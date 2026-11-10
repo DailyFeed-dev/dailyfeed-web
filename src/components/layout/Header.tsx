@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 import { SearchIcon } from '@/components/common/icons';
-import NotificationBell from '@/features/notification/components/NotificationBell';
-import ProfileMenu from '@/features/profile/components/ProfileMenu';
+import NotificationBell from '@/components/notification/NotificationBell';
+import ProfileMenu from '@/components/profile/ProfileMenu';
 
 // 메뉴는 Sidebar.tsx 에서 관리합니다.
 export default function Header() {
@@ -25,7 +25,7 @@ export default function Header() {
         </label>
       </div>
 
-      {/* 헤더 오른쪽 영역: 각 담당자가 자기 features 폴더의 컴포넌트만 수정합니다. */}
+      {/* 헤더 오른쪽 영역: 각 담당자가 자기 components/<도메인> 폴더의 컴포넌트만 수정합니다. */}
       <div className="flex items-center gap-4">
         <NotificationBell />
         <ProfileMenu />

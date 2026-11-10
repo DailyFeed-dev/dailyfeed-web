@@ -54,8 +54,10 @@
 
 ## 충돌 줄이기
 
-- 내 기능은 `src/features/<기능이름>/` 안에서 작업합니다.
-- `src/components/common/`, `src/app/layout.tsx`, 전역 스타일(`globals.css`), `package.json` 을 수정할 때는 **먼저 팀에 공유**합니다.
+- 내 기능의 컴포넌트는 `src/components/<도메인>/`, API 함수는 `src/services/` 에서 작업합니다.
+- `src/app/` 에는 페이지 파일(`page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`)만 둡니다. 컴포넌트 폴더를 만들지 않습니다.
+- 새 컴포넌트를 만들기 전에 `src/components/common/` 에 비슷한 게 있는지 먼저 확인합니다. (중복 방지)
+- `src/components/common/`, `src/components/layout/`, `src/app/layout.tsx`, 전역 스타일(`globals.css`), `package.json` 을 수정할 때는 **먼저 팀에 공유**합니다.
 - 매일 `develop` 을 내 브랜치에 반영합니다. (`git fetch origin && git merge origin/develop`)
 
 ## 환경변수와 보안
