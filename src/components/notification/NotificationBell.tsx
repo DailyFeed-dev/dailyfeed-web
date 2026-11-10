@@ -12,10 +12,10 @@ export default function NotificationBell() {
     <Link
       href="/notifications"
       aria-label="알림"
-      className="relative flex size-12 items-center justify-center rounded-full border border-zinc-200 text-zinc-900 transition-colors hover:bg-zinc-100"
+      className="relative flex size-10 items-center justify-center rounded-full text-zinc-900 transition-colors hover:bg-zinc-100"
     >
       <BellIcon className="size-5.5" />
-      <span className="absolute top-3 right-3.5 size-2 rounded-full bg-red-600 ring-2 ring-white" />
+      <span className="absolute top-2 right-2.5 size-2 rounded-full bg-red-600 ring-2 ring-white" />
     </Link>
   );
 }
