@@ -1,4 +1,4 @@
-import Header from '@/components/common/Header';
+import Header from '@/components/layout/Header';
 import Sidebar from '@/components/common/Sidebar';
 
 // 사이드바와 헤더가 있는 화면들의 공통 레이아웃입니다. (주소에는 (main) 이 나타나지 않습니다)

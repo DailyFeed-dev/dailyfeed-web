@@ -71,34 +71,41 @@ git merge origin/develop
 
 ```
 src/
-├── app/                   # 라우트(페이지). 페이지 파일은 얇게 유지하고 실제 UI는 features 에서 가져옵니다.
+├── app/                   # 페이지(주소)만. page.tsx, layout.tsx, loading.tsx, error.tsx 외의 폴더는 두지 않습니다.
 │   ├── layout.tsx         # [공통] 전체 틀
 │   ├── (auth)/            # 헤더 없는 화면 (주소에 (auth) 는 나타나지 않음)
 │   └── (main)/            # 헤더 있는 화면 (주소에 (main) 은 나타나지 않음)
 │       └── layout.tsx     # [공통] 헤더 + 본문
-├── features/              # 기능별 폴더. 각자 맡은 기능 폴더 안에서 작업합니다.
-│   └── <기능이름>/
-│       ├── components/
-│       ├── hooks/
-│       └── api.ts
-├── components/common/     # [공통] Header, PagePlaceholder 등 (수정 전 팀에 공유)
-├── lib/                   # 공통 유틸, API 클라이언트
+├── components/            # 모든 컴포넌트를 한 곳에 (중복이 한눈에 보이도록)
+│   ├── common/            # [공통] Button, Modal, Avatar, Badge, Input 등 (API 호출 X, props 만 그림)
+│   ├── layout/            # [공통] Header 등 레이아웃
+│   └── <도메인>/          # chat, til, archive, notification, profile, auth, home
+├── services/              # 도메인별 API 함수 (예: chatService.ts, notificationService.ts)
+├── hooks/                 # 공통 훅 (예: useAuth)
+├── lib/api/               # 공통 API 클라이언트 (src/lib/api/README.md 참고)
 └── types/                 # 공통 타입
 ```
 
+**컴포넌트 규칙**
+
+- 새 컴포넌트를 만들기 전에 `components/common/` 에 비슷한 게 있는지 **먼저 확인**합니다.
+- 두 도메인 이상에서 쓰게 되면 `components/common/` 으로 옮깁니다. (옮기기 전에 팀에 공유)
+- `components/common/` 은 API 를 부르지 않고 받은 값(props)만 그립니다. 다른 도메인 폴더를 import 하지 않습니다.
+- API 호출은 컴포넌트 안에서 직접 하지 않고 `services/` 의 함수를 사용합니다.
+
 ## 기능별 담당 위치
 
-각자 아래 두 곳만 수정하면 됩니다. 세부 페이지(예: `/til/123`, `/til/write`)는 자기 라우트 폴더 안에 추가합니다.
+각자 아래 세 곳만 수정하면 됩니다. 세부 페이지(예: `/til/123`, `/til/write`)는 자기 라우트 폴더 안에 `page.tsx` 로 추가합니다.
 
-| 기능             | 주소             | 실제 코드                   | 페이지 파일                     | 이슈 |
-| ---------------- | ---------------- | --------------------------- | ------------------------------- | ---- |
-| 메인화면         | `/`              | `src/features/home`         | `src/app/(main)/page.tsx`       | #8   |
-| 로그인           | `/login`         | `src/features/auth`         | `src/app/(auth)/login/`         | #4   |
-| 채팅             | `/chat`          | `src/features/chat`         | `src/app/(main)/chat/`          | #3   |
-| 자료실 게시판    | `/archive`       | `src/features/archive`      | `src/app/(main)/archive/`       | #5   |
-| 알림             | `/notifications` | `src/features/notification` | `src/app/(main)/notifications/` | #6   |
-| TIL, 학습 게시판 | `/til`           | `src/features/til`          | `src/app/(main)/til/`           | #7   |
-| 개인 프로필      | `/profile`       | `src/features/profile`      | `src/app/(main)/profile/`       | #9   |
+| 기능             | 주소             | 컴포넌트                      | API 함수                              | 페이지 파일                     | 이슈 |
+| ---------------- | ---------------- | ----------------------------- | ------------------------------------- | ------------------------------- | ---- |
+| 메인화면         | `/`              | `src/components/home`         | `src/services/homeService.ts`         | `src/app/(main)/page.tsx`       | #8   |
+| 로그인           | `/login`         | `src/components/auth`         | `src/services/authService.ts`         | `src/app/(auth)/login/`         | #4   |
+| 채팅             | `/chat`          | `src/components/chat`         | `src/services/chatService.ts`         | `src/app/(main)/chat/`          | #3   |
+| 자료실 게시판    | `/archive`       | `src/components/archive`      | `src/services/archiveService.ts`      | `src/app/(main)/archive/`       | #5   |
+| 알림             | `/notifications` | `src/components/notification` | `src/services/notificationService.ts` | `src/app/(main)/notifications/` | #6   |
+| TIL, 학습 게시판 | `/til`           | `src/components/til`          | `src/services/tilService.ts`          | `src/app/(main)/til/`           | #7   |
+| 개인 프로필      | `/profile`       | `src/components/profile`      | `src/services/profileService.ts`      | `src/app/(main)/profile/`       | #9   |
 
-헤더의 알림 아이콘(`NotificationBell`)과 프로필 메뉴(`ProfileMenu`)는 각 담당자의 features 폴더에 있습니다.
-헤더 파일(`components/common/Header.tsx`)을 고치지 않고 자기 컴포넌트만 수정하면 됩니다.
+헤더의 알림 아이콘(`NotificationBell`)과 프로필 메뉴(`ProfileMenu`)는 각 담당자의 `components/<도메인>/` 폴더에 있습니다.
+헤더 파일(`components/layout/Header.tsx`)을 고치지 않고 자기 컴포넌트만 수정하면 됩니다.
