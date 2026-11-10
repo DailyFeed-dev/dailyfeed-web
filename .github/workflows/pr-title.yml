@@ -1,0 +1,27 @@
+name: PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions: {}
+
+jobs:
+  pr-title:
+    name: pr-title
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR 제목이 커밋 규칙을 따르는지 검사
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^(feat|fix|refactor|docs|test|chore|style): .+'
+          if [[ "$TITLE" =~ $pattern ]]; then
+            echo "✅ PR 제목 형식이 올바릅니다: $TITLE"
+          else
+            echo "❌ PR 제목 형식이 올바르지 않습니다: $TITLE"
+            echo "   '타입: 내용' 형식으로 작성해 주세요. (콜론 뒤 한 칸 띄우기)"
+            echo "   사용 가능한 타입: feat, fix, refactor, docs, test, chore, style"
+            echo "   예) feat: 로그인 페이지 구현"
+            exit 1
+          fi

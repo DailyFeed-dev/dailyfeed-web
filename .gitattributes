@@ -1,0 +1,11 @@
+# 운영체제(Windows/macOS)와 상관없이 저장소에는 항상 LF 줄바꿈으로 저장합니다.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
