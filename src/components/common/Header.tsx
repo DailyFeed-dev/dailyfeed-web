@@ -1,37 +1,34 @@
 import Link from 'next/link';
 
+import { SearchIcon } from '@/components/common/icons';
 import NotificationBell from '@/features/notification/components/NotificationBell';
 import ProfileMenu from '@/features/profile/components/ProfileMenu';
 
-// 메뉴는 여기서 한 번에 관리합니다. 새 메뉴가 필요하면 팀에 공유한 뒤 수정하세요.
-const NAV_ITEMS = [
-  { href: '/', label: '홈' },
-  { href: '/til', label: 'TIL · 학습' },
-  { href: '/archive', label: '자료실' },
-  { href: '/chat', label: '채팅' },
-];
-
+// 메뉴는 Sidebar.tsx 에서 관리합니다.
 export default function Header() {
   return (
-    <header className="border-b border-zinc-200">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="font-bold">
-            DailyFeed
-          </Link>
-          <nav className="flex gap-4 text-sm">
-            {NAV_ITEMS.map((item) => (
-              <Link key={item.href} href={item.href} className="hover:underline">
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        {/* 헤더 오른쪽 영역: 각 담당자가 자기 features 폴더의 컴포넌트만 수정합니다. */}
-        <div className="flex items-center gap-3">
-          <NotificationBell />
-          <ProfileMenu />
-        </div>
+    <header className="sticky top-0 z-10 flex h-25 shrink-0 items-center justify-between gap-4 bg-white px-4 sm:px-6">
+      <div className="flex items-center gap-6">
+        {/* 사이드바가 숨겨지는 작은 화면에서만 로고를 보여줍니다. */}
+        <Link href="/" className="text-xl font-bold text-zinc-950 lg:hidden">
+          DailyFeed
+        </Link>
+        {/* 검색 기능이 생기면 이 입력창을 연결합니다. */}
+        <label className="hidden h-12 w-90 items-center gap-3 rounded-lg bg-zinc-100 px-4 text-zinc-500 focus-within:ring-2 focus-within:ring-zinc-300 md:flex">
+          <SearchIcon className="size-5 shrink-0" />
+          <input
+            type="search"
+            placeholder="검색..."
+            aria-label="검색"
+            className="w-full bg-transparent text-zinc-900 outline-none placeholder:text-zinc-500"
+          />
+        </label>
+      </div>
+
+      {/* 헤더 오른쪽 영역: 각 담당자가 자기 features 폴더의 컴포넌트만 수정합니다. */}
+      <div className="flex items-center gap-4">
+        <NotificationBell />
+        <ProfileMenu />
       </div>
     </header>
   );
