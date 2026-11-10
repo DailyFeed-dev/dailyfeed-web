@@ -71,13 +71,34 @@ git merge origin/develop
 
 ```
 src/
-├── app/                 # 라우트(페이지). 페이지 파일은 얇게 유지하고 실제 UI는 features 에서 가져옵니다.
-├── features/            # 기능별 폴더. 각자 맡은 기능 폴더 안에서 작업합니다.
+├── app/                   # 라우트(페이지). 페이지 파일은 얇게 유지하고 실제 UI는 features 에서 가져옵니다.
+│   ├── layout.tsx         # [공통] 전체 틀
+│   ├── (auth)/            # 헤더 없는 화면 (주소에 (auth) 는 나타나지 않음)
+│   └── (main)/            # 헤더 있는 화면 (주소에 (main) 은 나타나지 않음)
+│       └── layout.tsx     # [공통] 헤더 + 본문
+├── features/              # 기능별 폴더. 각자 맡은 기능 폴더 안에서 작업합니다.
 │   └── <기능이름>/
 │       ├── components/
 │       ├── hooks/
 │       └── api.ts
-├── components/common/   # 여러 기능이 같이 쓰는 공통 컴포넌트 (수정 전 팀에 공유)
-├── lib/                 # 공통 유틸, API 클라이언트
-└── types/               # 공통 타입
+├── components/common/     # [공통] Header, PagePlaceholder 등 (수정 전 팀에 공유)
+├── lib/                   # 공통 유틸, API 클라이언트
+└── types/                 # 공통 타입
 ```
+
+## 기능별 담당 위치
+
+각자 아래 두 곳만 수정하면 됩니다. 세부 페이지(예: `/til/123`, `/til/write`)는 자기 라우트 폴더 안에 추가합니다.
+
+| 기능             | 주소             | 실제 코드                   | 페이지 파일                     | 이슈 |
+| ---------------- | ---------------- | --------------------------- | ------------------------------- | ---- |
+| 메인화면         | `/`              | `src/features/home`         | `src/app/(main)/page.tsx`       | #8   |
+| 로그인           | `/login`         | `src/features/auth`         | `src/app/(auth)/login/`         | #4   |
+| 채팅             | `/chat`          | `src/features/chat`         | `src/app/(main)/chat/`          | #3   |
+| 자료실 게시판    | `/archive`       | `src/features/archive`      | `src/app/(main)/archive/`       | #5   |
+| 알림             | `/notifications` | `src/features/notification` | `src/app/(main)/notifications/` | #6   |
+| TIL, 학습 게시판 | `/til`           | `src/features/til`          | `src/app/(main)/til/`           | #7   |
+| 개인 프로필      | `/profile`       | `src/features/profile`      | `src/app/(main)/profile/`       | #9   |
+
+헤더의 알림 아이콘(`NotificationBell`)과 프로필 메뉴(`ProfileMenu`)는 각 담당자의 features 폴더에 있습니다.
+헤더 파일(`components/common/Header.tsx`)을 고치지 않고 자기 컴포넌트만 수정하면 됩니다.
