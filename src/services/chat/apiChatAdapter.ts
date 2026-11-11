@@ -40,8 +40,8 @@ const newestFirst = (a: { createdAt: string }, b: { createdAt: string }) =>
 const timeOfLastMessage = (conversation: ChatConversation) =>
   conversation.lastMessage ? Date.parse(conversation.lastMessage.createdAt) : 0;
 
-function toMessage(item: DmMessage): ChatMessage | null {
-  if (!item.id || item.senderId === undefined || !item.createdAt) return null;
+function toMessage(item: DmMessage | null | undefined): ChatMessage | null {
+  if (!item?.id || item.senderId === undefined || !item.createdAt) return null;
   return {
     id: item.id,
     senderId: item.senderId,
@@ -118,8 +118,9 @@ const messagePort: ChatMessagePort = {
       signal,
     });
     const messages = keepValid(items, toMessage).sort(oldestFirst);
-    const hasMore = (items?.length ?? 0) >= size && messages.length > 0;
-    return { messages, olderCursor: hasMore ? messages[0].id : null };
+    const pageIsFull = (items?.length ?? 0) >= size;
+    if (pageIsFull && messages.length === 0) return invalidResponse();
+    return { messages, olderCursor: pageIsFull ? messages[0].id : null };
   },
 
   async sendMessage(peerId, content) {
