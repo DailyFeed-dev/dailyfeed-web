@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { BellIcon } from '@/components/common/icons';
@@ -7,10 +9,24 @@ export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    // 컴포넌트 스스로 서버(Mock)에서 알림 개수를 가져옵니다.
-    notificationService.fetchNotifications().then((data) => {
+    const loadUnreadCount = async () => {
+      const data = await notificationService.fetchNotifications();
       setUnreadCount(data.length);
-    });
+    };
+
+    // 1. 처음 마운트될 때 개수 불러오기
+    loadUnreadCount();
+
+    // 2. 방송(이벤트)을 수신했을 때 실행될 함수
+    const handleUpdate = () => {
+      loadUnreadCount();
+    };
+
+    window.addEventListener('notification-updated', handleUpdate);
+
+    return () => {
+      window.removeEventListener('notification-updated', handleUpdate);
+    };
   }, []);
 
   const hasUnread = unreadCount > 0;
