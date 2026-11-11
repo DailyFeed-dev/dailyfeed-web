@@ -20,7 +20,9 @@ export default function TerminalWindow({
         <span className="size-3 rounded-full bg-[#D41717]" aria-hidden="true" />
         <span className="size-3 rounded-full bg-[#E8D156]" aria-hidden="true" />
         <span className="size-3 rounded-full bg-[#22C55E]" aria-hidden="true" />
-        <span className="ml-3 font-mono text-[12px] leading-[1.5] text-[#A9A8B6]">{title}</span>
+        <span className="ml-3 font-mono text-[12px] leading-[1.5] text-(--color-text-disabled)">
+          {title}
+        </span>
       </div>
       {children}
     </div>

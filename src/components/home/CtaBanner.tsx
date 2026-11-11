@@ -1,12 +1,19 @@
 import Link from 'next/link';
 
-import { buttonL } from './buttonStyles';
+import { buttonClassName } from '@/components/common/Button';
+
+import { fullBleedBackground, PAGE_BG } from './fullBleed';
+import { buttonHover } from './buttonHover';
+import Reveal from './Reveal';
 
 // ④ 마지막 시작하기 띠: 보라 그라데이션 박스 (왼쪽 아래 모서리가 크게 둥근 모양)
 export default function CtaBanner() {
   return (
-    <section className="-mx-4 bg-[#F6F5FB] px-4 pb-24 sm:-mx-10 sm:px-10 lg:-mx-20 lg:px-20 lg:pb-30">
-      <div className="relative flex flex-col items-start justify-between gap-8 overflow-hidden rounded-2xl rounded-bl-[120px] bg-linear-to-r from-[#4B3FD6] via-[#6157E9] via-55% to-[#8A7FF3] p-10 lg:flex-row lg:items-center lg:p-16">
+    <section
+      className="pb-24 lg:pb-30"
+      style={fullBleedBackground(`linear-gradient(${PAGE_BG} 0 0)`)}
+    >
+      <Reveal className="relative flex flex-col items-start justify-between gap-8 overflow-hidden rounded-2xl rounded-bl-[120px] bg-linear-to-r from-[#4B3FD6] via-[#6157E9] via-55% to-[#8A7FF3] p-10 lg:flex-row lg:items-center lg:p-16">
         {/* 배경 격자 */}
         <div
           aria-hidden="true"
@@ -19,7 +26,7 @@ export default function CtaBanner() {
           }}
         />
 
-        <div className="relative flex flex-col gap-3 text-[#FFFFFF]">
+        <div className="relative flex flex-col gap-3 text-(--color-text-on-brand)">
           <p className="font-mono text-[14px] leading-[1.55]">{'// ready to commit?'}</p>
           {/* ⚠️ 40px 제목은 팀 텍스트 스타일에 없는 크기예요. (Display 스타일 추가 요청 필요) */}
           <h2 className="text-[32px] leading-tight font-bold sm:text-[40px]">
@@ -31,17 +38,32 @@ export default function CtaBanner() {
           </p>
         </div>
 
-        {/* 시안은 흰 버튼 · 투명 버튼이지만, 04 · Button 에 보라 배경용 버튼이 없어 Soft · Outline 을 씁니다. */}
+        {/* 시안은 흰 버튼 · 투명 버튼이지만, 공통 Button 에 보라 배경용 버튼이 없어 Soft · Outline 을 씁니다. */}
         <div className="relative flex shrink-0 gap-3">
           {/* TODO: 회원가입 페이지 주소를 로그인 담당(#4)과 확인 */}
-          <Link href="/login" className={buttonL.soft}>
+          {/* 마우스를 올리면 한 단계 진한 색 + 살짝 떠오름 (누를 수 있다는 느낌) */}
+          <Link
+            href="/login"
+            className={buttonClassName({
+              variant: 'soft',
+              size: 'lg',
+              className: buttonHover.soft,
+            })}
+          >
             시작하기
           </Link>
-          <Link href="/faq" className={buttonL.outline}>
+          <Link
+            href="/faq"
+            className={buttonClassName({
+              variant: 'outline',
+              size: 'lg',
+              className: buttonHover.outline,
+            })}
+          >
             FAQ 보기
           </Link>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

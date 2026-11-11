@@ -8,6 +8,10 @@ import {
   MessageCircleIcon,
   MessageSquareTextIcon,
 } from './icons';
+import { buttonHover } from './buttonHover';
+import LoginRequiredLink from './LoginRequiredLink';
+import Reveal from './Reveal';
+import SectionHeading from './SectionHeading';
 
 type Variant = 'brand' | 'light' | 'dark';
 
@@ -16,24 +20,24 @@ const CARD_STYLE: Record<
   { card: string; path: string; title: string; desc: string; icon: string }
 > = {
   brand: {
-    card: 'bg-[#6157E9]',
-    path: 'bg-[#FFFFFF]/15 text-[#FFFFFF]',
-    title: 'text-[#FFFFFF]',
-    desc: 'text-[#FFFFFF]/90',
-    icon: 'text-[#FFFFFF]',
+    card: 'bg-(--color-bg-brand)',
+    path: 'bg-(--color-bg-surface)/15 text-(--color-text-on-brand)',
+    title: 'text-(--color-text-on-brand)',
+    desc: 'text-(--color-text-on-brand)/90',
+    icon: 'text-(--color-text-on-brand)',
   },
   light: {
-    card: 'border border-[#ECEAF4] bg-[#FFFFFF]',
-    path: 'bg-[#F0EEFE] text-[#4B3FD6]',
-    title: 'text-[#1F1D2B]',
-    desc: 'text-[#5F5C75]',
+    card: 'border border-(--color-border-default) bg-(--color-bg-surface)',
+    path: 'bg-(--color-bg-brand-soft) text-(--color-text-brand)',
+    title: 'text-(--color-text-primary)',
+    desc: 'text-(--color-text-secondary)',
     icon: 'text-[#6157E9]',
   },
   dark: {
     card: 'bg-[#1F1D2B]',
-    path: 'bg-[#2E2D3A] text-[#A9A8B6]',
-    title: 'text-[#FFFFFF]',
-    desc: 'text-[#A9A8B6]',
+    path: 'bg-[#2E2D3A] text-(--color-text-disabled)',
+    title: 'text-(--color-text-on-brand)',
+    desc: 'text-(--color-text-disabled)',
     icon: 'text-[#E8D156]',
   },
 };
@@ -46,6 +50,7 @@ function FeatureCard({
   title,
   description,
   preview,
+  delay = 0,
 }: {
   variant: Variant;
   path: string;
@@ -53,22 +58,28 @@ function FeatureCard({
   title: string;
   description: ReactNode;
   preview: ReactNode;
+  /** 스크롤로 나타날 때 기다릴 시간(ms). 카드 3장을 순서대로 띄워요 */
+  delay?: number;
 }) {
   const s = CARD_STYLE[variant];
   return (
-    <article
-      className={`flex min-h-125 flex-col justify-between gap-8 rounded-2xl rounded-tr-[120px] p-9 ${s.card}`}
-    >
-      <div className="flex flex-col items-start gap-4">
-        <span className={`rounded-full px-2.5 py-1 font-mono text-[12px] leading-[1.5] ${s.path}`}>
-          {path}
-        </span>
-        <CardIcon className={`size-6 ${s.icon}`} />
-        <h3 className={`text-[30px] leading-[1.3] font-bold ${s.title}`}>{title}</h3>
-        <p className={`text-[16px] leading-[1.5] font-normal ${s.desc}`}>{description}</p>
-      </div>
-      {preview}
-    </article>
+    <Reveal delay={delay} className="h-full">
+      <article
+        className={`flex h-full flex-col justify-between gap-8 rounded-2xl rounded-tr-[120px] p-9 min-[75rem]:min-h-125 ${s.card}`}
+      >
+        <div className="flex flex-col items-start gap-4">
+          <span
+            className={`rounded-full px-2.5 py-1 font-mono text-[12px] leading-[1.5] ${s.path}`}
+          >
+            {path}
+          </span>
+          <CardIcon className={`size-6 ${s.icon}`} />
+          <h3 className={`text-[30px] leading-[1.3] font-bold ${s.title}`}>{title}</h3>
+          <p className={`text-[16px] leading-[1.5] font-normal ${s.desc}`}>{description}</p>
+        </div>
+        {preview}
+      </article>
+    </Reveal>
   );
 }
 
@@ -78,31 +89,45 @@ function FeatureLinkCard({
   icon: CardIcon,
   title,
   description,
+  delay = 0,
+  requireLogin = false,
 }: {
   href: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
   title: string;
   description: string;
+  delay?: number;
+  /** true 면 로그인 전에는 로그인 화면으로 보내요 (채팅처럼 로그인이 필요한 곳) */
+  requireLogin?: boolean;
 }) {
+  const CardLink = requireLogin ? LoginRequiredLink : Link;
   return (
-    <Link
-      href={href}
-      className="group flex items-center gap-5 rounded-2xl border border-[#ECEAF4] bg-[#F6F5FB] py-7 pr-8 pl-7 transition-colors hover:border-[#6157E9]"
-    >
-      <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-[#F0EEFE] text-[#6157E9]">
-        <CardIcon className="size-6" />
-      </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="text-[20px] leading-[1.35] font-bold text-[#1F1D2B]">{title}</span>
-        <span className="text-[14px] leading-[1.55] text-[#5F5C75]">{description}</span>
-      </span>
-      <span
-        aria-hidden="true"
-        className="font-mono text-[18px] leading-[1.4] font-semibold text-[#4B3FD6] transition-transform group-hover:translate-x-1"
+    <Reveal delay={delay}>
+      {/* 마우스를 올리면 연보라로 한 단계 진해지고 살짝 떠오름 (버튼과 같은 느낌) */}
+      <CardLink
+        href={href}
+        className={`group flex items-center gap-5 rounded-2xl border border-(--color-border-default) bg-[#F6F5FB] py-7 pr-8 pl-7 ${buttonHover.card}`}
       >
-        -&gt;
-      </span>
-    </Link>
+        {/* 카드가 연보라가 되면 아이콘 칸은 흰색으로 바뀌어 또렷하게 보여요 */}
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-(--color-bg-brand-soft) text-[#6157E9] transition-colors duration-200 group-hover:bg-(--color-bg-surface)">
+          <CardIcon className="size-6" />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-1">
+          <span className="text-[20px] leading-[1.35] font-bold text-(--color-text-primary)">
+            {title}
+          </span>
+          <span className="text-[14px] leading-[1.55] text-(--color-text-secondary)">
+            {description}
+          </span>
+        </span>
+        <span
+          aria-hidden="true"
+          className="font-mono text-[18px] leading-[1.4] font-semibold text-(--color-text-brand) transition-transform group-hover:translate-x-1"
+        >
+          -&gt;
+        </span>
+      </CardLink>
+    </Reveal>
   );
 }
 
@@ -111,20 +136,16 @@ function FeatureLinkCard({
 export default function FeatureSection() {
   return (
     <section id="features" className="flex scroll-mt-28 flex-col gap-14 py-24 lg:py-30">
-      <div className="flex flex-col gap-3">
-        <p className="font-mono text-[14px] leading-[1.5] font-medium text-[#4B3FD6]">
-          ~/dailyfeed/features
-        </p>
-        {/* ⚠️ 40px 섹션 제목은 팀 텍스트 스타일에 없는 크기예요. (Display 스타일 추가 요청 필요) */}
-        <h2 className="text-[32px] leading-tight font-bold text-[#1F1D2B] sm:text-[40px]">
-          DailyFeed에서 할 수 있는 일
-        </h2>
-        <p className="text-[16px] leading-[1.5] font-normal text-[#5F5C75]">
-          기록하고, 나누고, 솔직하게 이야기해요. 필요한 공간이 모두 한곳에 있어요.
-        </p>
-      </div>
+      <Reveal>
+        <SectionHeading
+          path="~/dailyfeed/features"
+          title="DailyFeed에서 할 수 있는 일"
+          description="기록하고, 나누고, 솔직하게 이야기해요. 필요한 공간이 모두 한곳에 있어요."
+        />
+      </Reveal>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      {/* 카드 3열은 히어로와 같이 화면 1200px(75rem) 이상부터. 그보다 좁으면 한 줄씩 쌓이고, 카드 높이는 내용만큼 */}
+      <div className="grid gap-6 min-[75rem]:grid-cols-3">
         <FeatureCard
           variant="brand"
           path="~/til"
@@ -140,7 +161,7 @@ export default function FeatureSection() {
             </>
           }
           preview={
-            <pre className="rounded-xl bg-[#4B3FD6] px-4.5 py-4 font-mono text-[13px] leading-[1.55] whitespace-pre-wrap text-[#FFFFFF]">
+            <pre className="rounded-xl bg-[#4B3FD6] px-4.5 py-4 font-mono text-[13px] leading-[1.55] whitespace-pre-wrap text-(--color-text-on-brand)">
               <span className="text-[#E8D156]">&gt;</span> til write --tag react{'\n'}
               {'  '}# useEffect 의존성 배열 정리{'\n'}
               {'  '}saved · streak +1 (22일째)
@@ -149,6 +170,7 @@ export default function FeatureSection() {
         />
         <FeatureCard
           variant="light"
+          delay={120}
           path="~/board/free"
           icon={MessageSquareTextIcon}
           title="자유게시판"
@@ -169,12 +191,14 @@ export default function FeatureSection() {
               ].map(([title, count]) => (
                 <li
                   key={title}
-                  className="flex items-center justify-between rounded-lg border border-[#ECEAF4] bg-[#F3F2F8] px-3.5 py-2.5"
+                  className="flex items-center justify-between rounded-lg border border-(--color-border-default) bg-(--color-bg-subtle) px-3.5 py-2.5"
                 >
-                  <span className="text-[14px] leading-[1.5] font-medium text-[#1F1D2B]">
+                  <span className="text-[14px] leading-[1.5] font-medium text-(--color-text-primary)">
                     {title}
                   </span>
-                  <span className="text-[12px] leading-[1.5] text-[#6C6980]">댓글 {count}</span>
+                  <span className="text-[12px] leading-[1.5] text-(--color-text-muted)">
+                    댓글 {count}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -183,6 +207,7 @@ export default function FeatureSection() {
         {/* ⚠️ 익명 작성 기능이 백엔드에 아직 없습니다. 지원 여부에 따라 문구를 고칩니다. */}
         <FeatureCard
           variant="dark"
+          delay={240}
           path="~/board/secret"
           icon={LockIcon}
           title="비밀게시판"
@@ -199,18 +224,20 @@ export default function FeatureSection() {
             <div className="flex flex-col gap-2.5 rounded-xl bg-[#2E2D3A] px-4.5 py-4">
               <p className="flex items-center gap-2">
                 {/* 04 · Avatar Size=XS 자리 (익명이라 ? 표시) */}
-                <span className="flex size-6 items-center justify-center rounded-full bg-[#6C6980] text-[11px] leading-[1.45] font-medium text-[#FFFFFF]">
+                <span className="flex size-6 items-center justify-center rounded-full bg-[#6C6980] text-[11px] leading-[1.45] font-medium text-(--color-text-on-brand)">
                   ?
                 </span>
-                <span className="text-[14px] leading-[1.5] font-medium text-[#FFFFFF]">
+                <span className="text-[14px] leading-[1.5] font-medium text-(--color-text-on-brand)">
                   익명의 개발자
                 </span>
-                <span className="text-[12px] leading-[1.5] text-[#A9A8B6]">· 3분 전</span>
+                <span className="text-[12px] leading-[1.5] text-(--color-text-disabled)">
+                  · 3분 전
+                </span>
               </p>
               <p className="text-[14px] leading-[1.55] text-[#DFDDE8]">
                 취업 준비하다 번아웃 온 분 계신가요?
               </p>
-              <p className="font-mono text-[12px] leading-[1.5] text-[#6C6980]">
+              <p className="font-mono text-[12px] leading-[1.5] text-(--color-text-muted)">
                 author: &quot;********&quot;
               </p>
             </div>
@@ -219,14 +246,17 @@ export default function FeatureSection() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
+        {/* 채팅은 로그인이 필요해요: 로그인 전이면 로그인 화면으로 */}
         <FeatureLinkCard
           href="/chat"
+          requireLogin
           icon={MessageCircleIcon}
           title="채팅"
           description="프로젝트 팀원과 실시간으로 대화하고 1:1로 질문해요."
         />
         <FeatureLinkCard
           href="/faq"
+          delay={120}
           icon={CircleHelpIcon}
           title="FAQ"
           description="처음이라면 자주 묻는 질문부터 확인해 보세요."
