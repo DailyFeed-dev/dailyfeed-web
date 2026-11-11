@@ -1,3 +1,4 @@
+import ChatSection from './ChatSection';
 import CtaBanner from './CtaBanner';
 import FeatureSection from './FeatureSection';
 import HeroSection from './HeroSection';
@@ -9,7 +10,8 @@ import WhyTilSection from './WhyTilSection';
 
 /**
  * 메인화면 (이슈 #8) — 온보딩 형식
- * 소개 · 기능 · TIL 필요성 · 게시판 이점 · 3단계 · 시작하기 순서로 보여 주는 화면이라 데이터를 불러오지 않습니다.
+ * 소개 · 기능 · TIL 필요성 · 게시판 이점 · 채팅 · 3단계 · 시작하기 순서로 보여 주는 화면이라 데이터를 불러오지 않습니다.
+ * 배경은 섹션마다 연보라(#F6F5FB) / 흰색이 번갈아 나와요. (시작하기 띠만 연보라 위 보라 박스)
  * 그래서 'use client' 없이 서버 컴포넌트로 만들었어요. (Next.js 기본 방식)
  *
  * 디자인: Figma Web Design · 최동하 · 온보딩 시안
@@ -28,6 +30,7 @@ export default function HomePage() {
       <FeatureSection />
       <WhyTilSection />
       <WhyBoardSection />
+      <ChatSection />
       <StepsSection />
       <CtaBanner />
       <OnboardingFooter />

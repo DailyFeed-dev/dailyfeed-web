@@ -4,15 +4,18 @@ import Badge from '@/components/common/Badge';
 import { buttonClassName } from '@/components/common/Button';
 
 import { fullBleedBackground, PAGE_BG } from './fullBleed';
+import { BookOpenIcon, MessageSquareTextIcon } from './icons';
 import { buttonHover } from './buttonHover';
+import CountUp from './CountUp';
 import Reveal from './Reveal';
+import SectionJumpLink from './SectionJumpLink';
 import TerminalWindow from './TerminalWindow';
 
 // TODO: 숫자는 예시입니다. 로그인 없이 볼 수 있는 공개 통계 API 가 없어서 (백엔드 요청 중) 안 되면 이 영역을 뺍니다.
+// 숫자는 화면에 보일 때 0부터 올라가서 이 값에 멈춰요 (CountUp). API 가 생기면 이 값만 실제 숫자로 바꾸면 돼요.
 const STATS = [
-  { value: '1,284', label: '누적 TIL' },
-  { value: '3,920', label: '게시글' },
-  { value: '21일', label: '최장 연속 기록' },
+  { value: 1284, label: '누적 TIL', icon: BookOpenIcon },
+  { value: 3920, label: '게시글', icon: MessageSquareTextIcon },
 ];
 
 // 연속 기록 카드의 7일 칸 (brand/50 → brand/600)
@@ -139,8 +142,11 @@ export default function HeroSection() {
     <section
       className="relative isolate -mx-4 px-4 pt-20 pb-24 sm:-mx-10 sm:px-10 lg:-mx-20 lg:px-20 lg:pt-28 lg:pb-32"
       style={{
-        // 연보라 → 아래쪽 흰색으로 흐려지는 바탕을 화면 양끝까지 칠함
-        ...fullBleedBackground(`linear-gradient(to bottom, ${PAGE_BG} 70%, #FFFFFF)`),
+        // 연보라 바탕을 끝까지 유지 + 맨 아래 1px 구분선(border/default)을 화면 양끝까지 칠함
+        // (아래로 흰색이 되면 다음 흰색 섹션과 경계가 흐려져서, 바탕은 그대로 두고 선으로 나눠요)
+        ...fullBleedBackground(
+          `linear-gradient(to bottom, ${PAGE_BG} calc(100% - 1px), var(--color-border-default) calc(100% - 1px))`,
+        ),
         // 빛 번짐이 좌우로는 화면 끝까지 퍼지고, 위아래는 섹션 안에서 잘리게 함 (가로 스크롤 없음)
         clipPath: 'inset(0 -100vmax)',
       }}
@@ -151,7 +157,7 @@ export default function HeroSection() {
           className="absolute inset-0 opacity-60"
           style={{
             backgroundImage:
-              'linear-gradient(to right, #E2DEFD 1px, transparent 1px), linear-gradient(to bottom, #E2DEFD 1px, transparent 1px)',
+              'linear-gradient(to right, var(--color-bg-brand-muted) 1px, transparent 1px), linear-gradient(to bottom, var(--color-bg-brand-muted) 1px, transparent 1px)',
             backgroundSize: '48px 48px',
             // 왼쪽 · 오른쪽 끝 · 아래로 부드럽게 사라지게 (넓은 화면에서 격자가 뚝 끊겨 보이지 않도록)
             maskImage:
@@ -171,7 +177,7 @@ export default function HeroSection() {
         {/* 왼쪽: 소개 (처음 열렸을 때 떠오르며 등장) */}
         <Reveal className="flex min-w-0 flex-col items-start gap-8">
           <span className="flex items-center gap-2 rounded-full border border-(--color-border-brand-soft) bg-(--color-bg-surface) py-2 pr-4 pl-3.5 font-mono text-[13px] leading-[1.55] text-(--color-text-brand)">
-            <span className="size-2 rounded-full bg-[#22C55E]" aria-hidden="true" />
+            <span className="size-2 rounded-full bg-(--color-text-success)" aria-hidden="true" />
             dailyfeed --onboarding
           </span>
 
@@ -212,8 +218,9 @@ export default function HeroSection() {
             >
               시작하기
             </Link>
-            <Link
-              href="#features"
+            {/* 같은 페이지 안 기능 소개(#features)로 부드럽게 내려가요. 누를 때마다 동작해요 */}
+            <SectionJumpLink
+              targetId="features"
               className={buttonClassName({
                 variant: 'outline',
                 size: 'lg',
@@ -221,16 +228,29 @@ export default function HeroSection() {
               })}
             >
               둘러보기
-            </Link>
+            </SectionJumpLink>
           </div>
 
-          <dl className="flex gap-10">
-            {STATS.map((s) => (
-              <div key={s.label} className="flex flex-col-reverse gap-0.5">
-                <dt className="text-[13px] leading-[1.55] text-(--color-text-muted)">{s.label}</dt>
-                <dd className="text-[24px] leading-[1.3] font-bold text-(--color-text-primary)">
-                  {s.value}
-                </dd>
+          {/* 숫자 2개를 작은 카드로: 아이콘 + 큰 숫자(끝에 보라 +) + 이름 */}
+          <dl className="flex flex-wrap gap-4">
+            {STATS.map(({ value, label, icon: StatIcon }) => (
+              <div
+                key={label}
+                className="flex items-center gap-4 rounded-2xl border border-(--color-border-default) bg-(--color-bg-surface) py-4 pr-6 pl-4 shadow-[inset_0_1px_0_#FFFFFF,0_8px_24px_rgba(97,87,233,0.10)]"
+              >
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-(--color-bg-brand-soft) text-[#6157E9]">
+                  <StatIcon className="size-5.5" />
+                </span>
+                <div className="flex flex-col-reverse">
+                  <dt className="text-[13px] leading-[1.5] font-medium text-(--color-text-muted)">
+                    {label}
+                  </dt>
+                  <dd className="text-[32px] leading-[1.15] font-bold tracking-tight text-(--color-text-primary)">
+                    {/* 카드가 떠오르는 동안 기다렸다가 숫자가 올라가기 시작해요 */}
+                    <CountUp value={value} delay={300} />
+                    <span className="text-[#6157E9]">+</span>
+                  </dd>
+                </div>
               </div>
             ))}
           </dl>

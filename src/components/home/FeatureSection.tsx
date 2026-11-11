@@ -1,13 +1,8 @@
-import Link from 'next/link';
 import type { ComponentType, ReactNode, SVGProps } from 'react';
 
-import {
-  BookOpenIcon,
-  CircleHelpIcon,
-  LockIcon,
-  MessageCircleIcon,
-  MessageSquareTextIcon,
-} from './icons';
+import { MessageCircleIcon } from '@/components/common/icons';
+
+import { BookOpenIcon, CircleHelpIcon, LockIcon, MessageSquareTextIcon } from './icons';
 import { buttonHover } from './buttonHover';
 import LoginRequiredLink from './LoginRequiredLink';
 import Reveal from './Reveal';
@@ -15,12 +10,21 @@ import SectionHeading from './SectionHeading';
 
 type Variant = 'brand' | 'light' | 'dark';
 
+/**
+ * 마우스를 올리면: 4px 들어 올려지고, 테두리에 얇은 빛나는 선 + 같은 색의 은은한 빛 + 아래 그림자
+ * (클릭하는 카드는 아니라서 커서는 그대로예요. "동작 줄이기" 사용자에게는 움직이지 않고 빛만 나요)
+ */
+const CARD_HOVER =
+  'transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0';
+
 const CARD_STYLE: Record<
   Variant,
-  { card: string; path: string; title: string; desc: string; icon: string }
+  { card: string; glow: string; path: string; title: string; desc: string; icon: string }
 > = {
   brand: {
     card: 'bg-(--color-bg-brand)',
+    // 연보라(brand/300) 선 + 보라 빛
+    glow: 'hover:shadow-[0_0_0_2px_#B3AAF7,0_0_28px_rgba(138,127,243,0.55),0_18px_40px_rgba(97,87,233,0.25)]',
     path: 'bg-(--color-bg-surface)/15 text-(--color-text-on-brand)',
     title: 'text-(--color-text-on-brand)',
     desc: 'text-(--color-text-on-brand)/90',
@@ -28,6 +32,8 @@ const CARD_STYLE: Record<
   },
   light: {
     card: 'border border-(--color-border-default) bg-(--color-bg-surface)',
+    // 보라(brand/500) 선 + 연한 보라 빛 (테두리 색도 같이 바꿔 선이 겹쳐 보이지 않게)
+    glow: 'hover:border-(--color-border-brand) hover:shadow-[0_0_0_1px_#6157E9,0_0_24px_rgba(97,87,233,0.28),0_18px_40px_rgba(31,29,43,0.08)]',
     path: 'bg-(--color-bg-brand-soft) text-(--color-text-brand)',
     title: 'text-(--color-text-primary)',
     desc: 'text-(--color-text-secondary)',
@@ -35,6 +41,8 @@ const CARD_STYLE: Record<
   },
   dark: {
     card: 'bg-[#1F1D2B]',
+    // 자물쇠 아이콘과 같은 노랑(yellow/400) 선 + 노란 빛
+    glow: 'hover:shadow-[0_0_0_2px_rgba(232,209,86,0.75),0_0_28px_rgba(232,209,86,0.35),0_18px_40px_rgba(31,29,43,0.35)]',
     path: 'bg-[#2E2D3A] text-(--color-text-disabled)',
     title: 'text-(--color-text-on-brand)',
     desc: 'text-(--color-text-disabled)',
@@ -65,7 +73,7 @@ function FeatureCard({
   return (
     <Reveal delay={delay} className="h-full">
       <article
-        className={`flex h-full flex-col justify-between gap-8 rounded-2xl rounded-tr-[120px] p-9 min-[75rem]:min-h-125 ${s.card}`}
+        className={`flex h-full flex-col justify-between gap-8 rounded-2xl rounded-tr-[120px] p-9 min-[75rem]:min-h-125 ${s.card} ${CARD_HOVER} ${s.glow}`}
       >
         <div className="flex flex-col items-start gap-4">
           <span
@@ -83,28 +91,27 @@ function FeatureCard({
   );
 }
 
-/** 아래쪽 바로가기 카드 (채팅 · FAQ) */
+/**
+ * 아래쪽 바로가기 카드 (채팅 · FAQ)
+ * 둘 다 로그인이 필요한 곳이라, 로그인 전이면 로그인 화면으로 보내요. (LoginRequiredLink)
+ */
 function FeatureLinkCard({
   href,
   icon: CardIcon,
   title,
   description,
   delay = 0,
-  requireLogin = false,
 }: {
   href: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
   title: string;
   description: string;
   delay?: number;
-  /** true 면 로그인 전에는 로그인 화면으로 보내요 (채팅처럼 로그인이 필요한 곳) */
-  requireLogin?: boolean;
 }) {
-  const CardLink = requireLogin ? LoginRequiredLink : Link;
   return (
     <Reveal delay={delay}>
       {/* 마우스를 올리면 연보라로 한 단계 진해지고 살짝 떠오름 (버튼과 같은 느낌) */}
-      <CardLink
+      <LoginRequiredLink
         href={href}
         className={`group flex items-center gap-5 rounded-2xl border border-(--color-border-default) bg-[#F6F5FB] py-7 pr-8 pl-7 ${buttonHover.card}`}
       >
@@ -126,7 +133,7 @@ function FeatureLinkCard({
         >
           -&gt;
         </span>
-      </CardLink>
+      </LoginRequiredLink>
     </Reveal>
   );
 }
@@ -246,10 +253,9 @@ export default function FeatureSection() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* 채팅은 로그인이 필요해요: 로그인 전이면 로그인 화면으로 */}
+        {/* 채팅 · FAQ 는 로그인이 필요해요: 로그인 전이면 로그인 화면으로 */}
         <FeatureLinkCard
           href="/chat"
-          requireLogin
           icon={MessageCircleIcon}
           title="채팅"
           description="프로젝트 팀원과 실시간으로 대화하고 1:1로 질문해요."

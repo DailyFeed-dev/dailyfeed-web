@@ -1,4 +1,3 @@
-import { fullBleedBackground, PAGE_BG } from './fullBleed';
 import Reveal from './Reveal';
 import SectionHeading from './SectionHeading';
 import TerminalWindow from './TerminalWindow';
@@ -24,13 +23,11 @@ const STEPS = [
   },
 ];
 
-// ③ 3단계로 시작해요: 터미널 창 안에 단계 3개
+// ⑥ 3단계로 시작해요: 터미널 창 안에 단계 3개
+// 배경: 흰색 (바로 앞 채팅 섹션이 연보라라서 번갈아 보이도록)
 export default function StepsSection() {
   return (
-    <section
-      className="flex flex-col gap-10 py-24 lg:py-30"
-      style={fullBleedBackground(`linear-gradient(${PAGE_BG} 0 0)`)}
-    >
+    <section className="flex flex-col gap-10 py-24 lg:py-30">
       <Reveal>
         <SectionHeading path="$ dailyfeed --help" title="3단계로 시작해요" />
       </Reveal>

@@ -10,7 +10,7 @@ export default function OnboardingFooter() {
       )}
     >
       <p className="text-[13px] leading-[1.55] text-(--color-text-muted)">
-        Daily Feed · 매일 조금씩, 함께 기록하고 성장하는 개발 커뮤니티
+        DailyFeed · 매일 조금씩, 함께 기록하고 성장하는 개발 커뮤니티
       </p>
       <p className="font-mono text-[12px] leading-[1.5] text-(--color-text-disabled)">
         v0.1.0 · built with Next.js

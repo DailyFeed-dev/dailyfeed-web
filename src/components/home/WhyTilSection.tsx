@@ -31,22 +31,29 @@ const BENEFITS = [
 /** 왼쪽: "이렇게 쓰면 돼요"를 보여 주는 어두운 TIL 예시 카드 */
 function TilTemplateCard() {
   return (
-    <div className="flex flex-col gap-3.5 rounded-2xl bg-[#1F1D2B] p-8">
-      <span className="self-start rounded-full bg-[#2E2D3A] px-2.5 py-1 font-mono text-[12px] leading-[1.5] text-(--color-text-disabled)">
-        til/2026-11-11.md
-      </span>
-      {TEMPLATE.map((item) => (
-        <div key={item.heading} className="flex flex-col gap-1.5">
-          <p className="text-[15px] font-bold text-(--color-text-on-brand)">
-            <span className="font-mono">## </span>
-            {item.heading}
-          </p>
-          <p className="text-[14px] leading-[1.55] text-[#DFDDE8]">{item.body}</p>
-        </div>
-      ))}
-      <p className="font-mono text-[12px] leading-[1.5] text-[#B3AAF7]">
-        {'// 3줄이면 충분해요 · 하루 5분 TIL'}
-      </p>
+    // 입체감: 뒤에 연보라 종이 한 장(오른쪽 아래로 12px) + 위가 살짝 밝은 그라데이션 + 위쪽 하이라이트 + 깊은 그림자
+    <div className="relative isolate mr-3 mb-3">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 translate-x-3 translate-y-3 rounded-2xl bg-[#C3BEFF]/60"
+      />
+      <div className="flex flex-col gap-3.5 rounded-2xl bg-linear-to-b from-[#2A2838] to-[#1F1D2B] p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_10px_rgba(31,29,43,0.18),0_20px_40px_rgba(31,29,43,0.28)]">
+        <span className="self-start rounded-full bg-[#2E2D3A] px-2.5 py-1 font-mono text-[12px] leading-[1.5] text-(--color-text-disabled)">
+          til/2026-11-11.md
+        </span>
+        {TEMPLATE.map((item) => (
+          <div key={item.heading} className="flex flex-col gap-1.5">
+            <p className="text-[15px] font-bold text-(--color-text-on-brand)">
+              <span className="font-mono">## </span>
+              {item.heading}
+            </p>
+            <p className="text-[14px] leading-[1.55] text-[#DFDDE8]">{item.body}</p>
+          </div>
+        ))}
+        <p className="font-mono text-[12px] leading-[1.5] text-[#B3AAF7]">
+          {'// 3줄이면 충분해요 · 하루 5분 TIL'}
+        </p>
+      </div>
     </div>
   );
 }
@@ -75,11 +82,12 @@ export default function WhyTilSection() {
         <Reveal delay={120}>
           <ul className="grid gap-6 sm:grid-cols-2">
             {BENEFITS.map((b) => (
+              // 입체감: 흰색 → 아주 연한 보라 그라데이션 + 위쪽 하이라이트 + 가까운 그림자 · 은은한 보라 그림자
               <li
                 key={b.no}
-                className="flex h-full flex-col gap-3 rounded-2xl border border-(--color-border-default) bg-(--color-bg-surface) p-7"
+                className="flex h-full flex-col gap-3 rounded-2xl border border-(--color-border-default) bg-linear-to-b from-(--color-bg-surface) to-[#FAF9FF] p-7 shadow-[inset_0_1px_0_#FFFFFF,0_1px_2px_rgba(31,29,43,0.06),0_10px_24px_rgba(97,87,233,0.12)]"
               >
-                <span className="font-mono text-[13px] leading-[1.55] text-(--color-text-brand)">
+                <span className="self-start rounded-md bg-(--color-bg-brand-soft) px-2 py-0.5 font-mono text-[13px] leading-[1.55] font-semibold text-(--color-text-brand)">
                   {b.no}
                 </span>
                 <h3 className="text-[20px] leading-[1.35] font-bold text-(--color-text-primary)">
