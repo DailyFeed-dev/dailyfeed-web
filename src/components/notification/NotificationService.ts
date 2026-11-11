@@ -1,6 +1,6 @@
-import { NotificationItem } from './NotificationTypes'; // <-- 여기 경로가 수정되었습니다!
+import { NotificationItem } from './NotificationTypes';
 
-const MOCK_NOTIFICATIONS: NotificationItem[] = [
+let MOCK_NOTIFICATIONS: NotificationItem[] = [
   {
     id: '1',
     type: 'post',
@@ -41,11 +41,10 @@ const MOCK_NOTIFICATIONS: NotificationItem[] = [
 
 export const notificationService = {
   fetchNotifications: async (): Promise<NotificationItem[]> => {
-    // API 연결 시: return fetch('/api/notifications').then(res => res.json());
     return new Promise((resolve) => setTimeout(() => resolve(MOCK_NOTIFICATIONS), 200));
   },
   deleteNotification: async (id: string): Promise<boolean> => {
-    // API 연결 시: await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
+    MOCK_NOTIFICATIONS = MOCK_NOTIFICATIONS.filter((noti) => noti.id !== id);
     return new Promise((resolve) => setTimeout(() => resolve(true), 100));
   },
 };
