@@ -10,6 +10,7 @@ import type {
   ChatRelation,
   ChatUser,
   ChatUserId,
+  ChatUserPort,
 } from '@/types/chat';
 
 const ME: ChatUserId = 1;
@@ -19,7 +20,6 @@ const DEFAULT_PAGE_SIZE = 20;
 const MINUTE_MS = 60_000;
 
 type FriendRequestRecord = {
-  id: string;
   fromId: ChatUserId;
   toId: ChatUserId;
   createdAt: string;
@@ -44,6 +44,7 @@ const users = new Map<ChatUserId, ChatUser>(
     { id: 4, name: '박서연', avatarUrl: null },
     { id: 5, name: '최도윤', avatarUrl: null },
     { id: 6, name: '정하은', avatarUrl: null },
+    { id: 7, name: '한지우', avatarUrl: null },
   ].map((user) => [user.id, user]),
 );
 
@@ -73,9 +74,11 @@ const lastReadIds = new Map<ChatUserId, string>([
 
 const friendIds = new Set<ChatUserId>([2, 3]);
 
+const blockedIds = new Set<ChatUserId>([7]);
+
 let friendRequests: FriendRequestRecord[] = [
-  { id: nextId('fr'), fromId: 4, toId: ME, createdAt: minutesAgo(120) },
-  { id: nextId('fr'), fromId: ME, toId: 5, createdAt: minutesAgo(240) },
+  { fromId: 4, toId: ME, createdAt: minutesAgo(120) },
+  { fromId: ME, toId: 5, createdAt: minutesAgo(240) },
 ];
 
 function wait(signal?: AbortSignal) {
@@ -102,6 +105,10 @@ function requireUser(userId: ChatUserId): ChatUser {
 function requirePeer(userId: ChatUserId): ChatUser {
   if (userId === ME) throw new ApiError('나와는 채팅할 수 없습니다.', 400);
   return requireUser(userId);
+}
+
+function requireNotBlocked(userId: ChatUserId) {
+  if (blockedIds.has(userId)) throw new ApiError('차단한 사용자입니다.', 403);
 }
 
 function appendMessage(peerId: ChatUserId, message: ChatMessage) {
@@ -152,17 +159,16 @@ function requestBetween(userId: ChatUserId) {
   );
 }
 
-function takeRequest(requestId: string, side: 'sent' | 'received') {
-  const request = friendRequests.find(
-    (item) => item.id === requestId && (side === 'sent' ? item.fromId : item.toId) === ME,
-  );
+function takeRequest(userId: ChatUserId, side: 'sent' | 'received') {
+  const [fromId, toId] = side === 'sent' ? [ME, userId] : [userId, ME];
+  const request = friendRequests.find((item) => item.fromId === fromId && item.toId === toId);
   if (!request) throw new ApiError('친구 요청을 찾을 수 없습니다.', 404);
-  friendRequests = friendRequests.filter((item) => item.id !== requestId);
+  friendRequests = friendRequests.filter((item) => item !== request);
   return request;
 }
 
 function toFriendRequest(request: FriendRequestRecord, otherId: ChatUserId): ChatFriendRequest {
-  return { id: request.id, user: requireUser(otherId), createdAt: request.createdAt };
+  return { user: requireUser(otherId), createdAt: request.createdAt };
 }
 
 const newestFirst = (a: { createdAt: string }, b: { createdAt: string }) =>
@@ -204,6 +210,7 @@ const messagePort: ChatMessagePort = {
   async sendMessage(peerId, content) {
     await wait();
     requirePeer(peerId);
+    requireNotBlocked(peerId);
     const text = content.trim();
     if (!text) throw new ApiError('메시지를 입력해 주세요.', 400);
     const message: ChatMessage = { id: nextId('m'), senderId: ME, content: text, createdAt: now() };
@@ -217,12 +224,13 @@ const messagePort: ChatMessagePort = {
 const friendPort: ChatFriendPort = {
   async getRelation(userId, signal) {
     await wait(signal);
-    const user = requirePeer(userId);
-    if (friendIds.has(userId)) return { user, status: 'friend', requestId: null };
+    requirePeer(userId);
+    if (blockedIds.has(userId)) return { userId, status: 'blockedByMe', canDm: false };
+    if (friendIds.has(userId)) return { userId, status: 'friend', canDm: true };
     const request = requestBetween(userId);
-    if (!request) return { user, status: 'none', requestId: null };
+    if (!request) return { userId, status: 'none', canDm: true };
     const status: ChatRelation['status'] = request.fromId === ME ? 'sent' : 'received';
-    return { user, status, requestId: request.id };
+    return { userId, status, canDm: true };
   },
 
   async listFriends(signal) {
@@ -247,32 +255,26 @@ const friendPort: ChatFriendPort = {
   async sendFriendRequest(userId) {
     await wait();
     requirePeer(userId);
+    requireNotBlocked(userId);
     if (friendIds.has(userId)) throw new ApiError('이미 친구입니다.', 409);
     if (requestBetween(userId)) throw new ApiError('이미 친구 요청이 있습니다.', 409);
-    const request: FriendRequestRecord = {
-      id: nextId('fr'),
-      fromId: ME,
-      toId: userId,
-      createdAt: now(),
-    };
-    friendRequests = [...friendRequests, request];
-    return toFriendRequest(request, userId);
+    friendRequests = [...friendRequests, { fromId: ME, toId: userId, createdAt: now() }];
   },
 
-  async cancelFriendRequest(requestId) {
+  async cancelFriendRequest(userId) {
     await wait();
-    takeRequest(requestId, 'sent');
+    takeRequest(userId, 'sent');
   },
 
-  async acceptFriendRequest(requestId) {
+  async acceptFriendRequest(userId) {
     await wait();
-    const request = takeRequest(requestId, 'received');
-    friendIds.add(request.fromId);
+    takeRequest(userId, 'received');
+    friendIds.add(userId);
   },
 
-  async rejectFriendRequest(requestId) {
+  async rejectFriendRequest(userId) {
     await wait();
-    takeRequest(requestId, 'received');
+    takeRequest(userId, 'received');
   },
 
   async removeFriend(userId) {
@@ -281,8 +283,16 @@ const friendPort: ChatFriendPort = {
   },
 };
 
+const userPort: ChatUserPort = {
+  async getUser(userId, signal) {
+    await wait(signal);
+    return requireUser(userId);
+  },
+};
+
 export const mockChatAdapter: ChatAdapter = {
   conversations: conversationPort,
   messages: messagePort,
   friends: friendPort,
+  users: userPort,
 };

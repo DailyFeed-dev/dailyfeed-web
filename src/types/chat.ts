@@ -31,7 +31,6 @@ export type ChatMessagePage = {
 };
 
 export type ChatFriendRequest = {
-  id: string;
   user: ChatUser;
   createdAt: string;
 };
@@ -41,12 +40,13 @@ export type ChatFriendRequests = {
   sent: ChatFriendRequest[];
 };
 
-export type ChatRelationStatus = 'none' | 'friend' | 'sent' | 'received';
+export type ChatRelationStatus =
+  'none' | 'friend' | 'sent' | 'received' | 'blockedByMe' | 'blockedMe';
 
 export type ChatRelation = {
-  user: ChatUser;
+  userId: ChatUserId;
   status: ChatRelationStatus;
-  requestId: string | null;
+  canDm: boolean;
 };
 
 export type ChatConversationPort = {
@@ -63,17 +63,22 @@ export type ChatFriendPort = {
   getRelation(userId: ChatUserId, signal?: AbortSignal): Promise<ChatRelation>;
   listFriends(signal?: AbortSignal): Promise<ChatUser[]>;
   listFriendRequests(signal?: AbortSignal): Promise<ChatFriendRequests>;
-  sendFriendRequest(userId: ChatUserId): Promise<ChatFriendRequest>;
-  cancelFriendRequest(requestId: string): Promise<void>;
-  acceptFriendRequest(requestId: string): Promise<void>;
-  rejectFriendRequest(requestId: string): Promise<void>;
+  sendFriendRequest(userId: ChatUserId): Promise<void>;
+  cancelFriendRequest(userId: ChatUserId): Promise<void>;
+  acceptFriendRequest(userId: ChatUserId): Promise<void>;
+  rejectFriendRequest(userId: ChatUserId): Promise<void>;
   removeFriend(userId: ChatUserId): Promise<void>;
+};
+
+export type ChatUserPort = {
+  getUser(userId: ChatUserId, signal?: AbortSignal): Promise<ChatUser>;
 };
 
 export type ChatAdapter = {
   conversations: ChatConversationPort;
   messages: ChatMessagePort;
   friends: ChatFriendPort;
+  users: ChatUserPort;
 };
 
 export type ChatRoomEvent =
