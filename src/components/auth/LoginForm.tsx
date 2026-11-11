@@ -1,11 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { useId, useRef, useState, type ChangeEvent, type SubmitEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type SubmitEvent,
+} from 'react';
 
 import AuthButton from '@/components/auth/AuthButton';
 import AuthInput from '@/components/auth/AuthInput';
 import { validateEmail, validateRequired } from '@/components/auth/validation';
+import { ApiError, tokenStorage, type Schemas } from '@/lib/api';
+import { login } from '@/services/authService';
 
 type Field = 'email' | 'password';
 type Errors = Partial<Record<Field, string>>;
@@ -19,32 +29,82 @@ const VALIDATORS: Record<Field, (value: string) => string | undefined> = {
   password: (value) => validateRequired(value, '비밀번호를 입력해 주세요.'),
 };
 
+type AccountStatus = NonNullable<Schemas['AuthResponse']['accountStatus']>;
+
+// 로그인 API 는 성공했지만 아직 서비스를 쓸 수 없는 계정 상태와 안내 문구입니다.
+// 'ACTIVE' 만 로그인을 허용하고, 여기에 없는 값은 UNKNOWN_ACCOUNT_STATUS_MESSAGE 를 보여줍니다.
+const BLOCKED_ACCOUNT_MESSAGES: Partial<Record<AccountStatus, string>> = {
+  PENDING_APPROVAL: '가입 승인 대기 중인 계정이에요. 승인 후 로그인할 수 있어요.',
+  REJECTED: '가입이 승인되지 않은 계정이에요.',
+};
+const UNKNOWN_ACCOUNT_STATUS_MESSAGE = '로그인할 수 없는 계정 상태예요. 관리자에게 문의해 주세요.';
+
+const NETWORK_ERROR_MESSAGE = '서버와 연결할 수 없어요. 잠시 후 다시 시도해 주세요.';
+
+/**
+ * 로그인 실패 시 화면에 보여줄 문구를 고릅니다.
+ * 서버가 문구를 보낸 4xx(예: 비밀번호 불일치)만 서버 문구를 그대로 쓰고,
+ * 서버 오류(5xx)·JSON 이 아닌 응답(프록시 미설정 404 등)·네트워크 오류는 연결 오류 문구로 바꿉니다.
+ */
+function getLoginErrorMessage(error: unknown): string {
+  if (!(error instanceof ApiError)) return NETWORK_ERROR_MESSAGE;
+  // 응답이 JSON 이 아니거나 message 가 없으면 lib/api/client.ts 가 이 기본 문구를 넣습니다.
+  // (client.ts 의 문구가 바뀌면 여기도 함께 바꿔야 합니다)
+  const isFallbackMessage = error.message === `요청에 실패했습니다. (${error.status})`;
+  if (error.status >= 500 || isFallbackMessage) return NETWORK_ERROR_MESSAGE;
+  return error.message;
+}
+
 /**
  * 로그인 입력 폼입니다. 입력값·에러 상태를 다루므로 클라이언트 컴포넌트입니다.
  * 처음 제출할 때 전체를 검사하고, 그 뒤로는 값이 바뀔 때마다 해당 칸만 다시 검사합니다.
  */
 export default function LoginForm() {
+  const router = useRouter();
   const emailId = useId();
   const passwordId = useId();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  // 버튼이 disabled 로 다시 그려지기 전에 연달아 제출되는 것까지 막기 위한 표시입니다.
+  const submittingRef = useRef(false);
+  // 로그인에 성공해 화면을 떠날 때만 폼을 비우기 위한 표시입니다. (아래 useLayoutEffect 참고)
+  const shouldResetRef = useRef(false);
 
   const [values, setValues] = useState<Record<Field, string>>({ email: '', password: '' });
   const [errors, setErrors] = useState<Errors>({});
   const [submitted, setSubmitted] = useState(false);
-  const [showNotice, setShowNotice] = useState(false);
+  const [pending, setPending] = useState(false);
+  // 서버 응답이나 계정 상태 때문에 로그인하지 못했을 때 폼 아래에 보여줄 문구입니다.
+  const [formError, setFormError] = useState<string>();
+
+  // cacheComponents 가 켜져 있으면 Next.js 는 떠난 페이지를 지우지 않고 <Activity> 로 숨겨 둡니다.
+  // 그대로 두면 다시 /login 에 왔을 때 "로그인 중..." 버튼과 입력했던 비밀번호가 남아 있으므로,
+  // 로그인 성공 후 화면이 숨겨질 때 폼을 처음 상태로 되돌립니다. (docs: preserving-ui-state)
+  useLayoutEffect(() => {
+    return () => {
+      if (!shouldResetRef.current) return;
+      shouldResetRef.current = false;
+      submittingRef.current = false;
+      setValues({ email: '', password: '' });
+      setErrors({});
+      setSubmitted(false);
+      setPending(false);
+      setFormError(undefined);
+    };
+  }, []);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const field = event.target.name as Field;
     const { value } = event.target;
 
     setValues((prev) => ({ ...prev, [field]: value }));
-    setShowNotice(false);
+    setFormError(undefined);
     if (submitted) setErrors((prev) => ({ ...prev, [field]: VALIDATORS[field](value) }));
   }
 
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submittingRef.current) return;
 
     const nextErrors: Errors = {};
     for (const field of FIELDS) nextErrors[field] = VALIDATORS[field](values[field]);
@@ -53,15 +113,39 @@ export default function LoginForm() {
 
     const firstInvalid = FIELDS.find((field) => nextErrors[field]);
     if (firstInvalid) {
-      setShowNotice(false);
+      setFormError(undefined);
       const inputRef = firstInvalid === 'email' ? emailRef : passwordRef;
       inputRef.current?.focus();
       return;
     }
 
-    // TODO(#4): authService.login 연결 (POST /api/v1/auth/login, skipAuth, tokenStorage.setTokens)
-    // API 연결 전에는 로그인에 성공한 것처럼 처리하지 않고 안내 문구만 보여줍니다.
-    setShowNotice(true);
+    submittingRef.current = true;
+    setPending(true);
+    setFormError(undefined);
+
+    try {
+      const auth = await login({ email: values.email.trim(), password: values.password });
+
+      if (auth.accountStatus === 'ACTIVE') {
+        // 뒤로 가기로 로그인 화면에 돌아오지 않도록 push 대신 replace 로 이동합니다.
+        // 이동이 끝날 때까지 버튼은 "로그인 중..." 상태로 둡니다.
+        shouldResetRef.current = true;
+        router.replace('/');
+        return;
+      }
+
+      // 승인 대기·거절·알 수 없는 상태의 계정은 로그인 상태로 두지 않습니다.
+      tokenStorage.clear();
+      setFormError(
+        (auth.accountStatus && BLOCKED_ACCOUNT_MESSAGES[auth.accountStatus]) ||
+          UNKNOWN_ACCOUNT_STATUS_MESSAGE,
+      );
+    } catch (error) {
+      setFormError(getLoginErrorMessage(error));
+    }
+
+    submittingRef.current = false;
+    setPending(false);
   }
 
   return (
@@ -102,15 +186,15 @@ export default function LoginForm() {
         </Link>
       </div>
 
-      <AuthButton type="submit" className="mt-[30px]">
-        로그인
+      <AuthButton type="submit" disabled={pending} className="mt-[30px]">
+        {pending ? '로그인 중...' : '로그인'}
       </AuthButton>
 
-      {/* 스크린 리더가 문구 변화를 읽을 수 있도록 role="status" 영역은 항상 렌더링합니다. */}
-      <div role="status">
-        {showNotice && (
-          <p className="mt-4 rounded-[10px] bg-(--auth-page-bg) px-4 py-3 text-center text-sm text-[#77748b]">
-            로그인 기능은 아직 준비 중이에요.
+      {/* 스크린 리더가 문구를 바로 읽을 수 있도록 role="alert" 영역은 항상 렌더링합니다. */}
+      <div role="alert">
+        {formError && (
+          <p className="mt-4 rounded-[10px] bg-(--auth-danger-soft) px-4 py-3 text-center text-sm text-(--auth-danger)">
+            {formError}
           </p>
         )}
       </div>

@@ -13,6 +13,7 @@ const AUTH_COLORS = {
   '--auth-border-default': '#eceaf4', // border/default (gray/200)
   '--auth-border-strong': '#dfdde8', // border/strong (gray/300)
   '--auth-danger': '#d41717', // text/danger, border/danger (red/500)
+  '--auth-danger-soft': '#fdecec', // bg/danger-soft (red/50)
   '--auth-page-bg': '#f6f5fb', // bg/page (gray/50)
 } as CSSProperties;
 
