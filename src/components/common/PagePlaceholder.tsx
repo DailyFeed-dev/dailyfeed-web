@@ -1,6 +1,6 @@
 type PagePlaceholderProps = {
   title: string;
-  issue: number;
+  issue?: number;
 };
 
 /**
@@ -11,7 +11,9 @@ export default function PagePlaceholder({ title, issue }: PagePlaceholderProps) 
   return (
     <section className="flex flex-1 flex-col items-center justify-center gap-2 py-24 text-center">
       <h1 className="text-2xl font-semibold">{title}</h1>
-      <p className="text-sm text-zinc-500">작업 예정 페이지입니다. (이슈 #{issue})</p>
+      <p className="text-sm text-zinc-500">
+        작업 예정 페이지입니다.{issue ? ` (이슈 #${issue})` : ''}
+      </p>
     </section>
   );
 }
