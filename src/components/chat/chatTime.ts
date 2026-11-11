@@ -20,6 +20,11 @@ export function isSameDay(a: Date, b: Date) {
   );
 }
 
+export function toDayKey(iso: string) {
+  const date = new Date(iso);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+}
+
 export function formatMessageTime(iso: string) {
   return timeFormat.format(new Date(iso));
 }

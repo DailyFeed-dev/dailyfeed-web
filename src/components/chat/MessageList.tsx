@@ -21,6 +21,17 @@ type MessageListProps = {
 const NEAR_BOTTOM_PX = 120;
 const NEAR_TOP_PX = 80;
 
+function olderButtonLabel(loading: boolean, error: string | null) {
+  if (loading) return '불러오는 중...';
+  if (error) return `${error} 다시 시도`;
+  return '이전 메시지 보기';
+}
+
+function offsetTopOf(list: HTMLElement, key: string) {
+  const row = list.querySelector<HTMLElement>(`[data-row-key="${CSS.escape(key)}"]`);
+  return row ? row.offsetTop : null;
+}
+
 export default function MessageList({
   items,
   peer,
@@ -32,45 +43,55 @@ export default function MessageList({
   onDiscard,
 }: MessageListProps) {
   const listRef = useRef<HTMLDivElement>(null);
-  const previous = useRef({
-    firstKey: null as string | null,
-    lastKey: null as string | null,
-    scrollHeight: 0,
-    nearBottom: true,
+  const lastRender = useRef({
+    firstMessageKey: null as string | null,
+    firstMessageOffset: 0,
+    bottomKey: null as string | null,
+    wasNearBottom: true,
   });
 
-  const firstKey = items[0]?.key ?? null;
-  const lastItem = items[items.length - 1];
-  const lastKey = lastItem?.key ?? null;
-  const lastIsMine = lastItem?.kind === 'outgoing' || lastItem?.kind === 'pending';
+  const firstMessageKey = items.find((item) => item.kind !== 'divider')?.key ?? null;
+  const bottomItem = items[items.length - 1];
+  const bottomKey = bottomItem?.key ?? null;
+  const bottomIsMine = bottomItem?.kind === 'outgoing' || bottomItem?.kind === 'pending';
 
   useLayoutEffect(() => {
     const list = listRef.current;
     if (!list) return;
-    const before = previous.current;
-    const prepended =
-      before.firstKey !== null && firstKey !== before.firstKey && lastKey === before.lastKey;
-    if (prepended) {
-      list.scrollTop += list.scrollHeight - before.scrollHeight;
-    } else if (lastKey !== before.lastKey && (before.nearBottom || lastIsMine)) {
+    const before = lastRender.current;
+
+    if (before.firstMessageKey && before.firstMessageKey !== firstMessageKey) {
+      const movedOffset = offsetTopOf(list, before.firstMessageKey);
+      if (movedOffset !== null) list.scrollTop += movedOffset - before.firstMessageOffset;
+    }
+
+    const hasNewBottom = bottomKey !== before.bottomKey;
+    if (hasNewBottom && (before.wasNearBottom || bottomIsMine)) {
       list.scrollTop = list.scrollHeight;
     }
-    previous.current = { ...before, firstKey, lastKey, scrollHeight: list.scrollHeight };
-  }, [firstKey, lastKey, lastIsMine, items.length]);
+
+    lastRender.current = {
+      ...before,
+      firstMessageKey,
+      firstMessageOffset: firstMessageKey ? (offsetTopOf(list, firstMessageKey) ?? 0) : 0,
+      bottomKey,
+    };
+  }, [firstMessageKey, bottomKey, bottomIsMine]);
 
   const handleScroll = () => {
     const list = listRef.current;
     if (!list) return;
-    previous.current.nearBottom =
-      list.scrollHeight - list.scrollTop - list.clientHeight < NEAR_BOTTOM_PX;
-    if (list.scrollTop < NEAR_TOP_PX && hasOlder && !loadingOlder && !olderError) onLoadOlder();
+    const distanceFromBottom = list.scrollHeight - list.scrollTop - list.clientHeight;
+    lastRender.current.wasNearBottom = distanceFromBottom < NEAR_BOTTOM_PX;
+    const canLoadOlder = hasOlder && !loadingOlder && !olderError;
+    if (list.scrollTop < NEAR_TOP_PX && canLoadOlder) onLoadOlder();
   };
 
   return (
     <div
       ref={listRef}
       onScroll={handleScroll}
-      className="flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto bg-[#fcfcfe] px-4 py-5 sm:px-6"
+      className="relative flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto bg-[#fcfcfe] px-4 py-5 [overflow-anchor:none] sm:px-6"
     >
       <div className="mt-auto" />
       {hasOlder && (
@@ -81,22 +102,14 @@ export default function MessageList({
             disabled={loadingOlder}
             className="cursor-pointer text-xs leading-[1.45] text-(--color-text-muted) underline underline-offset-2 disabled:cursor-default disabled:no-underline"
           >
-            {loadingOlder
-              ? '불러오는 중...'
-              : olderError
-                ? `${olderError} 다시 시도`
-                : '이전 메시지 보기'}
+            {olderButtonLabel(loadingOlder, olderError)}
           </button>
         </div>
       )}
       {items.map((item) => (
-        <MessageRow
-          key={item.key}
-          item={item}
-          peer={peer}
-          onRetry={onRetry}
-          onDiscard={onDiscard}
-        />
+        <div key={item.key} data-row-key={item.key}>
+          <MessageRow item={item} peer={peer} onRetry={onRetry} onDiscard={onDiscard} />
+        </div>
       ))}
     </div>
   );

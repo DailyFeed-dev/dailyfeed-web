@@ -60,6 +60,7 @@ export function useChatRoom(peerId: ChatUserId) {
       setMessages((current) => mergeMessages(page.messages, current));
       setOlderCursor(page.olderCursor);
     } catch (error) {
+      if (generation !== snapshotGeneration.current) return;
       setOlderError(errorMessageOf(error, OLDER_FAILED_MESSAGE));
     } finally {
       loadingOlderRef.current = false;

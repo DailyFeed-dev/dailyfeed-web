@@ -1,6 +1,6 @@
 import type { ChatMessage, ChatUserId } from '@/types/chat';
 
-import { formatDayDivider, isSameDay } from './chatTime';
+import { formatDayDivider, isSameDay, toDayKey } from './chatTime';
 
 const GROUP_GAP_MS = 5 * 60_000;
 
@@ -18,10 +18,59 @@ export type TimelineItem =
   | { kind: 'outgoing'; key: string; message: ChatMessage }
   | { kind: 'pending'; key: string; message: PendingMessage };
 
+type TimelineEntry =
+  | { source: 'server'; key: string; createdAt: string; message: ChatMessage }
+  | { source: 'pending'; key: string; createdAt: string; message: PendingMessage };
+
+type PreviousEntry = { senderId: ChatUserId | null; createdAt: string };
+
 export function mergeMessages(current: ChatMessage[], incoming: ChatMessage[]) {
   const byId = new Map(current.map((message) => [message.id, message]));
   for (const message of incoming) byId.set(message.id, message);
   return [...byId.values()].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+}
+
+function sortByTime(messages: ChatMessage[], pending: PendingMessage[]): TimelineEntry[] {
+  const entries: TimelineEntry[] = [
+    ...messages.map((message) => ({
+      source: 'server' as const,
+      key: message.id,
+      createdAt: message.createdAt,
+      message,
+    })),
+    ...pending.map((message) => ({
+      source: 'pending' as const,
+      key: message.clientId,
+      createdAt: message.createdAt,
+      message,
+    })),
+  ];
+  return entries.sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+}
+
+function isContinuation(message: ChatMessage, previous: PreviousEntry | null) {
+  return (
+    previous !== null &&
+    previous.senderId === message.senderId &&
+    Date.parse(message.createdAt) - Date.parse(previous.createdAt) < GROUP_GAP_MS
+  );
+}
+
+function toItem(
+  entry: TimelineEntry,
+  peerId: ChatUserId,
+  previousOnSameDay: PreviousEntry | null,
+): TimelineItem {
+  if (entry.source === 'pending')
+    return { kind: 'pending', key: entry.key, message: entry.message };
+  const { message } = entry;
+  if (message.senderId !== peerId) return { kind: 'outgoing', key: entry.key, message };
+  return {
+    kind: 'incoming',
+    key: entry.key,
+    message,
+    showHead: !isContinuation(message, previousOnSameDay),
+  };
 }
 
 export function buildTimeline(
@@ -30,36 +79,23 @@ export function buildTimeline(
   peerId: ChatUserId,
 ): TimelineItem[] {
   const items: TimelineItem[] = [];
-  let previous: { senderId: ChatUserId | null; createdAt: string } | null = null;
+  let previous: PreviousEntry | null = null;
 
-  const startsNewDay = (createdAt: string) =>
-    !previous || !isSameDay(new Date(previous.createdAt), new Date(createdAt));
-
-  const addDividerIfNeeded = (key: string, createdAt: string) => {
-    const newDay = startsNewDay(createdAt);
-    if (newDay)
-      items.push({ kind: 'divider', key: `day-${key}`, label: formatDayDivider(createdAt) });
-    return newDay;
-  };
-
-  for (const message of messages) {
-    const newDay = addDividerIfNeeded(message.id, message.createdAt);
-    if (message.senderId !== peerId) {
-      items.push({ kind: 'outgoing', key: message.id, message });
-    } else {
-      const continued =
-        !newDay &&
-        previous?.senderId === message.senderId &&
-        Date.parse(message.createdAt) - Date.parse(previous.createdAt) < GROUP_GAP_MS;
-      items.push({ kind: 'incoming', key: message.id, message, showHead: !continued });
+  for (const entry of sortByTime(messages, pending)) {
+    const isNewDay =
+      previous === null || !isSameDay(new Date(previous.createdAt), new Date(entry.createdAt));
+    if (isNewDay) {
+      items.push({
+        kind: 'divider',
+        key: `day-${toDayKey(entry.createdAt)}`,
+        label: formatDayDivider(entry.createdAt),
+      });
     }
-    previous = message;
-  }
-
-  for (const message of pending) {
-    addDividerIfNeeded(message.clientId, message.createdAt);
-    items.push({ kind: 'pending', key: message.clientId, message });
-    previous = { senderId: null, createdAt: message.createdAt };
+    items.push(toItem(entry, peerId, isNewDay ? null : previous));
+    previous = {
+      senderId: entry.source === 'server' ? entry.message.senderId : null,
+      createdAt: entry.createdAt,
+    };
   }
 
   return items;
