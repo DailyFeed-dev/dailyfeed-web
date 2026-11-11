@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import type { ChatUserId } from '@/types/chat';
 
 import ChatRoom from './ChatRoom';
-import ConversationListPanel from './ConversationListPanel';
+import ChatSidebar from './ChatSidebar';
 import { useConversations } from './useConversations';
 
 function parsePeerId(value: string | null): ChatUserId | null {
@@ -22,7 +22,7 @@ export default function ChatScreen() {
 
   return (
     <div className="mb-6 flex h-[calc(100dvh-7.75rem)] min-h-[520px] gap-5 rounded-3xl bg-(--color-bg-subtle) p-3 sm:p-6">
-      <ConversationListPanel
+      <ChatSidebar
         conversations={conversations}
         loaded={loaded}
         selectedPeerId={peerId}

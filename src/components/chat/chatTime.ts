@@ -33,6 +33,14 @@ export function formatDayDivider(iso: string) {
   return dividerFormat.format(new Date(iso));
 }
 
+export function formatRelativeTime(iso: string, now = new Date()) {
+  const minutes = Math.floor((now.getTime() - Date.parse(iso)) / 60_000);
+  if (minutes < 1) return '방금 전';
+  if (minutes < 60) return `${minutes}분 전`;
+  if (minutes < 24 * 60) return `${Math.floor(minutes / 60)}시간 전`;
+  return formatRoomTime(iso, now);
+}
+
 export function formatRoomTime(iso: string, now = new Date()) {
   const date = new Date(iso);
   if (isSameDay(date, now)) return timeFormat.format(date);

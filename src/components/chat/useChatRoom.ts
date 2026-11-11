@@ -4,15 +4,12 @@ import { chatRealtime, conversationService, messageService } from '@/services/ch
 import type { ChatMessage, ChatUserId } from '@/types/chat';
 
 import { mergeMessages, type PendingMessage } from './chatTimeline';
+import { errorMessageOf } from './errorMessage';
 
 type RoomStatus = 'loading' | 'ready' | 'error';
 
 const SEND_FAILED_MESSAGE = '메시지를 보내지 못했어요.';
 const OLDER_FAILED_MESSAGE = '이전 메시지를 불러오지 못했어요.';
-
-function errorMessageOf(error: unknown, fallback: string) {
-  return error instanceof Error && error.message ? error.message : fallback;
-}
 
 export function useChatRoom(peerId: ChatUserId) {
   const [status, setStatus] = useState<RoomStatus>('loading');
