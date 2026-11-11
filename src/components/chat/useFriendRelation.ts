@@ -6,23 +6,24 @@ import type { ChatRelation, ChatUserId } from '@/types/chat';
 import { errorMessageOf } from './errorMessage';
 import type { FriendsState } from './useFriends';
 
-type ListedRelation = 'friend' | 'sent' | 'received' | 'none';
+type PeerListStatus = 'friend' | 'sent' | 'received' | 'unlisted';
 
-export function listedRelationOf(friendsState: FriendsState, userId: ChatUserId): ListedRelation {
+export function peerListStatusOf(friendsState: FriendsState, userId: ChatUserId): PeerListStatus {
   if (friendsState.friends.some((user) => user.id === userId)) return 'friend';
   if (friendsState.sentRequests.some((request) => request.user.id === userId)) return 'sent';
   if (friendsState.receivedRequests.some((request) => request.user.id === userId)) {
     return 'received';
   }
-  return 'none';
+  return 'unlisted';
 }
 
 export function useFriendRelation(
   peerId: ChatUserId,
-  listedRelation: ListedRelation,
+  peerListStatus: PeerListStatus,
   onChanged: () => void,
 ) {
   const [relation, setRelation] = useState<ChatRelation | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const latestLoadId = useRef(0);
@@ -34,9 +35,13 @@ export function useFriendRelation(
       const isStale = () => signal?.aborted || loadId !== latestLoadId.current;
       try {
         const next = await friendService.getRelation(peerId, signal);
-        if (!isStale()) setRelation(next);
+        if (isStale()) return;
+        setRelation(next);
+        setLoadFailed(false);
       } catch {
-        if (!isStale()) setRelation(null);
+        if (isStale()) return;
+        setRelation(null);
+        setLoadFailed(true);
       }
     },
     [peerId],
@@ -46,20 +51,22 @@ export function useFriendRelation(
     const controller = new AbortController();
     void load(controller.signal);
     return () => controller.abort();
-  }, [load, listedRelation]);
+  }, [load, peerListStatus]);
 
   const runAction = async (action: () => Promise<void>, failMessage: string) => {
     setBusy(true);
     setActionError(null);
     try {
-      await action();
-      onChanged();
-    } catch (error) {
-      setActionError(errorMessageOf(error, failMessage));
+      try {
+        await action();
+        onChanged();
+      } catch (error) {
+        setActionError(errorMessageOf(error, failMessage));
+      }
+      await load();
     } finally {
       setBusy(false);
     }
-    await load();
   };
 
   const request = () =>
@@ -71,7 +78,9 @@ export function useFriendRelation(
   const accept = () =>
     runAction(() => friendService.acceptFriendRequest(peerId), '친구 요청을 수락하지 못했어요.');
 
-  return { relation, busy, actionError, request, cancel, accept };
+  const retryLoad = () => load();
+
+  return { relation, loadFailed, busy, actionError, request, cancel, accept, retryLoad };
 }
 
 export type FriendRelationState = ReturnType<typeof useFriendRelation>;

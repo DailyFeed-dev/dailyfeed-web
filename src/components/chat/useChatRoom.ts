@@ -19,7 +19,7 @@ export function useChatRoom(peerId: ChatUserId) {
   const [olderError, setOlderError] = useState<string | null>(null);
   const [syncError, setSyncError] = useState<unknown>(null);
   const [pending, setPending] = useState<PendingMessage[]>([]);
-  const [connection, setConnection] = useState(0);
+  const [subscriptionRestartCount, setSubscriptionRestartCount] = useState(0);
   const loadingOlderRef = useRef(false);
   const snapshotGeneration = useRef(0);
   const clientSequence = useRef(0);
@@ -43,13 +43,13 @@ export function useChatRoom(peerId: ChatUserId) {
         setSyncError(event.error);
         setStatus((current) => (current === 'loading' ? 'error' : current));
       }),
-    [peerId, connection],
+    [peerId, subscriptionRestartCount],
   );
 
-  const reconnect = useCallback(() => {
+  const retryLoad = useCallback(() => {
     setStatus('loading');
     setSyncError(null);
-    setConnection((current) => current + 1);
+    setSubscriptionRestartCount((count) => count + 1);
   }, []);
 
   const loadOlder = useCallback(async () => {
@@ -151,7 +151,7 @@ export function useChatRoom(peerId: ChatUserId) {
     loadingOlder,
     olderError,
     syncError,
-    reconnect,
+    retryLoad,
     loadOlder,
     send,
     retry,

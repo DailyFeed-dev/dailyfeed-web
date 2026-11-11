@@ -15,7 +15,7 @@ export function useConversations() {
     loaded: false,
     error: null,
   });
-  const [connection, setConnection] = useState(0);
+  const [subscriptionRestartCount, setSubscriptionRestartCount] = useState(0);
 
   useEffect(
     () =>
@@ -26,12 +26,12 @@ export function useConversations() {
         }
         setState((current) => ({ ...current, error: event.error }));
       }),
-    [connection],
+    [subscriptionRestartCount],
   );
 
   const retry = useCallback(() => {
     setState((current) => ({ ...current, error: null }));
-    setConnection((current) => current + 1);
+    setSubscriptionRestartCount((count) => count + 1);
   }, []);
 
   return { ...state, retry };

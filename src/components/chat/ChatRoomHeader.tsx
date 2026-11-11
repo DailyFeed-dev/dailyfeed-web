@@ -77,10 +77,36 @@ function PeerSkeleton() {
   );
 }
 
-export default function ChatRoomHeader({ peer, peerLoading, relationState }: ChatRoomHeaderProps) {
-  const { relation, actionError } = relationState;
-  const relationText = relation ? RELATION_TEXT[relation.status] : null;
+function RelationStatus({ relationState }: { relationState: FriendRelationState }) {
+  const { relation, loadFailed, actionError } = relationState;
 
+  if (actionError) {
+    return (
+      <p role="alert" className="truncate text-xs text-(--color-text-danger)">
+        {actionError}
+      </p>
+    );
+  }
+  if (loadFailed) {
+    return (
+      <div role="alert" className="flex items-center gap-1.5 text-xs">
+        <span className="truncate text-(--color-text-danger)">친구 상태를 불러오지 못했어요</span>
+        <button
+          type="button"
+          onClick={() => void relationState.retryLoad()}
+          className="shrink-0 cursor-pointer text-(--color-text-secondary) underline underline-offset-2"
+        >
+          다시 시도
+        </button>
+      </div>
+    );
+  }
+  const relationText = relation ? RELATION_TEXT[relation.status] : null;
+  if (!relationText) return null;
+  return <p className="truncate text-xs text-(--color-text-secondary)">{relationText}</p>;
+}
+
+export default function ChatRoomHeader({ peer, peerLoading, relationState }: ChatRoomHeaderProps) {
   return (
     <header className="flex min-h-[73px] items-center gap-3 border-b border-(--color-border-default) py-4 pr-5 pl-4 sm:pl-6">
       <Link
@@ -99,15 +125,7 @@ export default function ChatRoomHeader({ peer, peerLoading, relationState }: Cha
             <h2 className="truncate text-[17px] font-semibold text-(--color-text-primary)">
               {peer.name}
             </h2>
-            {actionError ? (
-              <p role="alert" className="truncate text-xs text-(--color-text-danger)">
-                {actionError}
-              </p>
-            ) : (
-              relationText && (
-                <p className="truncate text-xs text-(--color-text-secondary)">{relationText}</p>
-              )
-            )}
+            <RelationStatus relationState={relationState} />
           </div>
           <RelationAction relationState={relationState} />
         </>

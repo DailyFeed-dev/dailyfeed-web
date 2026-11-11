@@ -15,7 +15,7 @@ import MessageComposer from './MessageComposer';
 import MessageList from './MessageList';
 import { useChatPeer } from './useChatPeer';
 import { useChatRoom } from './useChatRoom';
-import { listedRelationOf, useFriendRelation } from './useFriendRelation';
+import { peerListStatusOf, useFriendRelation } from './useFriendRelation';
 import type { FriendsState } from './useFriends';
 
 type ChatRoomProps = {
@@ -34,7 +34,7 @@ export default function ChatRoom({ peerId, knownPeer, friendsState }: ChatRoomPr
   const room = useChatRoom(peerId);
   const relationState = useFriendRelation(
     peerId,
-    listedRelationOf(friendsState, peerId),
+    peerListStatusOf(friendsState, peerId),
     friendsState.reload,
   );
   const [draft, setDraft] = useState('');
@@ -67,7 +67,7 @@ export default function ChatRoom({ peerId, knownPeer, friendsState }: ChatRoomPr
             description="네트워크 상태를 확인한 뒤 다시 시도해 주세요."
             detail={errorCodeOf(room.syncError)}
           >
-            <Button size="md" icon="refresh" onClick={room.reconnect}>
+            <Button size="md" icon="refresh" onClick={room.retryLoad}>
               다시 시도
             </Button>
           </ChatStateMessage>
