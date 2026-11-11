@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { friendService } from '@/services/chatService';
 import type { ChatFriendRequest, ChatUser, ChatUserId } from '@/types/chat';
@@ -7,28 +7,45 @@ import { errorMessageOf } from './errorMessage';
 
 type FriendsData = {
   friends: ChatUser[];
-  received: ChatFriendRequest[];
-  sent: ChatFriendRequest[];
+  receivedRequests: ChatFriendRequest[];
+  sentRequests: ChatFriendRequest[];
   loaded: boolean;
   loadError: string | null;
 };
 
-const EMPTY: FriendsData = { friends: [], received: [], sent: [], loaded: false, loadError: null };
+const EMPTY: FriendsData = {
+  friends: [],
+  receivedRequests: [],
+  sentRequests: [],
+  loaded: false,
+  loadError: null,
+};
 
 export function useFriends() {
   const [data, setData] = useState<FriendsData>(EMPTY);
   const [busyUserIds, setBusyUserIds] = useState<ChatUserId[]>([]);
   const [actionError, setActionError] = useState<string | null>(null);
+  const latestReloadId = useRef(0);
 
   const reload = useCallback(async (signal?: AbortSignal) => {
+    latestReloadId.current += 1;
+    const reloadId = latestReloadId.current;
+    const isStale = () => signal?.aborted || reloadId !== latestReloadId.current;
     try {
       const [friends, requests] = await Promise.all([
         friendService.listFriends(signal),
         friendService.listFriendRequests(signal),
       ]);
-      setData({ friends, ...requests, loaded: true, loadError: null });
+      if (isStale()) return;
+      setData({
+        friends,
+        receivedRequests: requests.received,
+        sentRequests: requests.sent,
+        loaded: true,
+        loadError: null,
+      });
     } catch (error) {
-      if (signal?.aborted) return;
+      if (isStale()) return;
       setData((current) => ({
         ...current,
         loaded: true,

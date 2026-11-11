@@ -31,12 +31,12 @@ export default function ChatSidebar({
 }: ChatSidebarProps) {
   const [tab, setTab] = useState<ChatTab>('chats');
   const [query, setQuery] = useState('');
-  const friends = useFriends();
+  const friendsState = useFriends();
 
   const changeTab = (next: ChatTab) => {
     setTab(next);
     setQuery('');
-    if (next === 'friends') void friends.reload();
+    if (next === 'friends') void friendsState.reload();
   };
 
   return (
@@ -53,7 +53,11 @@ export default function ChatSidebar({
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />
-      <ChatTabs value={tab} onChange={changeTab} requestCount={friends.received.length} />
+      <ChatTabs
+        value={tab}
+        onChange={changeTab}
+        requestCount={friendsState.receivedRequests.length}
+      />
       <div
         id={CHAT_TAB_PANEL_ID}
         role="tabpanel"
@@ -68,7 +72,7 @@ export default function ChatSidebar({
             query={query}
           />
         ) : (
-          <FriendsPanel friends={friends} query={query} />
+          <FriendsPanel friendsState={friendsState} query={query} />
         )}
       </div>
     </section>

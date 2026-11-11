@@ -11,7 +11,7 @@ import type { FriendsState } from './useFriends';
 import { UNKNOWN_USER_NAME } from './useChatPeer';
 
 type FriendsPanelProps = {
-  friends: FriendsState;
+  friendsState: FriendsState;
   query: string;
 };
 
@@ -42,35 +42,42 @@ function displayName(user: ChatUser) {
   return user.name || UNKNOWN_USER_NAME;
 }
 
-export default function FriendsPanel({ friends, query }: FriendsPanelProps) {
-  const received = friends.received.filter((request) => nameMatches(request.user, query));
-  const sent = friends.sent.filter((request) => nameMatches(request.user, query));
-  const friendList = friends.friends.filter((user) => nameMatches(user, query));
-  const isBusy = (user: ChatUser) => friends.busyUserIds.includes(user.id);
+export default function FriendsPanel({ friendsState, query }: FriendsPanelProps) {
+  const receivedRequests = friendsState.receivedRequests.filter((request) =>
+    nameMatches(request.user, query),
+  );
+  const sentRequests = friendsState.sentRequests.filter((request) =>
+    nameMatches(request.user, query),
+  );
+  const friends = friendsState.friends.filter((user) => nameMatches(user, query));
+  const isBusy = (user: ChatUser) => friendsState.busyUserIds.includes(user.id);
 
-  if (!friends.loaded) {
+  if (!friendsState.loaded) {
     return <p className="p-3 text-sm text-(--color-text-muted)">불러오는 중...</p>;
   }
 
-  if (friends.loadError) {
+  if (friendsState.loadError) {
     return (
-      <p role="alert" className="p-3 text-sm text-(--color-text-danger)">
-        {friends.loadError}
-      </p>
+      <div role="alert" className="flex flex-col items-start gap-2 p-3">
+        <p className="text-sm text-(--color-text-danger)">{friendsState.loadError}</p>
+        <Button variant="outline" onClick={() => void friendsState.reload()}>
+          다시 불러오기
+        </Button>
+      </div>
     );
   }
 
   return (
     <div className="-mx-1 flex min-h-0 flex-1 flex-col overflow-y-auto px-1">
-      {friends.actionError && (
+      {friendsState.actionError && (
         <p role="alert" className="px-1 pt-2 text-[13px] text-(--color-text-danger)">
-          {friends.actionError}
+          {friendsState.actionError}
         </p>
       )}
 
-      {received.length > 0 && (
-        <FriendSection title="받은 요청" count={received.length}>
-          {received.map(({ user, createdAt }) => (
+      {receivedRequests.length > 0 && (
+        <FriendSection title="받은 요청" count={receivedRequests.length}>
+          {receivedRequests.map(({ user, createdAt }) => (
             <li key={user.id}>
               <FriendRow user={user} subtitle={formatRelativeTime(createdAt)}>
                 <ChatIconButton
@@ -78,14 +85,14 @@ export default function FriendsPanel({ friends, query }: FriendsPanelProps) {
                   tone="brand"
                   label={`${displayName(user)}님의 친구 요청 수락`}
                   disabled={isBusy(user)}
-                  onClick={() => void friends.accept(user.id)}
+                  onClick={() => void friendsState.accept(user.id)}
                 />
                 <ChatIconButton
                   icon="close"
                   tone="outline"
                   label={`${displayName(user)}님의 친구 요청 거절`}
                   disabled={isBusy(user)}
-                  onClick={() => void friends.reject(user.id)}
+                  onClick={() => void friendsState.reject(user.id)}
                 />
               </FriendRow>
             </li>
@@ -93,16 +100,16 @@ export default function FriendsPanel({ friends, query }: FriendsPanelProps) {
         </FriendSection>
       )}
 
-      {sent.length > 0 && (
-        <FriendSection title="보낸 요청" count={sent.length}>
-          {sent.map(({ user }) => (
+      {sentRequests.length > 0 && (
+        <FriendSection title="보낸 요청" count={sentRequests.length}>
+          {sentRequests.map(({ user }) => (
             <li key={user.id}>
               <FriendRow user={user} subtitle="수락을 기다리는 중">
                 <Button
                   variant="outline"
                   aria-label={`${displayName(user)}님에게 보낸 친구 요청 취소`}
                   disabled={isBusy(user)}
-                  onClick={() => void friends.cancel(user.id)}
+                  onClick={() => void friendsState.cancel(user.id)}
                 >
                   요청 취소
                 </Button>
@@ -112,13 +119,13 @@ export default function FriendsPanel({ friends, query }: FriendsPanelProps) {
         </FriendSection>
       )}
 
-      <FriendSection title="친구" count={friendList.length}>
-        {friendList.length === 0 && (
+      <FriendSection title="친구" count={friends.length}>
+        {friends.length === 0 && (
           <li className="p-3 text-sm text-(--color-text-muted)">
             {query.trim() ? '검색 결과가 없어요.' : '아직 친구가 없어요.'}
           </li>
         )}
-        {friendList.map((user) => (
+        {friends.map((user) => (
           <li key={user.id}>
             <FriendRow user={user}>
               <Link

@@ -43,46 +43,46 @@ export default function MessageList({
   onDiscard,
 }: MessageListProps) {
   const listRef = useRef<HTMLDivElement>(null);
-  const lastRender = useRef({
-    firstMessageKey: null as string | null,
-    firstMessageOffset: 0,
-    bottomKey: null as string | null,
-    wasNearBottom: true,
+  const scrollMemory = useRef({
+    anchorMessageKey: null as string | null,
+    anchorOffsetTop: 0,
+    lastMessageKey: null as string | null,
+    isNearBottom: true,
   });
 
-  const firstMessageKey = items.find((item) => item.kind !== 'divider')?.key ?? null;
-  const bottomItem = items[items.length - 1];
-  const bottomKey = bottomItem?.key ?? null;
-  const bottomIsMine = bottomItem?.kind === 'outgoing' || bottomItem?.kind === 'pending';
+  const anchorMessageKey = items.find((item) => item.kind !== 'divider')?.key ?? null;
+  const lastItem = items[items.length - 1];
+  const lastMessageKey = lastItem?.key ?? null;
+  const lastIsMine = lastItem?.kind === 'outgoing' || lastItem?.kind === 'pending';
 
   useLayoutEffect(() => {
     const list = listRef.current;
     if (!list) return;
-    const before = lastRender.current;
+    const memory = scrollMemory.current;
 
-    if (before.firstMessageKey && before.firstMessageKey !== firstMessageKey) {
-      const movedOffset = offsetTopOf(list, before.firstMessageKey);
-      if (movedOffset !== null) list.scrollTop += movedOffset - before.firstMessageOffset;
+    if (memory.anchorMessageKey && memory.anchorMessageKey !== anchorMessageKey) {
+      const movedOffsetTop = offsetTopOf(list, memory.anchorMessageKey);
+      if (movedOffsetTop !== null) list.scrollTop += movedOffsetTop - memory.anchorOffsetTop;
     }
 
-    const hasNewBottom = bottomKey !== before.bottomKey;
-    if (hasNewBottom && (before.wasNearBottom || bottomIsMine)) {
+    const hasNewLastMessage = lastMessageKey !== memory.lastMessageKey;
+    if (hasNewLastMessage && (memory.isNearBottom || lastIsMine)) {
       list.scrollTop = list.scrollHeight;
     }
 
-    lastRender.current = {
-      ...before,
-      firstMessageKey,
-      firstMessageOffset: firstMessageKey ? (offsetTopOf(list, firstMessageKey) ?? 0) : 0,
-      bottomKey,
+    scrollMemory.current = {
+      ...memory,
+      anchorMessageKey,
+      anchorOffsetTop: anchorMessageKey ? (offsetTopOf(list, anchorMessageKey) ?? 0) : 0,
+      lastMessageKey,
     };
-  }, [firstMessageKey, bottomKey, bottomIsMine]);
+  }, [anchorMessageKey, lastMessageKey, lastIsMine, hasOlder, loadingOlder, olderError]);
 
   const handleScroll = () => {
     const list = listRef.current;
     if (!list) return;
     const distanceFromBottom = list.scrollHeight - list.scrollTop - list.clientHeight;
-    lastRender.current.wasNearBottom = distanceFromBottom < NEAR_BOTTOM_PX;
+    scrollMemory.current.isNearBottom = distanceFromBottom < NEAR_BOTTOM_PX;
     const canLoadOlder = hasOlder && !loadingOlder && !olderError;
     if (list.scrollTop < NEAR_TOP_PX && canLoadOlder) onLoadOlder();
   };

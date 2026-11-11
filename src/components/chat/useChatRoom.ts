@@ -50,14 +50,15 @@ export function useChatRoom(peerId: ChatUserId) {
     loadingOlderRef.current = true;
     setLoadingOlder(true);
     setOlderError(null);
-    const generation = snapshotGeneration.current;
+    const requestedSnapshotGeneration = snapshotGeneration.current;
+    const snapshotChanged = () => requestedSnapshotGeneration !== snapshotGeneration.current;
     try {
       const page = await messageService.listMessages(peerId, { before: olderCursor });
-      if (generation !== snapshotGeneration.current) return;
+      if (snapshotChanged()) return;
       setMessages((current) => mergeMessages(page.messages, current));
       setOlderCursor(page.olderCursor);
     } catch (error) {
-      if (generation !== snapshotGeneration.current) return;
+      if (snapshotChanged()) return;
       setOlderError(errorMessageOf(error, OLDER_FAILED_MESSAGE));
     } finally {
       loadingOlderRef.current = false;
