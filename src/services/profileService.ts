@@ -1,4 +1,6 @@
 import type { Schemas } from '@/lib/api';
+import type { ProfilePostPage } from '@/components/profile/profileActivity';
+import { sampleActivity, samplePosts } from '@/components/profile/profileSampleData';
 
 const sampleProfile: Schemas['AuthResponse'] = {
   userId: 1,
@@ -48,4 +50,24 @@ export async function deleteMyAvatar() {
   currentProfile = { ...currentProfile, avatarUrl: undefined };
 
   return { ...currentProfile };
+}
+
+export async function getProfileActivity(signal?: AbortSignal) {
+  signal?.throwIfAborted();
+  return structuredClone(sampleActivity);
+}
+
+export async function getMyProfilePosts(
+  page: number,
+  signal?: AbortSignal,
+): Promise<ProfilePostPage> {
+  signal?.throwIfAborted();
+  if (!Number.isSafeInteger(page) || page < 0) throw new Error('페이지 번호를 확인해 주세요.');
+  const size = 3;
+  return structuredClone({
+    items: samplePosts.slice(page * size, (page + 1) * size),
+    page,
+    size,
+    totalElements: samplePosts.length,
+  });
 }

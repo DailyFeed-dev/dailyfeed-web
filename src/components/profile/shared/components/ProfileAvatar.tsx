@@ -14,6 +14,7 @@ export default function ProfileAvatar({ src, name, size = 'default' }: ProfileAv
   const sizeClass = size === 'summary' ? 'size-24 text-3xl' : 'size-20 text-2xl';
 
   if (!src || failedSrc === src) {
+    // 사진이 없거나 불로오지 못하는 경우 이름의 첫 글자 결과가 비어있으면 ?를 사용한다
     return (
       <span
         role="img"

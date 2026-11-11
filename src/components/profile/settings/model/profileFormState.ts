@@ -1,5 +1,7 @@
 import type { Schemas } from '@/lib/api';
 
+//프로필 설정에서 작업 종류, 진행 상태, 오류, 처리 결과의 데이터 형태를 정하는 코드
+
 export type ProfileSubmitAction = 'status' | 'avatar';
 export type ProfileAction = ProfileSubmitAction | 'delete-avatar';
 

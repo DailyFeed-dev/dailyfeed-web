@@ -1,3 +1,5 @@
+// 오류 문장을 보여주는 역할만 가지고 있다 즉 어떤 오류가 만들어지는지는 이 컴포넌트에서는 결정 안한다.
+
 type ProfileErrorMessageProps = {
   id: string;
   error?: string;
