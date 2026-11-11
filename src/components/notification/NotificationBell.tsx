@@ -1,13 +1,20 @@
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
 import { BellIcon } from '@/components/common/icons';
+import { notificationService } from './NotificationService';
 
-/**
- * 헤더 오른쪽의 알림 아이콘입니다. (담당: 알림 기능, 이슈 #6)
- * 헤더 파일을 고치지 않고 이 컴포넌트만 수정하면 헤더에 반영됩니다.
- * 빨간 점은 임시 표시입니다. 읽지 않은 알림 여부와 연결해 주세요.
- */
 export default function NotificationBell() {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    // 컴포넌트 스스로 서버(Mock)에서 알림 개수를 가져옵니다.
+    notificationService.fetchNotifications().then((data) => {
+      setUnreadCount(data.length);
+    });
+  }, []);
+
+  const hasUnread = unreadCount > 0;
+
   return (
     <Link
       href="/notifications"
@@ -15,7 +22,9 @@ export default function NotificationBell() {
       className="relative flex size-10 items-center justify-center rounded-full text-zinc-900 transition-colors hover:bg-zinc-100"
     >
       <BellIcon className="size-5.5" />
-      <span className="absolute top-2 right-2.5 size-2 rounded-full bg-red-600 ring-2 ring-white" />
+      {hasUnread && (
+        <span className="absolute top-2 right-2.5 size-2 rounded-full bg-red-600 ring-2 ring-white" />
+      )}
     </Link>
   );
 }
