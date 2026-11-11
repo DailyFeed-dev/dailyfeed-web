@@ -284,6 +284,11 @@ const friendPort: ChatFriendPort = {
 };
 
 const userPort: ChatUserPort = {
+  async getMe(signal) {
+    await wait(signal);
+    return { id: ME, name: '테스트', avatarUrl: null };
+  },
+
   async getUser(userId, signal) {
     await wait(signal);
     return requireUser(userId);

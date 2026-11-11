@@ -9,14 +9,27 @@ import type {
 const DEFAULT_INTERVAL_MS = 3000;
 const MAX_CATCH_UP_PAGES = 5;
 
+export type ChatSyncSignal = {
+  intervalMs(): number;
+  subscribe(onPoke: () => void): () => void;
+};
+
+export function fixedIntervalSignal(intervalMs: number): ChatSyncSignal {
+  return {
+    intervalMs: () => intervalMs,
+    subscribe: () => () => {},
+  };
+}
+
 type Poll = (signal: AbortSignal) => Promise<void>;
 
-function startPolling(poll: Poll, onError: (error: unknown) => void, intervalMs: number) {
+function startPolling(poll: Poll, onError: (error: unknown) => void, sync: ChatSyncSignal) {
   if (typeof document === 'undefined') return () => {};
 
   let timer: ReturnType<typeof setTimeout> | null = null;
   let controller: AbortController | null = null;
   let stopped = false;
+  let pokedWhileRunning = false;
 
   const isVisible = () => document.visibilityState === 'visible';
 
@@ -27,7 +40,11 @@ function startPolling(poll: Poll, onError: (error: unknown) => void, intervalMs:
 
   const run = async () => {
     clearTimer();
-    if (stopped || controller) return;
+    if (stopped) return;
+    if (controller) {
+      pokedWhileRunning = true;
+      return;
+    }
     const current = new AbortController();
     controller = current;
     try {
@@ -36,8 +53,16 @@ function startPolling(poll: Poll, onError: (error: unknown) => void, intervalMs:
       if (!current.signal.aborted) onError(error);
     } finally {
       controller = null;
-      if (!stopped && isVisible()) timer = setTimeout(() => void run(), intervalMs);
+      const runAgainNow = pokedWhileRunning;
+      pokedWhileRunning = false;
+      if (!stopped && isVisible()) {
+        timer = setTimeout(() => void run(), runAgainNow ? 0 : sync.intervalMs());
+      }
     }
+  };
+
+  const poke = () => {
+    if (isVisible()) void run();
   };
 
   const onVisibilityChange = () => {
@@ -49,12 +74,14 @@ function startPolling(poll: Poll, onError: (error: unknown) => void, intervalMs:
   };
 
   document.addEventListener('visibilitychange', onVisibilityChange);
+  const stopListening = sync.subscribe(poke);
   if (isVisible()) void run();
 
   return () => {
     stopped = true;
     clearTimer();
     controller?.abort();
+    stopListening();
     document.removeEventListener('visibilitychange', onVisibilityChange);
   };
 }
@@ -80,7 +107,7 @@ async function loadSinceSeen(
 
 export function createPollingChatRealtime(
   ports: Pick<ChatAdapter, 'conversations' | 'messages'>,
-  intervalMs = DEFAULT_INTERVAL_MS,
+  sync: ChatSyncSignal = fixedIntervalSignal(DEFAULT_INTERVAL_MS),
 ): ChatRealtimePort {
   return {
     subscribeRoom(peerId, onEvent) {
@@ -120,7 +147,7 @@ export function createPollingChatRealtime(
           recovering = true;
           onEvent({ type: 'error', error });
         },
-        intervalMs,
+        sync,
       );
     },
 
@@ -139,7 +166,7 @@ export function createPollingChatRealtime(
           lastSnapshot = null;
           onEvent({ type: 'error', error });
         },
-        intervalMs,
+        sync,
       );
     },
   };

@@ -14,6 +14,7 @@ import type {
 
 const DM_PATH = '/api/v1/dm/conversations';
 const FRIENDS_PATH = '/api/v1/friends';
+const ME_PATH = '/api/v1/auth/me';
 const DEFAULT_PAGE_SIZE = 20;
 
 type DmMessage = Schemas['GlobalDmMessageResult'];
@@ -181,6 +182,12 @@ const friendPort: ChatFriendPort = {
 };
 
 const userPort: ChatUserPort = {
+  async getMe(signal) {
+    const me = await api.get<Schemas['AuthResponse']>(ME_PATH, { signal });
+    if (me?.userId === undefined) return invalidResponse();
+    return { id: me.userId, name: me.name ?? '', avatarUrl: me.avatarUrl ?? null };
+  },
+
   async getUser() {
     throw new ApiError('사용자 조회 API가 아직 준비되지 않았습니다.', 501);
   },
