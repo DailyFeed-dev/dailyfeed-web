@@ -51,7 +51,7 @@ export type ChatRelation = {
 
 export type ChatConversationPort = {
   listConversations(signal?: AbortSignal): Promise<ChatConversation[]>;
-  markConversationRead(peerId: ChatUserId): Promise<void>;
+  markConversationRead(peerId: ChatUserId, lastReadMessageId: string): Promise<void>;
 };
 
 export type ChatMessagePort = {
@@ -76,9 +76,13 @@ export type ChatAdapter = {
   friends: ChatFriendPort;
 };
 
-export type ChatRoomEvent = { type: 'messages'; messages: ChatMessage[] };
+export type ChatRoomEvent =
+  | ({ type: 'snapshot' } & ChatMessagePage)
+  | { type: 'messages'; messages: ChatMessage[] }
+  | { type: 'error'; error: unknown };
 
-export type ChatListEvent = { type: 'snapshot'; conversations: ChatConversation[] };
+export type ChatListEvent =
+  { type: 'snapshot'; conversations: ChatConversation[] } | { type: 'error'; error: unknown };
 
 export type ChatRealtimePort = {
   subscribeRoom(peerId: ChatUserId, onEvent: (event: ChatRoomEvent) => void): () => void;

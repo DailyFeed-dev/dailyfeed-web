@@ -47,24 +47,28 @@ const users = new Map<ChatUserId, ChatUser>(
   ].map((user) => [user.id, user]),
 );
 
+const minjiThread = [
+  ...Array.from({ length: 30 }, (_, index) =>
+    seedMessage(index % 2 === 0 ? 2 : ME, `이전 대화 ${index + 1}`, 600 - index * 10),
+  ),
+  seedMessage(2, '로그인 API 연결 끝났어요 🎉', 5),
+  seedMessage(2, '채팅 화면은 어디까지 됐어요?', 3),
+];
+const junhoThread = [
+  seedMessage(ME, '내일 회의 몇 시예요?', 90),
+  seedMessage(3, '오후 2시예요!', 60),
+];
+const seoyeonThread = [seedMessage(4, '안녕하세요, 게시글 보고 연락드려요.', 30)];
+
 const threads = new Map<ChatUserId, ChatMessage[]>([
-  [
-    2,
-    [
-      ...Array.from({ length: 30 }, (_, index) =>
-        seedMessage(index % 2 === 0 ? 2 : ME, `이전 대화 ${index + 1}`, 600 - index * 10),
-      ),
-      seedMessage(2, '로그인 API 연결 끝났어요 🎉', 5),
-      seedMessage(2, '채팅 화면은 어디까지 됐어요?', 3),
-    ],
-  ],
-  [3, [seedMessage(ME, '내일 회의 몇 시예요?', 90), seedMessage(3, '오후 2시예요!', 60)]],
-  [4, [seedMessage(4, '안녕하세요, 게시글 보고 연락드려요.', 30)]],
+  [2, minjiThread],
+  [3, junhoThread],
+  [4, seoyeonThread],
 ]);
 
-const readAt = new Map<ChatUserId, string>([
-  [2, minutesAgo(300)],
-  [3, minutesAgo(90)],
+const lastReadIds = new Map<ChatUserId, string>([
+  [2, minjiThread[29].id],
+  [3, junhoThread[0].id],
 ]);
 
 const friendIds = new Set<ChatUserId>([2, 3]);
@@ -104,13 +108,14 @@ function appendMessage(peerId: ChatUserId, message: ChatMessage) {
   threads.set(peerId, [...(threads.get(peerId) ?? []), message]);
 }
 
+function readIndexOf(peerId: ChatUserId, thread: ChatMessage[]) {
+  return thread.findIndex(({ id }) => id === lastReadIds.get(peerId));
+}
+
 function unreadCountOf(peerId: ChatUserId, thread: ChatMessage[]) {
-  const lastRead = Date.parse(readAt.get(peerId) ?? '');
-  return thread.filter(
-    (message) =>
-      message.senderId === peerId &&
-      (Number.isNaN(lastRead) || Date.parse(message.createdAt) > lastRead),
-  ).length;
+  return thread
+    .slice(readIndexOf(peerId, thread) + 1)
+    .filter((message) => message.senderId === peerId).length;
 }
 
 function toConversation(peerId: ChatUserId, thread: ChatMessage[]): ChatConversation {
@@ -172,10 +177,13 @@ const conversationPort: ChatConversationPort = {
       .sort(latestFirst);
   },
 
-  async markConversationRead(peerId) {
+  async markConversationRead(peerId, lastReadMessageId) {
     await wait();
     requirePeer(peerId);
-    readAt.set(peerId, now());
+    const thread = threads.get(peerId) ?? [];
+    const nextIndex = thread.findIndex(({ id }) => id === lastReadMessageId);
+    if (nextIndex === -1) throw new ApiError('메시지를 찾을 수 없습니다.', 404);
+    if (nextIndex > readIndexOf(peerId, thread)) lastReadIds.set(peerId, lastReadMessageId);
   },
 };
 
@@ -200,7 +208,7 @@ const messagePort: ChatMessagePort = {
     if (!text) throw new ApiError('메시지를 입력해 주세요.', 400);
     const message: ChatMessage = { id: nextId('m'), senderId: ME, content: text, createdAt: now() };
     appendMessage(peerId, message);
-    readAt.set(peerId, message.createdAt);
+    lastReadIds.set(peerId, message.id);
     scheduleAutoReply(peerId);
     return { ...message };
   },
