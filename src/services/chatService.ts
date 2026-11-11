@@ -23,11 +23,16 @@ function selectChatAdapter(): ChatAdapter {
 
 const adapter = selectChatAdapter();
 
-async function getJoinPayload(): Promise<ChatJoinPayload> {
+function requireAccessToken() {
   const accessToken = tokenStorage.getAccessToken();
   if (!accessToken) throw new Error('로그인이 필요합니다.');
+  return accessToken;
+}
+
+async function getJoinPayload(): Promise<ChatJoinPayload> {
+  requireAccessToken();
   const me = await adapter.users.getMe();
-  return { accessToken, userId: me.id, userName: me.name };
+  return { accessToken: requireAccessToken(), userId: me.id, userName: me.name };
 }
 
 function selectSyncSignal() {

@@ -26,21 +26,28 @@ export function createSocketChatSignal({
   const listeners = new Set<() => void>();
   let socket: Socket | null = null;
   let joined = false;
+  let attempt = 0;
 
   const pokeAll = () => {
     for (const listener of [...listeners]) listener();
   };
 
-  const join = async (current: Socket) => {
+  const forgetJoin = () => {
+    attempt += 1;
     joined = false;
+  };
+
+  const join = async (current: Socket) => {
+    forgetJoin();
+    const myAttempt = attempt;
+    const isLatest = () => socket === current && current.connected && attempt === myAttempt;
     try {
       const payload = await getJoinPayload();
-      if (socket === current && current.connected) {
-        current.emit('join', payload);
-        joined = true;
-      }
+      if (!isLatest()) return;
+      current.emit('join', payload);
+      joined = true;
     } catch {
-      joined = false;
+      if (!isLatest()) return;
     }
     pokeAll();
   };
@@ -49,16 +56,14 @@ export function createSocketChatSignal({
     const current = io(url, { path });
     socket = current;
     current.on('connect', () => void join(current));
-    current.on('disconnect', () => {
-      joined = false;
-    });
+    current.on('disconnect', forgetJoin);
     current.on('chat:message', pokeAll);
   };
 
   const close = () => {
     socket?.disconnect();
     socket = null;
-    joined = false;
+    forgetJoin();
   };
 
   return {
