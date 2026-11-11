@@ -1,6 +1,6 @@
-import BoardPagination from '../molecules/BoardPagination';
-import BoardPostHeader from '../molecules/BoardPostHeader';
-import BoardPostRow, { type BoardPostItem } from '../molecules/BoardPostRow';
+import BoardPagination from '../organisms/BoardPagination';
+import BoardPostHeader from '../organisms/BoardPostHeader';
+import BoardPostRow, { type BoardPostItem } from '../organisms/BoardPostRow';
 
 // 임시 데이터입니다. 게시글 API 연결 후 props 로 받도록 바꿔 주세요.
 const POSTS: BoardPostItem[] = [

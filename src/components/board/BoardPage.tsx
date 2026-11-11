@@ -1,6 +1,6 @@
-import BoardHeader from './organisms/BoardHeader';
-import BoardPageMenuBar from './organisms/BoardPageMenuBar';
-import BoardPostList from './organisms/BoardPostList';
+import BoardHeader from './templates/BoardHeader';
+import BoardPageMenuBar from './templates/BoardPageMenuBar';
+import BoardPostList from './templates/BoardPostList';
 
 // 게시판 화면 — 담당자는 이 폴더(src/components/board) 안에서 작업합니다.
 export default function BoardPage() {
