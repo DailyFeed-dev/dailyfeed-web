@@ -1,45 +1,50 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BellIcon } from '@/components/common/icons';
 import { notificationService } from './NotificationService';
 
 export default function NotificationBell() {
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [hasNew, setHasNew] = useState(false);
+
+  const fetchBadgeStatus = async () => {
+    const unreadCount = await notificationService.getUnreadCount();
+    setHasNew(unreadCount > 0);
+  };
 
   useEffect(() => {
-    const loadUnreadCount = async () => {
-      const data = await notificationService.fetchNotifications();
-      setUnreadCount(data.length);
-    };
-
-    // 1. 처음 마운트될 때 개수 불러오기
-    loadUnreadCount();
-
-    // 2. 방송(이벤트)을 수신했을 때 실행될 함수
-    const handleUpdate = () => {
-      loadUnreadCount();
-    };
-
-    window.addEventListener('notification-updated', handleUpdate);
+    fetchBadgeStatus();
+    window.addEventListener('notification-updated', fetchBadgeStatus);
 
     return () => {
-      window.removeEventListener('notification-updated', handleUpdate);
+      window.removeEventListener('notification-updated', fetchBadgeStatus);
     };
   }, []);
 
-  const hasUnread = unreadCount > 0;
-
   return (
-    <Link
-      href="/notifications"
-      aria-label="알림"
-      className="relative flex size-10 items-center justify-center rounded-full text-zinc-900 transition-colors hover:bg-zinc-100"
-    >
-      <BellIcon className="size-5.5" />
-      {hasUnread && (
-        <span className="absolute top-2 right-2.5 size-2 rounded-full bg-red-600 ring-2 ring-white" />
+    <Link href="/notifications" className="relative inline-flex items-center justify-center p-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="text-gray-700 transition-colors hover:text-black"
+      >
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+      </svg>
+
+      {hasNew && (
+        <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500"></span>
+        </span>
       )}
     </Link>
   );
