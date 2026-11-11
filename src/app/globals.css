@@ -4,10 +4,6 @@
   --background: #ffffff;
   --foreground: #171717;
 
-  /*
-   * 팀 디자인 시스템 색상 토큰 (Figma Web Design · 04 · 컴포넌트의 변수와 같은 이름)
-   * Figma Dev Mode 에 보이는 var(--color-...) 이름 그대로 씁니다. 예: bg-(--color-bg-brand)
-   */
   --color-text-primary: #1f1d2b;
   --color-text-secondary: #5f5c75;
   --color-text-muted: #6c6980;
