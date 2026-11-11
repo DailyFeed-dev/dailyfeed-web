@@ -1,60 +1,85 @@
 'use client';
 
-import Link from 'next/link';
+import { useRef, useState } from 'react';
 
-import Icon from '@/components/common/Icon';
+import Button from '@/components/common/Button';
+import { ApiError } from '@/lib/api';
 import type { ChatUser, ChatUserId } from '@/types/chat';
 
-import ChatAvatar from './ChatAvatar';
+import ChatRoomHeader from './ChatRoomHeader';
+import { MessageSkeletonList } from './ChatSkeletons';
+import ChatStateMessage, { ChatStateIcon } from './ChatStateMessage';
 import { buildTimeline } from './chatTimeline';
+import FirstChatIntro from './FirstChatIntro';
 import MessageComposer from './MessageComposer';
 import MessageList from './MessageList';
 import { useChatPeer } from './useChatPeer';
 import { useChatRoom } from './useChatRoom';
+import { listedRelationOf, useFriendRelation } from './useFriendRelation';
+import type { FriendsState } from './useFriends';
 
 type ChatRoomProps = {
   peerId: ChatUserId;
   knownPeer: ChatUser | undefined;
+  friendsState: FriendsState;
 };
 
-export default function ChatRoom({ peerId, knownPeer }: ChatRoomProps) {
-  const peer = useChatPeer(peerId, knownPeer);
+function errorCodeOf(error: unknown) {
+  if (!(error instanceof ApiError)) return undefined;
+  return `오류 코드: ${error.code ?? error.status}`;
+}
+
+export default function ChatRoom({ peerId, knownPeer, friendsState }: ChatRoomProps) {
+  const { peer, loading: peerLoading } = useChatPeer(peerId, knownPeer);
   const room = useChatRoom(peerId);
+  const relationState = useFriendRelation(
+    peerId,
+    listedRelationOf(friendsState, peerId),
+    friendsState.reload,
+  );
+  const [draft, setDraft] = useState('');
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const items = buildTimeline(room.messages, room.pending, peerId);
+  const canDm = relationState.relation?.canDm !== false;
+  const isFirstChat = room.status === 'ready' && items.length === 0 && !room.hasOlder;
+
+  const pickReply = (text: string) => {
+    setDraft(text);
+    inputRef.current?.focus();
+  };
 
   return (
     <section
-      aria-label={`${peer.name}님과의 대화`}
+      aria-label={peerLoading ? '대화' : `${peer.name}님과의 대화`}
       className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-(--color-bg-surface)"
     >
-      <header className="flex items-center gap-3 border-b border-(--color-border-default) py-4 pr-5 pl-4 sm:pl-6">
-        <Link
-          href="/chat"
-          aria-label="채팅 목록으로"
-          className="-ml-1 flex size-8 items-center justify-center rounded-full text-(--color-text-secondary) lg:hidden"
-        >
-          <Icon name="arrow-left" size={20} />
-        </Link>
-        <ChatAvatar name={peer.name} src={peer.avatarUrl} size={36} />
-        <h2 className="truncate text-[17px] leading-[1.45] font-semibold text-(--color-text-primary)">
-          {peer.name}
-        </h2>
-      </header>
+      <ChatRoomHeader peer={peer} peerLoading={peerLoading} relationState={relationState} />
 
-      {room.status === 'loading' && (
-        <p className="flex flex-1 items-center justify-center text-sm text-(--color-text-muted)">
-          대화를 불러오는 중...
-        </p>
-      )}
+      {room.status === 'loading' && <MessageSkeletonList />}
       {room.status === 'error' && (
-        <p
+        <div
           role="alert"
-          className="flex flex-1 items-center justify-center text-sm text-(--color-text-danger)"
+          className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto bg-[#fcfcfe] px-4 py-5"
         >
-          대화를 불러오지 못했어요. 잠시 후 자동으로 다시 시도해요.
-        </p>
+          <ChatStateMessage
+            visual={<ChatStateIcon name="warning" tone="danger" />}
+            title="메시지를 불러오지 못했어요"
+            description="네트워크 상태를 확인한 뒤 다시 시도해 주세요."
+            detail={errorCodeOf(room.syncError)}
+          >
+            <Button size="md" icon="refresh" onClick={room.reconnect}>
+              다시 시도
+            </Button>
+          </ChatStateMessage>
+        </div>
       )}
-      {room.status === 'ready' && (
+      {isFirstChat &&
+        (peerLoading ? (
+          <div className="flex-1 bg-[#fcfcfe]" />
+        ) : (
+          <FirstChatIntro peer={peer} onPickReply={canDm ? pickReply : undefined} />
+        ))}
+      {room.status === 'ready' && !isFirstChat && (
         <MessageList
           items={items}
           peer={peer}
@@ -67,7 +92,14 @@ export default function ChatRoom({ peerId, knownPeer }: ChatRoomProps) {
         />
       )}
 
-      <MessageComposer onSend={room.send} disabled={room.status !== 'ready'} />
+      <MessageComposer
+        value={draft}
+        onValueChange={setDraft}
+        onSend={room.send}
+        disabled={room.status !== 'ready' || !canDm}
+        placeholder={canDm ? undefined : '메시지를 보낼 수 없어요'}
+        inputRef={inputRef}
+      />
     </section>
   );
 }

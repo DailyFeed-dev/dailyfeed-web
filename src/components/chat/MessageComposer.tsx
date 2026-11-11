@@ -1,27 +1,32 @@
 'use client';
 
-import { useState, type FormEvent, type KeyboardEvent } from 'react';
+import type { FormEvent, KeyboardEvent, Ref } from 'react';
 
 import Icon from '@/components/common/Icon';
 
 type MessageComposerProps = {
+  value: string;
+  onValueChange: (text: string) => void;
   onSend: (text: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  inputRef?: Ref<HTMLTextAreaElement>;
 };
 
 export default function MessageComposer({
+  value,
+  onValueChange,
   onSend,
   disabled = false,
   placeholder = '메시지를 입력하세요',
+  inputRef,
 }: MessageComposerProps) {
-  const [text, setText] = useState('');
-  const canSend = !disabled && text.trim().length > 0;
+  const canSend = !disabled && value.trim().length > 0;
 
   const submit = () => {
     if (!canSend) return;
-    onSend(text);
-    setText('');
+    onSend(value);
+    onValueChange('');
   };
 
   const handleSubmit = (event: FormEvent) => {
@@ -42,8 +47,9 @@ export default function MessageComposer({
     >
       <div className="flex items-center gap-3 rounded-[14px] bg-(--color-bg-subtle) py-2 pr-2 pl-4">
         <textarea
-          value={text}
-          onChange={(event) => setText(event.target.value)}
+          ref={inputRef}
+          value={value}
+          onChange={(event) => onValueChange(event.target.value)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
           rows={1}

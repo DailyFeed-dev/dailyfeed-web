@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { chatRealtime } from '@/services/chatService';
 import type { ChatConversation } from '@/types/chat';
@@ -15,6 +15,7 @@ export function useConversations() {
     loaded: false,
     error: null,
   });
+  const [connection, setConnection] = useState(0);
 
   useEffect(
     () =>
@@ -25,8 +26,15 @@ export function useConversations() {
         }
         setState((current) => ({ ...current, error: event.error }));
       }),
-    [],
+    [connection],
   );
 
-  return state;
+  const retry = useCallback(() => {
+    setState((current) => ({ ...current, error: null }));
+    setConnection((current) => current + 1);
+  }, []);
+
+  return { ...state, retry };
 }
+
+export type ConversationsResult = ReturnType<typeof useConversations>;

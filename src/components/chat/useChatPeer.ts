@@ -5,8 +5,9 @@ import type { ChatUser, ChatUserId } from '@/types/chat';
 
 export const UNKNOWN_USER_NAME = '알 수 없는 사용자';
 
-export function useChatPeer(peerId: ChatUserId, knownPeer: ChatUser | undefined): ChatUser {
+export function useChatPeer(peerId: ChatUserId, knownPeer: ChatUser | undefined) {
   const [loadedPeer, setLoadedPeer] = useState<ChatUser | null>(null);
+  const [lookupFailed, setLookupFailed] = useState(false);
   const needsLookup = !knownPeer;
 
   useEffect(() => {
@@ -15,14 +16,17 @@ export function useChatPeer(peerId: ChatUserId, knownPeer: ChatUser | undefined)
     userService
       .getUser(peerId, controller.signal)
       .then(setLoadedPeer)
-      .catch(() => undefined);
+      .catch(() => {
+        if (!controller.signal.aborted) setLookupFailed(true);
+      });
     return () => controller.abort();
   }, [peerId, needsLookup]);
 
-  const peer = knownPeer ?? loadedPeer;
-  return {
+  const found = knownPeer ?? loadedPeer;
+  const peer: ChatUser = {
     id: peerId,
-    name: peer?.name || UNKNOWN_USER_NAME,
-    avatarUrl: peer?.avatarUrl ?? null,
+    name: found?.name || UNKNOWN_USER_NAME,
+    avatarUrl: found?.avatarUrl ?? null,
   };
+  return { peer, loading: !found && !lookupFailed };
 }

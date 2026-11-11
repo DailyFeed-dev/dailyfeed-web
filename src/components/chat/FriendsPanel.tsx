@@ -5,6 +5,8 @@ import Button, { buttonClassName } from '@/components/common/Button';
 import type { ChatUser } from '@/types/chat';
 
 import ChatIconButton from './ChatIconButton';
+import { matchesQuery } from './chatSearch';
+import { ChatListSkeleton } from './ChatSkeletons';
 import { formatRelativeTime } from './chatTime';
 import FriendRow from './FriendRow';
 import type { FriendsState } from './useFriends';
@@ -34,8 +36,7 @@ function FriendSection({ title, count, children }: FriendSectionProps) {
 }
 
 function nameMatches(user: ChatUser, query: string) {
-  const keyword = query.trim().toLowerCase();
-  return !keyword || user.name.toLowerCase().includes(keyword);
+  return matchesQuery(query, user.name);
 }
 
 function displayName(user: ChatUser) {
@@ -53,7 +54,7 @@ export default function FriendsPanel({ friendsState, query }: FriendsPanelProps)
   const isBusy = (user: ChatUser) => friendsState.busyUserIds.includes(user.id);
 
   if (!friendsState.loaded) {
-    return <p className="p-3 text-sm text-(--color-text-muted)">불러오는 중...</p>;
+    return <ChatListSkeleton label="친구 목록을 불러오는 중" />;
   }
 
   if (friendsState.loadError) {

@@ -3,17 +3,19 @@
 import { useState } from 'react';
 
 import Search from '@/components/common/Search';
-import type { ChatConversation, ChatUserId } from '@/types/chat';
+import type { ChatUserId } from '@/types/chat';
 
 import ChatIconButton from './ChatIconButton';
 import ChatTabs, { CHAT_TAB_PANEL_ID, chatTabId, type ChatTab } from './ChatTabs';
 import ConversationList from './ConversationList';
 import FriendsPanel from './FriendsPanel';
-import { useFriends } from './useFriends';
+import NewChatDialog from './NewChatDialog';
+import type { ConversationsResult } from './useConversations';
+import type { FriendsState } from './useFriends';
 
 type ChatSidebarProps = {
-  conversations: ChatConversation[];
-  loaded: boolean;
+  conversationsState: ConversationsResult;
+  friendsState: FriendsState;
   selectedPeerId: ChatUserId | null;
   className?: string;
 };
@@ -24,19 +26,24 @@ const SEARCH_PLACEHOLDER: Record<ChatTab, string> = {
 };
 
 export default function ChatSidebar({
-  conversations,
-  loaded,
+  conversationsState,
+  friendsState,
   selectedPeerId,
   className,
 }: ChatSidebarProps) {
   const [tab, setTab] = useState<ChatTab>('chats');
   const [query, setQuery] = useState('');
-  const friendsState = useFriends();
+  const [newChatOpen, setNewChatOpen] = useState(false);
 
   const changeTab = (next: ChatTab) => {
     setTab(next);
     setQuery('');
     if (next === 'friends') void friendsState.reload();
+  };
+
+  const openNewChat = () => {
+    void friendsState.reload();
+    setNewChatOpen(true);
   };
 
   return (
@@ -46,7 +53,7 @@ export default function ChatSidebar({
     >
       <div className="flex items-center px-1">
         <h1 className="text-[22px] leading-[1.45] font-bold text-(--color-text-primary)">채팅</h1>
-        <ChatIconButton icon="plus" label="새 채팅" className="ml-auto" />
+        <ChatIconButton icon="plus" label="새 채팅" className="ml-auto" onClick={openNewChat} />
       </div>
       <Search
         placeholder={SEARCH_PLACEHOLDER[tab]}
@@ -66,15 +73,18 @@ export default function ChatSidebar({
       >
         {tab === 'chats' ? (
           <ConversationList
-            conversations={conversations}
-            loaded={loaded}
+            conversationsState={conversationsState}
             selectedPeerId={selectedPeerId}
             query={query}
+            onStartNewChat={openNewChat}
           />
         ) : (
           <FriendsPanel friendsState={friendsState} query={query} />
         )}
       </div>
+      {newChatOpen && (
+        <NewChatDialog friendsState={friendsState} onClose={() => setNewChatOpen(false)} />
+      )}
     </section>
   );
 }
