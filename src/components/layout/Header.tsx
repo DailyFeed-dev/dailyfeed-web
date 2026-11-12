@@ -50,7 +50,13 @@ export default function Header() {
 
       {/* 헤더 오른쪽 영역: 각 담당자가 자기 components/<도메인> 폴더의 컴포넌트만 수정합니다. */}
       <div className="flex items-center gap-3">
-        <NotificationBell />
+        <Link
+          href="/notifications"
+          aria-label="알림"
+          className="relative flex size-10 items-center justify-center rounded-full text-zinc-900 transition-colors hover:bg-zinc-100"
+        >
+          <NotificationBell />
+        </Link>
         <Link href="/chat" aria-label="채팅" className={iconButtonClass}>
           <MessageCircleIcon className="size-5.5" />
         </Link>
