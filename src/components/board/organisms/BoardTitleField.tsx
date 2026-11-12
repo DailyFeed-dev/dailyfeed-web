@@ -1,13 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  BORDER_DEFAULT,
-  BORDER_ERROR,
-  BORDER_FILLED,
-  FIELD_BORDER,
-  LABEL,
-} from '../boardWriteStyles';
+import { BORDER_DEFAULT, BORDER_ERROR, BORDER_FILLED, LABEL } from '../boardWriteStyles';
 
 const MAX_LENGTH = 100;
 
@@ -45,7 +39,7 @@ export default function BoardTitleField() {
             event.currentTarget.focus();
           }
         }}
-        className={`${FIELD_BORDER} ${
+        className={`rounded-lg border-[1.5px] bg-white ${
           missing ? BORDER_ERROR : value.trim() ? BORDER_FILLED : BORDER_DEFAULT
         } h-[46px] px-4 text-sm leading-[1.55] text-[#201D2B] outline-none placeholder:text-[#6C6980] focus:border-[#6157E9]`}
       />
