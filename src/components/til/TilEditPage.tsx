@@ -15,6 +15,7 @@ import {
   isSameUser,
   isUnauthorized,
   tilDetailHref,
+  tilEditHref,
   tilErrorMessage,
 } from './tilBoardUrl';
 
@@ -60,7 +61,7 @@ export default function TilEditPage({ tilId }: { tilId: number }) {
     return (
       <Notice
         message={tilErrorMessage(state.error, 'TIL을 불러오지 못했어요.')}
-        needLogin={isUnauthorized(state.error)}
+        loginReturnTo={isUnauthorized(state.error) ? tilEditHref(tilId) : undefined}
         link={{ href: TIL_BOARD_BASE, label: 'TIL 게시판으로' }}
       />
     );

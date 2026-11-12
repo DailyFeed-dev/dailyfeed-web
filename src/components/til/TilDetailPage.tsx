@@ -17,13 +17,14 @@ import TilOwnerActions from './TilOwnerActions';
 import TilReactions from './TilReactions';
 import { TilIcon } from './TilTempUi';
 import {
-  LOGIN_HREF,
   TIL_BOARD_BASE,
   formatTilDate,
   formatTilDateTime,
   isSameUser,
   isUnauthorized,
+  tilDetailHref,
   tilErrorMessage,
+  tilLoginHref,
 } from './tilBoardUrl';
 
 type Loaded = {
@@ -59,7 +60,7 @@ export default function TilDetailPage({ tilId }: { tilId: number }) {
   useEffect(() => {
     // 상세는 로그인해야 볼 수 있어요. 토큰이 없으면 바로 로그인 페이지로 보냅니다.
     if (!hasTilLoginToken()) {
-      router.replace(LOGIN_HREF);
+      router.replace(tilLoginHref(tilDetailHref(tilId)));
       return;
     }
 
@@ -72,7 +73,7 @@ export default function TilDetailPage({ tilId }: { tilId: number }) {
       (error: unknown) => {
         if (ignore) return;
         // 토큰이 만료돼 갱신도 실패한 경우
-        if (isUnauthorized(error)) router.replace(LOGIN_HREF);
+        if (isUnauthorized(error)) router.replace(tilLoginHref(tilDetailHref(tilId)));
         else setState({ id: tilId, error });
       },
     );

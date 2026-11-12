@@ -9,7 +9,7 @@ import type { Schemas } from '@/lib/api';
 
 import TilAvatar from './TilAvatar';
 import { TilIcon } from './TilTempUi';
-import { LOGIN_HREF, formatTilDate, tilDetailHref, tilExcerpt } from './tilBoardUrl';
+import { formatTilDate, tilDetailHref, tilExcerpt, tilLoginHref } from './tilBoardUrl';
 
 /**
  * 게시판 목록 카드. 카드 전체가 상세 페이지 링크입니다. (디자인: TIL Post Card 67:7247)
@@ -26,7 +26,7 @@ export default function TilPostCard({ til }: { til: Schemas['TilResponse'] }) {
       onClick={(e) => {
         if (hasTilLoginToken()) return;
         e.preventDefault();
-        router.push(LOGIN_HREF);
+        router.push(tilLoginHref(tilDetailHref(til.id)));
       }}
       className="flex w-full flex-col gap-3 rounded-xl border border-[#e2defd] bg-white px-6 py-5 transition-[border-color,box-shadow] hover:border-[#c9c3fa] hover:shadow-[0_6px_20px_rgba(104,92,240,0.08)]"
     >
