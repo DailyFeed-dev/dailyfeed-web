@@ -1,5 +1,4 @@
 import { ApiError } from '@/lib/api';
-import type { ChatTypingFeed } from '@/services/chat/pollingChatRealtime';
 import type {
   ChatAdapter,
   ChatConversation,
@@ -9,6 +8,7 @@ import type {
   ChatMessage,
   ChatMessagePort,
   ChatRelation,
+  ChatTypingFeed,
   ChatTypingPort,
   ChatUser,
   ChatUserId,

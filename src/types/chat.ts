@@ -103,3 +103,5 @@ export type ChatRealtimePort = {
   subscribeConversations(onEvent: (event: ChatListEvent) => void): () => void;
   subscribeTyping(peerId: ChatUserId, onTyping: (typing: boolean) => void): () => void;
 };
+
+export type ChatTypingFeed = Pick<ChatRealtimePort, 'subscribeTyping'>;
