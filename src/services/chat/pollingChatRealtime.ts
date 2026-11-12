@@ -21,6 +21,14 @@ export function fixedIntervalSignal(intervalMs: number): ChatSyncSignal {
   };
 }
 
+export type ChatTypingFeed = {
+  subscribeTyping(peerId: ChatUserId, onTyping: (typing: boolean) => void): () => void;
+};
+
+export const noTypingFeed: ChatTypingFeed = {
+  subscribeTyping: () => () => {},
+};
+
 type Poll = (signal: AbortSignal) => Promise<void>;
 
 function startPolling(poll: Poll, onError: (error: unknown) => void, sync: ChatSyncSignal) {
@@ -108,8 +116,11 @@ async function loadSinceSeen(
 export function createPollingChatRealtime(
   ports: Pick<ChatAdapter, 'conversations' | 'messages'>,
   sync: ChatSyncSignal = fixedIntervalSignal(DEFAULT_INTERVAL_MS),
+  typingFeed: ChatTypingFeed = noTypingFeed,
 ): ChatRealtimePort {
   return {
+    subscribeTyping: (peerId, onTyping) => typingFeed.subscribeTyping(peerId, onTyping),
+
     subscribeRoom(peerId, onEvent) {
       let seen: Set<string> | null = null;
       let recovering = false;
