@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 
 import { MessageCircleIcon } from '@/components/common/icons';
 import NotificationBell from '@/components/notification/NotificationBell';
-import ProfileMenu from '@/components/profile/ProfileMenu';
+
+import HeaderProfileDropdown from './HeaderProfileDropdown';
 
 // 메뉴는 여기서 한 번에 관리합니다. 새 메뉴가 필요하면 팀에 공유한 뒤 수정하세요.
 const NAV_ITEMS = [
@@ -53,7 +54,7 @@ export default function Header() {
         <Link href="/chat" aria-label="채팅" className={iconButtonClass}>
           <MessageCircleIcon className="size-5.5" />
         </Link>
-        <ProfileMenu />
+        <HeaderProfileDropdown />
       </div>
     </header>
   );
