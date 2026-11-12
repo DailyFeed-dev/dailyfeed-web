@@ -1,16 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { notificationService } from './NotificationService';
-// (참고: 유저님이 쓰시던 아이콘이나 팝오버 컴포넌트 임포트 경로가 있다면 유지해주세요)
 
 export default function NotificationBell() {
-  const router = useRouter();
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  // 미읽음 개수 가져오기 (로그인 상태일 때만)
   useEffect(() => {
     const token =
       typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
@@ -22,30 +18,26 @@ export default function NotificationBell() {
     }
   }, []);
 
-  // 🔔 종 아이콘 클릭 핸들러
+  // 🔔 종 아이콘 클릭 핸들러 (오직 여기서만 팝업을 띄우고 페이지 이동을 막습니다)
   const handleBellClick = () => {
     const token =
       typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
 
-    // 토큰이 없으면 로그인 페이지로 이동
     if (!token) {
-      router.push('/login');
+      alert('로그인이 필요합니다.'); // 👈 여기서 딱 1번만 뜹니다!
       return;
     }
 
-    // 토큰이 있으면 알림 팝오버 열기/닫기 토글
     setIsOpen((prev) => !prev);
   };
 
   return (
     <div className="relative">
-      {/* 🚀 유저님이 원래 쓰시던 벨 버튼 UI & SVG & 빨간 뱃지 코드 */}
       <button
         onClick={handleBellClick}
         aria-label="알림"
         className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-zinc-100"
       >
-        {/* 종 아이콘 SVG */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -61,7 +53,6 @@ export default function NotificationBell() {
           />
         </svg>
 
-        {/* 미읽음 빨간 점(뱃지) */}
         {unreadCount > 0 && (
           <span className="absolute top-2 right-2 flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
@@ -69,8 +60,6 @@ export default function NotificationBell() {
           </span>
         )}
       </button>
-
-      {/* (참고) isOpen이 true일 때 나타나는 알림 목록 팝오버 컴포넌트가 있다면 여기에 배치하시면 됩니다. */}
     </div>
   );
 }

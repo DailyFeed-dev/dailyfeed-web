@@ -3,20 +3,17 @@ import { NotificationItem } from './NotificationTypes';
 
 const getAuthToken = () => {
   if (typeof window !== 'undefined') {
-    // ✅ 1. 팀원이 정해둔 정확한 토큰 이름표(dailyfeed.accessToken)로 꺼내옵니다.
     return localStorage.getItem('dailyfeed.accessToken');
   }
   return '';
 };
 
 export const notificationService = {
-  // 1. 알림 목록 불러오기
   fetchNotifications: async (): Promise<NotificationItem[]> => {
     try {
       const token = getAuthToken();
-      if (!token) return [];
+      if (!token) return []; // 팝업 없이 조용히 빈 배열 반환
 
-      // ✅ 2. BASE_URL을 빼고 프록시 설정에 맞게 상대 경로(/api/...)로 직접 찌릅니다.
       const response = await fetch('/api/v1/notifications', {
         method: 'GET',
         headers: {
@@ -49,7 +46,6 @@ export const notificationService = {
     }
   },
 
-  // 2. 알림 삭제(읽음) 처리
   deleteNotification: async (id: string): Promise<boolean> => {
     try {
       const token = getAuthToken();
@@ -70,7 +66,6 @@ export const notificationService = {
     }
   },
 
-  // 3. 미읽음 알림 개수 조회 (헤더 뱃지용)
   getUnreadCount: async (): Promise<number> => {
     try {
       const token = getAuthToken();
