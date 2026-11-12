@@ -30,12 +30,12 @@ function validateProfile(profile: Schemas['AuthResponse']) {
   return profile;
 }
 
-function validateRecord(record: Schemas['PostResponse'] | Schemas['ReflectionResponse']) {
+function validateRecord(record: Schemas['PostResponse'] | Schemas['TilResponse']) {
   if (
     !record ||
     !isNonNegativeInteger(record.id) ||
-    (record.projectId !== undefined && !isNonNegativeInteger(record.projectId)) ||
-    !hasOptionalText([record.title, record.body, record.createdAt, record.kind])
+    !hasOptionalText([record.title, record.body, record.createdAt]) ||
+    ('content' in record && !hasOptionalText([record.content]))
   ) {
     throw new Error('기록 응답을 확인하지 못했습니다.');
   }
@@ -117,49 +117,80 @@ export async function getMyProfileProjects(
   return projects;
 }
 
-export async function getMyProfilePosts(
+function validatePage(
+  response: Schemas['PostPageResponse'] | Schemas['TilPageResponse'],
   page: number,
-  signal?: AbortSignal,
-): Promise<Schemas['PageResponsePostResponse']> {
+  size: number,
+) {
+  if (
+    !response ||
+    !Array.isArray(response.items) ||
+    response.page !== page ||
+    response.size !== size ||
+    typeof response.hasNext !== 'boolean' ||
+    response.items.length > size ||
+    (response.hasNext && response.items.length === 0)
+  ) {
+    throw new Error('목록 페이지 응답을 확인하지 못했습니다.');
+  }
+
+  response.items.forEach(validateRecord);
+}
+
+async function getProfilePostPage(page: number, size: number, signal?: AbortSignal) {
   signal?.throwIfAborted();
   if (!isNonNegativeInteger(page)) throw new Error('페이지 번호를 확인해 주세요.');
 
-  const posts = await api.get<Schemas['PageResponsePostResponse']>('/api/v1/me/posts', {
-    query: { page, size: 3 },
+  const posts = await api.get<Schemas['PostPageResponse']>('/api/v1/posts/me', {
+    query: { page, size },
     signal,
   });
-
-  if (
-    !posts ||
-    !Array.isArray(posts.items) ||
-    posts.page !== page ||
-    posts.size !== 3 ||
-    !isNonNegativeInteger(posts.totalElements) ||
-    posts.items.length > posts.size ||
-    posts.items.length > posts.totalElements
-  ) {
-    throw new Error('게시글 페이지 응답을 확인하지 못했습니다.');
-  }
-
-  posts.items.forEach(validateRecord);
+  validatePage(posts, page, size);
   return posts;
+}
+
+export function getMyProfilePosts(page: number, signal?: AbortSignal) {
+  return getProfilePostPage(page, 3, signal);
+}
+
+export async function getMyProfileTils(page: number, size: number, signal?: AbortSignal) {
+  signal?.throwIfAborted();
+  if (!isNonNegativeInteger(page) || !Number.isSafeInteger(size) || size < 1) {
+    throw new Error('페이지 번호와 목록 크기를 확인해 주세요.');
+  }
+  const tils = await api.get<Schemas['TilPageResponse']>('/api/v1/tils/me', {
+    query: { page, size },
+    signal,
+  });
+  validatePage(tils, page, size);
+  return tils;
+}
+
+export async function getMyProfileTilStats(signal?: AbortSignal) {
+  signal?.throwIfAborted();
+  const stats = await api.get<Schemas['MyStatsResponse']>('/api/v1/tils/me/stats', { signal });
+  return validateTilStats(stats);
+}
+
+async function getMyProfilePostCount(signal?: AbortSignal) {
+  let page = 0;
+  let count = 0;
+  // 게시판 API에 전체 개수가 없어 마지막 페이지까지 합산한다.
+  while (true) {
+    const posts = await getProfilePostPage(page, 100, signal);
+    count += posts.items?.length ?? 0;
+    if (!posts.hasNext) return count;
+    page += 1;
+  }
 }
 
 export async function getProfileActivity(signal?: AbortSignal) {
   signal?.throwIfAborted();
-  const [projects, reflections, tilStats, postPage] = await Promise.all([
+  const [projects, tilStats, postCount] = await Promise.all([
     getMyProfileProjects(signal),
-    api.get<Schemas['ReflectionResponse'][]>('/api/v1/me/reflections', { signal }),
-    api.get<Schemas['MyStatsResponse']>('/api/v1/tils/me/stats', { signal }),
-    getMyProfilePosts(0, signal),
+    getMyProfileTilStats(signal),
+    getMyProfilePostCount(signal),
   ]);
-
-  if (!Array.isArray(reflections)) throw new Error('회고 목록을 확인하지 못했습니다.');
-  reflections.forEach(validateRecord);
-  validateTilStats(tilStats);
-
-  const postCount = postPage.totalElements;
-  if (!isNonNegativeInteger(postCount)) throw new Error('게시글 전체 개수를 확인하지 못했습니다.');
 
   return {
     month: new Intl.DateTimeFormat('sv-SE', {
@@ -169,7 +200,6 @@ export async function getProfileActivity(signal?: AbortSignal) {
     }).format(new Date()),
     postCount,
     projects,
-    reflections,
     tilStats,
   };
 }

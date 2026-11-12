@@ -51,7 +51,7 @@ export default function ProfilePage() {
       {view === 'information' && (
         <ProfileInfoPanel profile={profile} onEdit={openProfileSettings} />
       )}
-      {view === 'posts' && <ProfilePosts onViewChange={setView} />}
+      {view === 'posts' && <ProfilePosts />}
       {view === 'reflections' && <ProfileReflections />}
       <footer className="mt-8 flex flex-wrap justify-between gap-3 text-xs text-(--color-text-muted)">
         <span>DailyFeed</span>

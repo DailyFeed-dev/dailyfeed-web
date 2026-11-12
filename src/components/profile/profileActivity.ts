@@ -2,12 +2,11 @@ import type { Schemas } from '@/lib/api';
 
 export type ProfileView = 'overview' | 'information' | 'posts' | 'reflections';
 
-export const reflectionLabels: Record<string, string> = {
-  DAILY: '일간 회고',
-  WEEKLY: '주간 회고',
-  ASSIGNMENT: '과제 회고',
-  TEAM: '팀 회고',
-};
+export function getProfilePostBody(post: Schemas['PostResponse']) {
+  // Swagger의 프로젝트 body와 달리 일반 게시판의 실제 응답은 content를 사용한다.
+  if ('content' in post && typeof post.content === 'string') return post.content;
+  return post.body ?? '';
+}
 
 export function formatProfileDate(value?: string) {
   if (!value) return '날짜 정보 없음';
@@ -32,10 +31,4 @@ export function getProfileMonth(value?: string) {
     year: 'numeric',
     month: '2-digit',
   }).format(date);
-}
-
-export function getProfileProjectName(projects: Schemas['ProjectResponse'][], id?: number) {
-  if (id === undefined) return '프로젝트 정보 없음';
-
-  return projects.find((project) => project.id === id)?.name ?? `프로젝트 ${id}`;
 }
