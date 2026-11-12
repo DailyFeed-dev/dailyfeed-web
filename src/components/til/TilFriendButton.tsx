@@ -2,15 +2,21 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { friendService } from '@/services/chatService';
+import { apiChatAdapter } from '@/services/chat/apiChatAdapter';
 import type { ChatRelationStatus } from '@/types/chat';
 
 import { TilIcon, type TilIconName } from './TilTempUi';
 
+const friendApi = apiChatAdapter.friends;
+
 /**
  * 프로필 팝오버의 친구 버튼 (디자인: Profile Popover 599:2983 의 Friend=No / Friend=Yes)
- * 친구 API 는 채팅 화면과 같은 friendService(services/chatService.ts) 를 씁니다.
- * 그래서 가짜 데이터 / 실제 API 전환도 채팅과 같이 NEXT_PUBLIC_CHAT_ADAPTER 를 따릅니다.
+ * 친구 API 는 채팅 팀이 만든 실제 API 함수(services/chat/apiChatAdapter.ts) 를 그대로 씁니다.
+ *   GET /api/v1/friends/relationship/{userId}  관계 조회
+ *   POST /api/v1/friends/requests              요청 보내기
+ *   DELETE /api/v1/friends/requests/{userId}   요청 취소
+ *   POST /api/v1/friends/requests/{userId}/accept  수락,  DELETE /api/v1/friends/{userId}  친구 끊기
+ * TIL 은 가짜 데이터 없이 실제 API 만 쓰므로, 채팅의 가짜 데이터 설정(NEXT_PUBLIC_CHAT_ADAPTER)과 상관없이 항상 실제 API 를 부릅니다.
  *
  * 백엔드 친구 기능은 요청 → 수락 방식이라, 디자인의 두 상태에 요청 상태를 더했습니다.
  * - 친구 아님 → '친구 추가' (요청 보내기)
@@ -46,7 +52,7 @@ const BUTTONS: Partial<Record<ChatRelationStatus, ButtonDef>> = {
     icon: 'user-plus',
     className: primaryClass,
     ariaLabel: (name) => `${name}님에게 친구 요청 보내기`,
-    action: (id) => friendService.sendFriendRequest(id),
+    action: (id) => friendApi.sendFriendRequest(id),
     failMessage: '친구 요청을 보내지 못했어요.',
   },
   sent: {
@@ -54,7 +60,7 @@ const BUTTONS: Partial<Record<ChatRelationStatus, ButtonDef>> = {
     icon: 'user-plus',
     className: outlineClass,
     ariaLabel: (name) => `${name}님에게 친구 요청을 보냈어요. 누르면 요청을 취소해요`,
-    action: (id) => friendService.cancelFriendRequest(id),
+    action: (id) => friendApi.cancelFriendRequest(id),
     failMessage: '친구 요청을 취소하지 못했어요.',
   },
   received: {
@@ -62,7 +68,7 @@ const BUTTONS: Partial<Record<ChatRelationStatus, ButtonDef>> = {
     icon: 'user-check',
     className: primaryClass,
     ariaLabel: (name) => `${name}님의 친구 요청 수락하기`,
-    action: (id) => friendService.acceptFriendRequest(id),
+    action: (id) => friendApi.acceptFriendRequest(id),
     failMessage: '친구 요청을 수락하지 못했어요.',
   },
   friend: {
@@ -70,7 +76,7 @@ const BUTTONS: Partial<Record<ChatRelationStatus, ButtonDef>> = {
     icon: 'user-check',
     className: outlineClass,
     ariaLabel: (name) => `${name}님과 친구예요. 누르면 친구를 끊어요`,
-    action: (id) => friendService.removeFriend(id),
+    action: (id) => friendApi.removeFriend(id),
     failMessage: '친구를 끊지 못했어요.',
     confirm: (name) => `${name}님과 친구를 끊을까요?`,
   },
@@ -86,7 +92,7 @@ async function fetchStatus(
   signal?: AbortSignal,
 ): Promise<ChatRelationStatus | null> {
   try {
-    return (await friendService.getRelation(userId, signal)).status;
+    return (await friendApi.getRelation(userId, signal)).status;
   } catch {
     return null;
   }
