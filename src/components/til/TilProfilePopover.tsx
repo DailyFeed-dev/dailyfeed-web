@@ -14,10 +14,13 @@ import {
 import type { TilProfile } from '@/types/til';
 
 import TilAvatar from './TilAvatar';
+import TilFriendButton from './TilFriendButton';
 import { TilIcon } from './TilTempUi';
 
 type PopoverProps = {
   profile: TilProfile;
+  /** 프로필 주인의 userId. 있으면 친구 버튼(친구 추가 · 친구 등)을 보여줍니다. */
+  userId?: number;
   /** 채팅 버튼 링크 (chatHref 또는 onChat 중 하나) */
   chatHref?: string;
   onChat?: () => void;
@@ -35,11 +38,12 @@ const chatClass =
   'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-(--color-border-brand-soft) bg-(--color-bg-brand-soft) py-2 pr-[17px] pl-[15px] text-sm leading-[1.4] font-semibold text-(--color-text-brand) hover:bg-(--color-bg-brand-muted) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-border-brand)';
 
 /**
- * 작성자 · 댓글 작성자의 간단 프로필. '채팅' 버튼으로 채팅을 엽니다.
- * (디자인: Profile Popover 135:4525)
+ * 작성자 · 댓글 작성자의 간단 프로필. 친구 버튼과 '채팅' 버튼이 있습니다.
+ * (디자인: Profile Popover 599:2983)
  */
 export function TilProfilePopover({
   profile,
+  userId,
   chatHref,
   onChat,
   id,
@@ -78,15 +82,18 @@ export function TilProfilePopover({
             </span>
           )}
         </div>
-        {chatHref ? (
-          <Link href={chatHref} onClick={onChat} className={chatClass}>
-            {chatContent}
-          </Link>
-        ) : (
-          <button type="button" onClick={onChat} className={chatClass}>
-            {chatContent}
-          </button>
-        )}
+        <div className="flex shrink-0 items-center gap-2">
+          {userId !== undefined && <TilFriendButton userId={userId} name={profile.name} />}
+          {chatHref ? (
+            <Link href={chatHref} onClick={onChat} className={chatClass}>
+              {chatContent}
+            </Link>
+          ) : (
+            <button type="button" onClick={onChat} className={chatClass}>
+              {chatContent}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 커버에 걸치는 72px 아바타 (바깥 흰 테두리 4px 포함) */}
@@ -120,13 +127,14 @@ type TriggerProps = Omit<PopoverProps, 'id' | 'className' | 'style'> & {
  * 바깥 클릭 · Esc · 채팅 버튼 클릭 시 닫힙니다.
  *
  * @example
- * <TilProfilePopoverTrigger profile={author} chatHref={tilChatHref(author.id)}>
+ * <TilProfilePopoverTrigger profile={author} userId={author.id} chatHref={tilChatHref(author.id)}>
  *   <TilAvatar name={author.name} size={40} /> {author.name}
  * </TilProfilePopoverTrigger>
  */
 export function TilProfilePopoverTrigger({
   children,
   profile,
+  userId,
   chatHref,
   onChat,
   triggerClassName,
@@ -192,6 +200,7 @@ export function TilProfilePopoverTrigger({
         <TilProfilePopover
           id={popoverId}
           profile={profile}
+          userId={userId}
           chatHref={chatHref}
           onChat={() => {
             onChat?.();
