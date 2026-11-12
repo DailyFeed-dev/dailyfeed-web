@@ -2483,6 +2483,23 @@ export interface paths {
         patch: operations["decide"];
         trace?: never;
     };
+    "/api/v1/users/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공개 프로필 조회 (id, name, avatarUrl) — 채팅 상대 표시용 */
+        get: operations["getPublicProfile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/{userId}/avatar": {
         parameters: {
             query?: never;
@@ -2492,6 +2509,23 @@ export interface paths {
         };
         /** 사용자 아바타 이미지 */
         get: operations["getAvatar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 사용자 이름 검색 (채팅 상대 찾기) */
+        get: operations["search"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3432,6 +3466,26 @@ export interface paths {
         };
         /** 내 정보 */
         get: operations["me_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 내가 신청한 스터디 목록 (회원)
+         * @description 토큰 기준 본인 신청만. PENDING/APPROVED/REJECTED 전부, 신청일 최신순.
+         */
+        get: operations["myApplications"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5453,6 +5507,7 @@ export interface components {
             /** Format: int64 */
             senderId?: number;
             senderName?: string;
+            senderAvatarUrl?: string;
             content?: string;
             kind?: string;
             attachmentName?: string;
@@ -5778,6 +5833,24 @@ export interface components {
         };
         DecideApplicationRequest: {
             status: string;
+        };
+        ApiResponsePublicUserProfileResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["PublicUserProfileResult"];
+            code?: string;
+        };
+        PublicUserProfileResult: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            avatarUrl?: string;
+        };
+        ApiResponseListPublicUserProfileResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["PublicUserProfileResult"][];
+            code?: string;
         };
         ApiResponseListAccountRoleChangeRequestResponse: {
             success?: boolean;
@@ -6372,6 +6445,8 @@ export interface components {
         RelationshipResult: {
             /** Format: int64 */
             peerUserId?: number;
+            peerName?: string;
+            peerAvatarUrl?: string;
             /** @enum {string} */
             relationship?: "NONE" | "OUTGOING_REQUEST" | "INCOMING_REQUEST" | "FRIENDS" | "BLOCKED_BY_ME" | "BLOCKED_ME";
             canDm?: boolean;
@@ -6431,6 +6506,46 @@ export interface components {
             message?: string;
             data?: components["schemas"]["BlockedUserResult"][];
             code?: string;
+        };
+        ApiResponseMyApplicationsResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["MyApplicationsResponse"];
+            code?: string;
+        };
+        /** @description 신청 목록용 스터디 요약 */
+        AppliedStudyBriefResponse: {
+            /** Format: int64 */
+            id?: number;
+            title?: string;
+            /** @enum {string} */
+            category?: "FRONTEND" | "BACKEND" | "ALGORITHM" | "CS" | "INTERVIEW";
+            /** @enum {string} */
+            status?: "OPEN" | "CLOSED";
+            authorName?: string;
+        };
+        /** @description 내가 신청한 스터디 항목 */
+        MyApplicationItemResponse: {
+            /** Format: int64 */
+            id?: number;
+            /** @enum {string} */
+            status?: "PENDING" | "APPROVED" | "REJECTED";
+            message?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            study?: components["schemas"]["AppliedStudyBriefResponse"];
+        };
+        /** @description 내가 신청한 스터디 목록 페이지 */
+        MyApplicationsResponse: {
+            items?: components["schemas"]["MyApplicationItemResponse"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
         };
         ApiResponseListSystemAnnouncement: {
             success?: boolean;
@@ -11957,6 +12072,28 @@ export interface operations {
             };
         };
     };
+    getPublicProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePublicUserProfileResult"];
+                };
+            };
+        };
+    };
     getAvatar: {
         parameters: {
             query?: never;
@@ -11975,6 +12112,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": string;
+                };
+            };
+        };
+    };
+    search: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListPublicUserProfileResult"];
                 };
             };
         };
@@ -13226,6 +13386,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResponseAuthResponse"];
+                };
+            };
+        };
+    };
+    myApplications: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseMyApplicationsResponse"];
                 };
             };
         };
