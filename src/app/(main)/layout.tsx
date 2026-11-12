@@ -1,10 +1,15 @@
+import { Suspense } from 'react';
+
 import Header from '@/components/layout/Header';
 
 // 헤더가 있는 화면들의 공통 레이아웃입니다. (주소에는 (main) 이 나타나지 않습니다)
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Header />
+      {/* 헤더가 현재 주소(usePathname)를 읽으므로 Suspense 로 감쌉니다. */}
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
       <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-4 sm:px-10 lg:px-20">
         {children}
       </main>

@@ -15,6 +15,7 @@
     "api:types": "node scripts/generate-api-types.mjs"
   },
   "dependencies": {
+    "lucide-react": "^1.72.0",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
