@@ -53,6 +53,26 @@ const ICONS = {
   },
 
   // ---- 상세 ----
+  'user-plus': {
+    viewBox: 18,
+    strokeWidth: 1.5,
+    paths: (
+      <>
+        <path d="M6.75 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+        <path d="M1.875 15a4.875 4.875 0 0 1 9.75 0M14.25 6v4.5M12 8.25h4.5" />
+      </>
+    ),
+  },
+  'user-check': {
+    viewBox: 18,
+    strokeWidth: 1.5,
+    paths: (
+      <>
+        <path d="M6.75 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+        <path d="M1.875 15a4.875 4.875 0 0 1 9.75 0M12 8.25l1.5 1.5 3-3" />
+      </>
+    ),
+  },
   chat: {
     viewBox: 18,
     strokeWidth: 1.9,

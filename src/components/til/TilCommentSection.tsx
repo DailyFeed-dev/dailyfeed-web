@@ -125,6 +125,7 @@ export default function TilCommentSection({
         <TilProfilePopoverTrigger
           disabled={isMine}
           profile={author}
+          userId={author.id}
           chatHref={tilChatHref(author.id)}
           triggerClassName="rounded-full"
         >
@@ -136,6 +137,7 @@ export default function TilCommentSection({
             <TilProfilePopoverTrigger
               disabled={isMine}
               profile={author}
+              userId={author.id}
               chatHref={tilChatHref(author.id)}
               triggerClassName="group"
             >
