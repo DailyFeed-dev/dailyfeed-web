@@ -1,15 +1,20 @@
-import BoardDetailTopBar from './organisms/BoardDetailTopBar';
-import BoardCommentSection from './templates/BoardCommentSection';
-import BoardDetailPost from './templates/BoardDetailPost';
+import { notFound } from 'next/navigation';
+import BoardDetailView from './templates/BoardDetailView';
+
+type BoardDetailPageProps = {
+  params: Promise<{ postId: string }>;
+};
 
 // 게시판 상세 화면 — 담당자는 이 폴더(src/components/board) 안에서 작업합니다.
-export default function BoardDetailPage() {
+export default async function BoardDetailPage({ params }: BoardDetailPageProps) {
+  const { postId } = await params;
+  // 숫자가 아닌 주소(/board/abc)는 없는 페이지로 처리합니다.
+  const id = Number(postId);
+  if (!Number.isInteger(id) || id <= 0) notFound();
+
   return (
     <div className="mx-auto w-full max-w-[720px] py-8">
-      {/* 카테고리는 게시글 API 연결 후 게시글 데이터에서 받아 주세요. */}
-      <BoardDetailTopBar category="템플릿" />
-      <BoardDetailPost />
-      <BoardCommentSection />
+      <BoardDetailView postId={id} />
     </div>
   );
 }
