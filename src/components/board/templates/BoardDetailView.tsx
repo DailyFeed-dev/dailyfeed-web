@@ -3,7 +3,7 @@
 import { ApiError } from '@/lib/api';
 import { useApiData } from '@/hooks/useApiData';
 import { getCurrentUser } from '@/services/authService';
-import { getPost } from '@/services/postService';
+import { getPost, getPostAuthor } from '@/services/postService';
 import { getCategoryLabel } from '../boardCategories';
 import BoardDetailTopBar from '../organisms/BoardDetailTopBar';
 import BoardCommentSection from './BoardCommentSection';
@@ -36,17 +36,14 @@ export default function BoardDetailView({ postId }: { postId: number }) {
     );
   }
 
-  const isMine = meId !== undefined && post.authorId === meId;
+  const authorId = getPostAuthor(post).id;
+  const isMine = meId !== undefined && authorId === meId;
 
   return (
     <>
       <BoardDetailTopBar category={post.category ? getCategoryLabel(post.category) : undefined} />
       <BoardDetailPost post={post} isMe={isMine} />
-      <BoardCommentSection
-        postId={postId}
-        postAuthorId={post.authorId}
-        currentUser={me.data ?? null}
-      />
+      <BoardCommentSection postId={postId} postAuthorId={authorId} currentUser={me.data ?? null} />
     </>
   );
 }
