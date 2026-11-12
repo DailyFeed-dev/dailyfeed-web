@@ -9,11 +9,11 @@ import type { FriendsState } from './useFriends';
 type PeerListStatus = 'friend' | 'sent' | 'received' | 'unlisted';
 
 const RELATION_RECHECK_MS = 5000;
-const STATUSES_CHANGED_BY_PEER: ChatRelationStatus[] = ['none', 'sent', 'received', 'blockedMe'];
+const STATUSES_TO_RECHECK: ChatRelationStatus[] = ['none', 'sent', 'received', 'blockedMe'];
 
 type LoadOptions = {
   signal?: AbortSignal;
-  keepOnFailure?: boolean;
+  quiet?: boolean;
 };
 
 export function peerListStatusOf(friendsState: FriendsState, userId: ChatUserId): PeerListStatus {
@@ -31,11 +31,18 @@ export function useRelationRecheck(
   onChanged: () => void,
 ) {
   useEffect(() => {
-    if (!status || !STATUSES_CHANGED_BY_PEER.includes(status)) return;
+    if (!status || !STATUSES_TO_RECHECK.includes(status)) return;
     const controller = new AbortController();
+    let checking = false;
     const recheck = async () => {
-      const next = await loadQuietly(controller.signal);
-      if (next && next.status !== status) onChanged();
+      if (checking) return;
+      checking = true;
+      try {
+        const next = await loadQuietly(controller.signal);
+        if (next && next.status !== status) onChanged();
+      } finally {
+        checking = false;
+      }
     };
     const recheckIfVisible = () => {
       if (document.visibilityState === 'visible') void recheck();
@@ -64,8 +71,8 @@ export function useFriendRelation(
   const latestLoadId = useRef(0);
 
   const load = useCallback(
-    async ({ signal, keepOnFailure = false }: LoadOptions = {}): Promise<ChatRelation | null> => {
-      latestLoadId.current += 1;
+    async ({ signal, quiet = false }: LoadOptions = {}): Promise<ChatRelation | null> => {
+      if (!quiet) latestLoadId.current += 1;
       const loadId = latestLoadId.current;
       const isStale = () => signal?.aborted || loadId !== latestLoadId.current;
       try {
@@ -75,7 +82,7 @@ export function useFriendRelation(
         setLoadFailed(false);
         return next;
       } catch {
-        if (isStale() || keepOnFailure) return null;
+        if (isStale() || quiet) return null;
         setRelation(null);
         setLoadFailed(true);
         return null;
@@ -90,10 +97,7 @@ export function useFriendRelation(
     return () => controller.abort();
   }, [load, peerListStatus]);
 
-  const loadQuietly = useCallback(
-    (signal: AbortSignal) => load({ signal, keepOnFailure: true }),
-    [load],
-  );
+  const loadQuietly = useCallback((signal: AbortSignal) => load({ signal, quiet: true }), [load]);
   useRelationRecheck(relation?.status, loadQuietly, onChanged);
 
   const runAction = async (action: () => Promise<void>, failMessage: string) => {
