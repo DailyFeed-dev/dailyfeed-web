@@ -7,6 +7,7 @@ const GROUP_GAP_MS = 5 * 60_000;
 export type PendingMessage = {
   clientId: string;
   content: string;
+  file: File | null;
   createdAt: string;
   status: 'sending' | 'failed';
   errorMessage: string | null;

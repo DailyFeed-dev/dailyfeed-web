@@ -1,6 +1,7 @@
 import { api, ApiError, type Schemas } from '@/lib/api';
 import type {
   ChatAdapter,
+  ChatAttachment,
   ChatConversation,
   ChatConversationPort,
   ChatFriendPort,
@@ -14,6 +15,10 @@ import type {
 } from '@/types/chat';
 
 const DM_PATH = '/api/v1/dm/conversations';
+const ATTACHMENTS_PATH = '/api/v1/dm/attachments';
+const PATH_CHECK_ORIGIN = 'https://path-check.invalid';
+const MAX_DECODE_ROUNDS = 3;
+const INVALID_ATTACHMENT_PATH = '첨부 파일 주소가 올바르지 않습니다.';
 const FRIENDS_PATH = '/api/v1/friends';
 const BLOCKS_PATH = '/api/v1/blocks';
 const ME_PATH = '/api/v1/auth/me';
@@ -23,6 +28,7 @@ const SEARCH_LIMIT = 20;
 
 type DmMessage = Schemas['GlobalDmMessageResult'];
 type DmConversation = Schemas['GlobalDmConversationResult'];
+type DmAttachment = Schemas['DmAttachmentResult'];
 type FriendUser = Schemas['FriendUserResult'];
 type FriendRequest = Schemas['FriendRequestResult'];
 type PublicUser = Schemas['PublicUserProfileResult'];
@@ -46,14 +52,73 @@ const newestFirst = (a: { createdAt: string }, b: { createdAt: string }) =>
 const timeOfLastMessage = (conversation: ChatConversation) =>
   conversation.lastMessage ? Date.parse(conversation.lastMessage.createdAt) : 0;
 
+function toAttachment(item: DmAttachment | null | undefined): ChatAttachment | null {
+  if (!item?.attachmentPath) return null;
+  return {
+    name: item.attachmentName || '첨부 파일',
+    path: item.attachmentPath,
+    mime: item.attachmentMime || 'application/octet-stream',
+    size: item.attachmentSize ?? 0,
+  };
+}
+
 function toMessage(item: DmMessage | null | undefined): ChatMessage | null {
   if (!item?.id || item.senderId === undefined || !item.createdAt) return null;
+  const attachment = toAttachment(item);
   return {
     id: item.id,
     senderId: item.senderId,
     content: item.content ?? '',
     createdAt: item.createdAt,
+    ...(attachment && { attachment }),
   };
+}
+
+function decodedFormsOf(segment: string) {
+  const forms = [segment];
+  for (let round = 0; round < MAX_DECODE_ROUNDS; round += 1) {
+    const current = forms[forms.length - 1];
+    try {
+      const next = decodeURIComponent(current);
+      if (next === current) break;
+      forms.push(next);
+    } catch {
+      break;
+    }
+  }
+  return forms;
+}
+
+function hasEncodedTraversal(pathname: string) {
+  return pathname
+    .split('/')
+    .some((segment) =>
+      decodedFormsOf(segment).some((form) => form === '.' || form === '..' || /[/\\]/.test(form)),
+    );
+}
+
+function parsePath(path: string) {
+  try {
+    return new URL(path, PATH_CHECK_ORIGIN);
+  } catch {
+    return null;
+  }
+}
+
+function isAttachmentUrl(url: URL) {
+  return (
+    url.origin === PATH_CHECK_ORIGIN &&
+    url.pathname.startsWith(`${ATTACHMENTS_PATH}/`) &&
+    !url.search &&
+    !url.hash &&
+    !hasEncodedTraversal(url.pathname)
+  );
+}
+
+function downloadPathOf(attachment: ChatAttachment) {
+  const url = parsePath(attachment.path);
+  if (!url || !isAttachmentUrl(url)) throw new Error(INVALID_ATTACHMENT_PATH);
+  return url.pathname;
 }
 
 function toConversation(item: DmConversation): ChatConversation | null {
@@ -140,6 +205,29 @@ const messagePort: ChatMessagePort = {
     const body: Schemas['SendFlexibleBody'] = { content: text };
     const item = await api.post<DmMessage>(`${DM_PATH}/${peerId}/messages`, body);
     return toMessage(item) ?? invalidResponse();
+  },
+
+  async uploadAttachment(file) {
+    const form = new FormData();
+    form.append('file', file);
+    const item = await api.post<DmAttachment>(ATTACHMENTS_PATH, form);
+    return toAttachment(item) ?? invalidResponse();
+  },
+
+  async sendAttachment(peerId, attachment) {
+    const body: Schemas['SendFlexibleBody'] = {
+      kind: attachment.mime.startsWith('image/') ? 'IMAGE' : 'FILE',
+      attachmentName: attachment.name,
+      attachmentPath: attachment.path,
+      attachmentMime: attachment.mime,
+      attachmentSize: attachment.size,
+    };
+    const item = await api.post<DmMessage>(`${DM_PATH}/${peerId}/messages`, body);
+    return toMessage(item) ?? invalidResponse();
+  },
+
+  async downloadAttachment(peerId, attachment, signal) {
+    return api.getBlob(downloadPathOf(attachment), { query: { peerUserId: peerId }, signal });
   },
 };
 

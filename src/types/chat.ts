@@ -6,11 +6,19 @@ export type ChatUser = {
   avatarUrl: string | null;
 };
 
+export type ChatAttachment = {
+  name: string;
+  path: string;
+  mime: string;
+  size: number;
+};
+
 export type ChatMessage = {
   id: string;
   senderId: ChatUserId;
   content: string;
   createdAt: string;
+  attachment?: ChatAttachment;
 };
 
 export type ChatConversation = {
@@ -57,6 +65,13 @@ export type ChatConversationPort = {
 export type ChatMessagePort = {
   listMessages(peerId: ChatUserId, request?: ChatMessagePageRequest): Promise<ChatMessagePage>;
   sendMessage(peerId: ChatUserId, content: string): Promise<ChatMessage>;
+  uploadAttachment(file: File): Promise<ChatAttachment>;
+  sendAttachment(peerId: ChatUserId, attachment: ChatAttachment): Promise<ChatMessage>;
+  downloadAttachment(
+    peerId: ChatUserId,
+    attachment: ChatAttachment,
+    signal?: AbortSignal,
+  ): Promise<Blob>;
 };
 
 export type ChatFriendPort = {
