@@ -11,14 +11,22 @@ export default function NotificationsPage() {
   const router = useRouter();
 
   useEffect(() => {
+    const token =
+      typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
+
+    // 팝업을 띄우지 않고, 비로그인 상태로 주소창에 직접 쳐서 들어온 경우에만 안전하게 뒤로 보냄
+    if (!token) {
+      router.back();
+      return;
+    }
+
     notificationService.fetchNotifications().then((data) => {
       setNotifications(data);
       setIsLoading(false);
     });
-  }, []);
+  }, [router]);
 
   const triggerUpdateEvent = () => {
-    // 확실하게 브라우저 전역에 알림 업데이트 신호를 보냅니다.
     window.dispatchEvent(new CustomEvent('notification-updated'));
   };
 
