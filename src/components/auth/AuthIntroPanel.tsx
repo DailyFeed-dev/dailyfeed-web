@@ -6,7 +6,7 @@ export default function AuthIntroPanel() {
   return (
     <aside
       aria-label="DailyFeed 소개"
-      className="hidden max-w-[594px] min-w-0 flex-1 flex-col self-start rounded-[24px] bg-(--auth-primary) px-[54px] pt-16 pb-[45px] break-keep lg:flex lg:min-h-[840px]"
+      className="hidden max-w-[594px] min-w-0 flex-1 flex-col self-start rounded-[24px] bg-(--color-bg-brand) px-[54px] pt-16 pb-[45px] break-keep lg:flex lg:min-h-[840px]"
     >
       <p className="text-sm leading-[17px] font-semibold text-[#d9d5ff]">DAILYFEED</p>
       <p className="mt-[61px] text-[40px] leading-[58px] font-bold text-white">
