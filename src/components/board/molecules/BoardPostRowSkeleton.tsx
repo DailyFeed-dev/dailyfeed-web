@@ -9,10 +9,10 @@ export default function BoardPostRowSkeleton() {
         <span className="h-3.5 w-3/5 rounded bg-zinc-200" />
         <span className="h-3 w-2/5 rounded bg-zinc-100" />
       </div>
-      <span className="h-3.5 w-14 rounded bg-zinc-200" />
-      <span className="h-3.5 w-16 rounded bg-zinc-200" />
-      <span className="h-3.5 w-8 rounded bg-zinc-200" />
-      <span className="h-3.5 w-8 rounded bg-zinc-200" />
+      <span className="h-3.5 w-14 justify-self-center rounded bg-zinc-200" />
+      <span className="h-3.5 w-16 justify-self-center rounded bg-zinc-200" />
+      <span className="h-3.5 w-8 justify-self-center rounded bg-zinc-200" />
+      <span className="h-3.5 w-8 justify-self-center rounded bg-zinc-200" />
     </div>
   );
 }

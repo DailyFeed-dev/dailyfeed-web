@@ -9,7 +9,7 @@ import BoardCommentSection from './BoardCommentSection';
 import BoardDetailPost from './BoardDetailPost';
 
 // 게시글 상세 — 글을 가져와 상단 바, 본문, 댓글을 보여 줍니다.
-// 댓글은 아직 임시 데이터입니다.
+// 댓글은 BoardCommentSection 이 API 로 가져옵니다.
 export default function BoardDetailView({ postId }: { postId: number }) {
   const {
     data: post,

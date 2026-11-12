@@ -8,6 +8,15 @@ export const BOARD_CATEGORIES = [
 
 export type BoardCategory = (typeof BOARD_CATEGORIES)[number]['code'];
 
+// 카테고리별 배지 색. 카테고리가 없는 글은 NO_CATEGORY_BADGE 로 "없음"을 보여 줍니다.
+export const CATEGORY_BADGE_COLOR: Record<BoardCategory, string> = {
+  FREE: 'bg-indigo-50 text-indigo-600',
+  QUESTION: 'bg-amber-50 text-amber-700',
+  INFO: 'bg-emerald-50 text-emerald-700',
+  REVIEW: 'bg-rose-50 text-rose-600',
+};
+export const NO_CATEGORY_BADGE = { label: '없음', color: 'bg-zinc-100 text-zinc-500' };
+
 export function getCategoryLabel(code: string): string {
   return BOARD_CATEGORIES.find((category) => category.code === code)?.label ?? code;
 }

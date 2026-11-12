@@ -1,16 +1,12 @@
 import type { Post } from '@/services/postService';
-import { getCategoryLabel } from '../boardCategories';
+import BoardCategoryBadge from '../atoms/BoardCategoryBadge';
 import { formatDateTime } from '../boardFormat';
 
 // 게시글 상세 카드 — 제목, 작성 정보, 본문, 태그, 반응
 export default function BoardDetailPost({ post }: { post: Post }) {
   return (
     <article className="rounded-2xl border border-zinc-200 bg-white p-8">
-      {post.category && (
-        <span className="inline-block rounded-full bg-indigo-50 px-2.5 py-0.5 text-[13px] leading-normal font-medium text-indigo-600">
-          {getCategoryLabel(post.category)}
-        </span>
-      )}
+      <BoardCategoryBadge code={post.category} />
       <h1 className="mt-3 text-2xl leading-8 font-bold text-[#201D2B]">{post.title}</h1>
       <p className="mt-3 text-[13px] leading-[1.55] text-[#74717F]">
         <span className="font-semibold text-[#201D2B]">{post.authorName}</span>
