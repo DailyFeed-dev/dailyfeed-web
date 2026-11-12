@@ -3,11 +3,13 @@ import { api, type Schemas } from '@/lib/api';
 // 피드 글 API (/api/v1/posts) 호출 함수 모음입니다.
 // 컴포넌트에서는 api 를 직접 부르지 않고 이 함수들을 씁니다.
 
-// ⚠️ schema.d.ts 가 아직 최신이 아니라서 새로 생긴 필드(author, category, tags, likeCount, viewCount)를 여기서 보충합니다.
+// ⚠️ schema.d.ts 가 아직 최신이 아니라서 새로 생긴 필드(author, content, category, tags, likeCount, viewCount)를 여기서 보충합니다.
 //    `npm run api:types` 로 타입을 다시 만든 뒤에는 Schemas['PostResponse'] 만 쓰면 됩니다.
 export type Post = Schemas['PostResponse'] & {
   /** 작성자. 실제 서버는 authorId · authorName 대신 이 객체로 줍니다. */
   author?: Schemas['AuthorResponse'];
+  /** 본문. 실제 서버는 body 가 아니라 content 로 줍니다. */
+  content?: string;
   category?: string | null;
   tags?: string[];
   likeCount?: number;
