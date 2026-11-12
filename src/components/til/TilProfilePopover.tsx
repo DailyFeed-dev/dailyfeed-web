@@ -111,6 +111,8 @@ type TriggerProps = Omit<PopoverProps, 'id' | 'className' | 'style'> & {
   /** 트리거 아래로 떨어뜨릴 거리(px) */
   offset?: number;
   className?: string;
+  /** true 면 눌러도 팝오버가 열리지 않습니다. (내 프로필 — 나와 채팅할 일이 없어서) */
+  disabled?: boolean;
 };
 
 /**
@@ -118,7 +120,7 @@ type TriggerProps = Omit<PopoverProps, 'id' | 'className' | 'style'> & {
  * 바깥 클릭 · Esc · 채팅 버튼 클릭 시 닫힙니다.
  *
  * @example
- * <TilProfilePopoverTrigger profile={author} chatHref={`/chat?user=${author.id}`}>
+ * <TilProfilePopoverTrigger profile={author} chatHref={tilChatHref(author.id)}>
  *   <TilAvatar name={author.name} size={40} /> {author.name}
  * </TilProfilePopoverTrigger>
  */
@@ -131,6 +133,7 @@ export function TilProfilePopoverTrigger({
   openClassName,
   offset = 8,
   className,
+  disabled = false,
 }: TriggerProps) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLSpanElement>(null);
@@ -156,6 +159,19 @@ export function TilProfilePopoverTrigger({
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [open, close]);
+
+  // 내 프로필이면 버튼 없이 내용만 보여줍니다. (모양은 같게, 마우스 반응 · 클릭은 없게)
+  if (disabled) {
+    return (
+      <span className={`relative inline-flex ${className ?? ''}`}>
+        <span
+          className={`pointer-events-none inline-flex items-center rounded-lg text-left ${triggerClassName ?? ''}`}
+        >
+          {children}
+        </span>
+      </span>
+    );
+  }
 
   return (
     <span ref={wrapRef} className={`relative inline-flex ${className ?? ''}`}>

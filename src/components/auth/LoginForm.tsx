@@ -14,6 +14,7 @@ import {
 import { getBlockedAccountMessage } from '@/components/auth/accountStatus';
 import { getAuthErrorMessage } from '@/components/auth/authErrorMessage';
 import AuthFormError from '@/components/auth/AuthFormError';
+import { getPostLoginPath } from '@/components/auth/nextPath';
 import { validateEmail, validateRequired } from '@/components/auth/validation';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
@@ -105,10 +106,11 @@ export default function LoginForm() {
 
       const blockedMessage = getBlockedAccountMessage(auth.accountStatus);
       if (!blockedMessage) {
+        // ?next= 로 받은 원래 주소(없으면 메인)로 이동합니다.
         // 뒤로 가기로 로그인 화면에 돌아오지 않도록 push 대신 replace 로 이동합니다.
         // 이동이 끝날 때까지 버튼은 "로그인 중..." 상태로 둡니다.
         shouldResetRef.current = true;
-        router.replace('/');
+        router.replace(getPostLoginPath());
         return;
       }
 

@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from 'react';
 
-import { getMyTilStats, getTilWeeklyRanking, getTils } from '@/services/tilService';
+import {
+  TIL_POPULAR_PERIOD,
+  getMyTilStats,
+  getTilWeeklyRanking,
+  getTils,
+} from '@/services/tilService';
 import type { Schemas } from '@/lib/api';
 import type { TilListQuery, TilListTab } from '@/types/til';
 
@@ -20,7 +25,12 @@ type ListState = { key: string; data?: Schemas['TilPageResponse']; error?: unkno
 // 탭마다 글이 없을 때 보여줄 안내
 const EMPTY: Record<TilListTab, { message: string; link?: { href: string; label: string } }> = {
   all: { message: '아직 작성된 TIL이 없어요.' },
-  popular: { message: '아직 작성된 TIL이 없어요.' },
+  popular: {
+    message:
+      TIL_POPULAR_PERIOD === 'week'
+        ? '이번 주 인기 TIL이 아직 없어요.'
+        : '아직 작성된 TIL이 없어요.',
+  },
   mine: {
     message: '아직 작성한 TIL이 없어요. 오늘 배운 것을 기록해 보세요.',
     link: { href: TIL_WRITE_HREF, label: '새 TIL 작성' },
