@@ -2,8 +2,10 @@
 
 import { ApiError } from '@/lib/api';
 import { useApiData } from '@/hooks/useApiData';
+import { getCurrentUser } from '@/services/authService';
 import { getPost } from '@/services/postService';
 import { getCategoryLabel } from '../boardCategories';
+import BoardAuthorCard from '../organisms/BoardAuthorCard';
 import BoardDetailTopBar from '../organisms/BoardDetailTopBar';
 import BoardCommentSection from './BoardCommentSection';
 import BoardDetailPost from './BoardDetailPost';
@@ -17,7 +19,11 @@ export default function BoardDetailView({ postId }: { postId: number }) {
     loading,
   } = useApiData(`post:${postId}`, (signal) => getPost(postId, signal));
 
-  if (loading) return <Message>글을 불러오는 중이에요.</Message>;
+  // 로그인하지 않았으면 이 요청이 401 로 실패합니다. 그 경우 글과 댓글은 읽을 수만 있습니다.
+  const me = useApiData('me', (signal) => getCurrentUser(signal));
+  const meId = me.data?.id;
+
+  if (loading || me.loading) return <Message>글을 불러오는 중이에요.</Message>;
   if (error !== undefined || !post) {
     return (
       <>
@@ -31,11 +37,19 @@ export default function BoardDetailView({ postId }: { postId: number }) {
     );
   }
 
+  const author = { id: post.authorId, name: post.authorName };
+  const isMine = meId !== undefined && post.authorId === meId;
+
   return (
     <>
       <BoardDetailTopBar category={post.category ? getCategoryLabel(post.category) : undefined} />
-      <BoardDetailPost post={post} />
-      <BoardCommentSection postId={postId} />
+      <BoardDetailPost post={post} isMe={isMine} />
+      <BoardAuthorCard author={author} isMe={isMine} />
+      <BoardCommentSection
+        postId={postId}
+        postAuthorId={post.authorId}
+        currentUser={me.data ?? null}
+      />
     </>
   );
 }
