@@ -7,6 +7,7 @@ import { buttonHover } from './buttonHover';
 import LoginRequiredLink from './LoginRequiredLink';
 import Reveal from './Reveal';
 import SectionHeading from './SectionHeading';
+import SectionJumpLink from './SectionJumpLink';
 
 type Variant = 'brand' | 'light' | 'dark';
 
@@ -93,7 +94,8 @@ function FeatureCard({
 
 /**
  * 아래쪽 바로가기 카드 (채팅 · FAQ)
- * 둘 다 로그인이 필요한 곳이라, 로그인 전이면 로그인 화면으로 보내요. (LoginRequiredLink)
+ * - href 가 '#'으로 시작하면 같은 페이지 안 섹션으로 부드럽게 이동해요. (FAQ → #faq, 로그인 필요 없음)
+ * - 그 외 주소는 로그인이 필요한 곳이라, 로그인 전이면 로그인 화면으로 보내요. (채팅 → LoginRequiredLink)
  */
 function FeatureLinkCard({
   href,
@@ -108,32 +110,42 @@ function FeatureLinkCard({
   description: string;
   delay?: number;
 }) {
+  // 마우스를 올리면 연보라로 한 단계 진해지고 살짝 떠오름 (버튼과 같은 느낌)
+  const className = `group flex items-center gap-5 rounded-2xl border border-(--color-border-default) bg-[#F6F5FB] py-7 pr-8 pl-7 ${buttonHover.card}`;
+  const content = (
+    <>
+      {/* 카드가 연보라가 되면 아이콘 칸은 흰색으로 바뀌어 또렷하게 보여요 */}
+      <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-(--color-bg-brand-soft) text-[#6157E9] transition-colors duration-200 group-hover:bg-(--color-bg-surface)">
+        <CardIcon className="size-6" />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="text-[20px] leading-[1.35] font-bold text-(--color-text-primary)">
+          {title}
+        </span>
+        <span className="text-[14px] leading-[1.55] text-(--color-text-secondary)">
+          {description}
+        </span>
+      </span>
+      <span
+        aria-hidden="true"
+        className="font-mono text-[18px] leading-[1.4] font-semibold text-(--color-text-brand) transition-transform group-hover:translate-x-1"
+      >
+        -&gt;
+      </span>
+    </>
+  );
+
   return (
     <Reveal delay={delay}>
-      {/* 마우스를 올리면 연보라로 한 단계 진해지고 살짝 떠오름 (버튼과 같은 느낌) */}
-      <LoginRequiredLink
-        href={href}
-        className={`group flex items-center gap-5 rounded-2xl border border-(--color-border-default) bg-[#F6F5FB] py-7 pr-8 pl-7 ${buttonHover.card}`}
-      >
-        {/* 카드가 연보라가 되면 아이콘 칸은 흰색으로 바뀌어 또렷하게 보여요 */}
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-(--color-bg-brand-soft) text-[#6157E9] transition-colors duration-200 group-hover:bg-(--color-bg-surface)">
-          <CardIcon className="size-6" />
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="text-[20px] leading-[1.35] font-bold text-(--color-text-primary)">
-            {title}
-          </span>
-          <span className="text-[14px] leading-[1.55] text-(--color-text-secondary)">
-            {description}
-          </span>
-        </span>
-        <span
-          aria-hidden="true"
-          className="font-mono text-[18px] leading-[1.4] font-semibold text-(--color-text-brand) transition-transform group-hover:translate-x-1"
-        >
-          -&gt;
-        </span>
-      </LoginRequiredLink>
+      {href.startsWith('#') ? (
+        <SectionJumpLink targetId={href.slice(1)} className={className}>
+          {content}
+        </SectionJumpLink>
+      ) : (
+        <LoginRequiredLink href={href} className={className}>
+          {content}
+        </LoginRequiredLink>
+      )}
     </Reveal>
   );
 }
@@ -252,7 +264,7 @@ export default function FeatureSection() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* 채팅 · FAQ 는 로그인이 필요해요: 로그인 전이면 로그인 화면으로 */}
+        {/* 채팅은 로그인이 필요해요(로그인 전이면 로그인 화면으로) · FAQ 는 아래 FAQ 섹션으로 이동 */}
         <FeatureLinkCard
           href="/chat"
           icon={MessageCircleIcon}
@@ -260,7 +272,7 @@ export default function FeatureSection() {
           description="프로젝트 팀원과 실시간으로 대화하고 1:1로 질문해요."
         />
         <FeatureLinkCard
-          href="/faq"
+          href="#faq"
           delay={120}
           icon={CircleHelpIcon}
           title="FAQ"

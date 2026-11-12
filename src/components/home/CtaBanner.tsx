@@ -4,10 +4,10 @@ import { buttonClassName } from '@/components/common/Button';
 
 import { fullBleedBackground, PAGE_BG } from './fullBleed';
 import { buttonHover } from './buttonHover';
-import LoginRequiredLink from './LoginRequiredLink';
 import Reveal from './Reveal';
+import SectionJumpLink from './SectionJumpLink';
 
-// ⑦ 마지막 시작하기 띠: 보라 그라데이션 박스 (왼쪽 아래 모서리가 크게 둥근 모양)
+// ⑧ 마지막 시작하기 띠: 보라 그라데이션 박스 (왼쪽 아래 모서리가 크게 둥근 모양)
 export default function CtaBanner() {
   return (
     <section
@@ -53,9 +53,9 @@ export default function CtaBanner() {
           >
             시작하기
           </Link>
-          {/* FAQ 는 로그인이 필요해요: 로그인 전이면 로그인 화면으로 */}
-          <LoginRequiredLink
-            href="/faq"
+          {/* 바로 위 FAQ 섹션으로 부드럽게 이동 (로그인 필요 없음) */}
+          <SectionJumpLink
+            targetId="faq"
             className={buttonClassName({
               variant: 'outline',
               size: 'lg',
@@ -63,7 +63,7 @@ export default function CtaBanner() {
             })}
           >
             FAQ 보기
-          </LoginRequiredLink>
+          </SectionJumpLink>
         </div>
       </Reveal>
     </section>
