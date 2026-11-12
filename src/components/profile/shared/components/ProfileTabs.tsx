@@ -1,6 +1,6 @@
 import type { ProfileView } from '../../profileActivity';
 
-// Overview·내 정보·Posts·학습 회고·계정 설정을 선택하는 탭 메뉴
+// 종합·내 정보·게시판·학습 회고를 선택하는 탭 메뉴
 
 type Props = { view: ProfileView; onChange: (view: ProfileView) => void };
 const tabs: { value: ProfileView; label: string }[] = [
@@ -8,7 +8,6 @@ const tabs: { value: ProfileView; label: string }[] = [
   { value: 'information', label: '내 정보' },
   { value: 'posts', label: '게시판' },
   { value: 'reflections', label: '학습 회고' },
-  { value: 'settings', label: '계정 설정' },
 ];
 
 export default function ProfileTabs({ view, onChange }: Props) {

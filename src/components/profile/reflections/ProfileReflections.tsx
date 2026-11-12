@@ -25,7 +25,7 @@ export default function ProfileReflections() {
   const [selected, setSelected] = useState<Schemas['ReflectionResponse'] | null>(null);
   const [showAll, setShowAll] = useState(false);
   const { data, isLoading, error, retry } = useProfileResource('reflections', getProfileActivity);
-  const month = data?.month ?? '2026-11';
+  const month = data?.month ?? '';
   const records = data
     ? [...data.reflections].sort(
         (a, b) => (Date.parse(b.createdAt ?? '') || 0) - (Date.parse(a.createdAt ?? '') || 0),
