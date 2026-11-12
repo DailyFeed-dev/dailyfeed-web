@@ -1,12 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { friendService } from '@/services/chatService';
-import type { ChatRelation, ChatUserId } from '@/types/chat';
+import type { ChatRelation, ChatRelationStatus, ChatUserId } from '@/types/chat';
 
 import { errorMessageOf } from './errorMessage';
 import type { FriendsState } from './useFriends';
 
 type PeerListStatus = 'friend' | 'sent' | 'received' | 'unlisted';
+
+const RELATION_RECHECK_MS = 5000;
+const STATUSES_CHANGED_BY_PEER: ChatRelationStatus[] = ['none', 'sent', 'received', 'blockedMe'];
+
+type LoadOptions = {
+  signal?: AbortSignal;
+  keepOnFailure?: boolean;
+};
 
 export function peerListStatusOf(friendsState: FriendsState, userId: ChatUserId): PeerListStatus {
   if (friendsState.friends.some((user) => user.id === userId)) return 'friend';
@@ -15,6 +23,33 @@ export function peerListStatusOf(friendsState: FriendsState, userId: ChatUserId)
     return 'received';
   }
   return 'unlisted';
+}
+
+export function useRelationRecheck(
+  status: ChatRelationStatus | undefined,
+  loadQuietly: (signal: AbortSignal) => Promise<ChatRelation | null>,
+  onChanged: () => void,
+) {
+  useEffect(() => {
+    if (!status || !STATUSES_CHANGED_BY_PEER.includes(status)) return;
+    const controller = new AbortController();
+    const recheck = async () => {
+      const next = await loadQuietly(controller.signal);
+      if (next && next.status !== status) onChanged();
+    };
+    const recheckIfVisible = () => {
+      if (document.visibilityState === 'visible') void recheck();
+    };
+    const timer = setInterval(recheckIfVisible, RELATION_RECHECK_MS);
+    document.addEventListener('visibilitychange', recheckIfVisible);
+    window.addEventListener('focus', recheckIfVisible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', recheckIfVisible);
+      window.removeEventListener('focus', recheckIfVisible);
+      controller.abort();
+    };
+  }, [status, loadQuietly, onChanged]);
 }
 
 export function useFriendRelation(
@@ -29,19 +64,21 @@ export function useFriendRelation(
   const latestLoadId = useRef(0);
 
   const load = useCallback(
-    async (signal?: AbortSignal) => {
+    async ({ signal, keepOnFailure = false }: LoadOptions = {}): Promise<ChatRelation | null> => {
       latestLoadId.current += 1;
       const loadId = latestLoadId.current;
       const isStale = () => signal?.aborted || loadId !== latestLoadId.current;
       try {
         const next = await friendService.getRelation(peerId, signal);
-        if (isStale()) return;
+        if (isStale()) return null;
         setRelation(next);
         setLoadFailed(false);
+        return next;
       } catch {
-        if (isStale()) return;
+        if (isStale() || keepOnFailure) return null;
         setRelation(null);
         setLoadFailed(true);
+        return null;
       }
     },
     [peerId],
@@ -49,9 +86,15 @@ export function useFriendRelation(
 
   useEffect(() => {
     const controller = new AbortController();
-    void load(controller.signal);
+    void load({ signal: controller.signal });
     return () => controller.abort();
   }, [load, peerListStatus]);
+
+  const loadQuietly = useCallback(
+    (signal: AbortSignal) => load({ signal, keepOnFailure: true }),
+    [load],
+  );
+  useRelationRecheck(relation?.status, loadQuietly, onChanged);
 
   const runAction = async (action: () => Promise<void>, failMessage: string) => {
     setBusy(true);
