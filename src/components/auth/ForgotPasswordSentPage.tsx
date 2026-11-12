@@ -25,10 +25,7 @@ export default function ForgotPasswordSentPage() {
         비밀번호 재설정 보안키를 보내드려요.
       </p>
 
-      <AuthNotice className="mt-[55px]">
-        메일이 오지 않았나요? 스팸함도 확인해 주세요.
-        <br />
-      </AuthNotice>
+      <AuthNotice className="mt-[55px]">메일이 오지 않았나요? 스팸함도 확인해 주세요.</AuthNotice>
 
       {/* 페이지 이동이라 버튼이 아닌 링크입니다. 모양만 공통 Button 과 같게 맞춥니다. */}
       <Link
