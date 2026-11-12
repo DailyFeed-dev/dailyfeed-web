@@ -10,6 +10,10 @@ const PREVIEW_IMAGE_TYPES = [
 ];
 const SIZE_UNITS = ['B', 'KB', 'MB', 'GB'];
 const MAX_EXTENSION_LENGTH = 5;
+const UPLOAD_BODY_LIMIT_BYTES = 10 * 1024 * 1024;
+const MULTIPART_MARGIN_BYTES = 64 * 1024;
+
+export const MAX_ATTACHMENT_BYTES = UPLOAD_BODY_LIMIT_BYTES - MULTIPART_MARGIN_BYTES;
 
 export function isPreviewImage(mime: string) {
   return PREVIEW_IMAGE_TYPES.includes(mime.toLowerCase());
