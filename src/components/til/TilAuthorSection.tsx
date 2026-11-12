@@ -21,6 +21,7 @@ export function TilAuthorTrigger({
     <TilProfilePopoverTrigger
       disabled={isMe}
       profile={author}
+      userId={author.id}
       chatHref={tilChatHref(author.id)}
       triggerClassName="-my-1 -ml-1.5 gap-3 rounded-[10px] py-1 pr-3 pl-1.5 transition-colors hover:bg-[#f0eefe]/60"
       openClassName="bg-[#f0eefe] hover:bg-[#f0eefe]"
@@ -54,6 +55,7 @@ export function TilAuthorCard({
       <TilProfilePopoverTrigger
         disabled={isMe}
         profile={author}
+        userId={author.id}
         chatHref={tilChatHref(author.id)}
         triggerClassName="rounded-full"
       >
