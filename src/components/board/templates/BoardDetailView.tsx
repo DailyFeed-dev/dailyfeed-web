@@ -35,7 +35,7 @@ export default function BoardDetailView({ postId }: { postId: number }) {
     <>
       <BoardDetailTopBar category={post.category ? getCategoryLabel(post.category) : undefined} />
       <BoardDetailPost post={post} />
-      <BoardCommentSection />
+      <BoardCommentSection postId={postId} />
     </>
   );
 }
