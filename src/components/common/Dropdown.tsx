@@ -90,7 +90,10 @@ export default function Dropdown({
             onInvalid={(event) => {
               event.preventDefault(); // 브라우저 기본 말풍선 대신 아래 에러 표시를 씁니다.
               setMissing(true);
-              buttonRef.current?.focus();
+              // 비어 있는 칸이 여러 개면 맨 위 칸에만 포커스를 줍니다.
+              if (event.currentTarget.form?.querySelector(':invalid') === event.currentTarget) {
+                buttonRef.current?.focus();
+              }
             }}
             className="pointer-events-none absolute inset-x-0 bottom-0 h-0 opacity-0"
           />
