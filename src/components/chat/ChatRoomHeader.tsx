@@ -5,6 +5,7 @@ import Icon from '@/components/common/Icon';
 import type { ChatRelationStatus, ChatUser } from '@/types/chat';
 
 import ChatAvatar from './ChatAvatar';
+import ChatRoomMenu from './ChatRoomMenu';
 import type { FriendRelationState } from './useFriendRelation';
 
 type ChatRoomHeaderProps = {
@@ -128,6 +129,7 @@ export default function ChatRoomHeader({ peer, peerLoading, relationState }: Cha
             <RelationStatus relationState={relationState} />
           </div>
           <RelationAction relationState={relationState} />
+          <ChatRoomMenu peerName={peer.name} relationState={relationState} />
         </>
       )}
     </header>

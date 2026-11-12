@@ -8,14 +8,18 @@ import type {
   ChatMessage,
   ChatMessagePort,
   ChatRelation,
+  ChatTypingFeed,
+  ChatTypingPort,
   ChatUser,
   ChatUserId,
   ChatUserPort,
 } from '@/types/chat';
 
 const ME: ChatUserId = 1;
+const ME_USER: ChatUser = { id: ME, name: '테스트', avatarUrl: null };
 const MOCK_DELAY_MS = 200;
 const AUTO_REPLY_DELAY_MS = 1500;
+const AUTO_REPLY_TYPING_AFTER_MS = 300;
 const DEFAULT_PAGE_SIZE = 20;
 const MINUTE_MS = 60_000;
 
@@ -140,8 +144,16 @@ function latestFirst(a: ChatConversation, b: ChatConversation) {
   return timeOf(b) - timeOf(a);
 }
 
+const typingListeners = new Map<ChatUserId, Set<(typing: boolean) => void>>();
+
+function emitTyping(peerId: ChatUserId, typing: boolean) {
+  for (const listener of [...(typingListeners.get(peerId) ?? [])]) listener(typing);
+}
+
 function scheduleAutoReply(peerId: ChatUserId) {
+  setTimeout(() => emitTyping(peerId, true), AUTO_REPLY_TYPING_AFTER_MS);
   setTimeout(() => {
+    emitTyping(peerId, false);
     appendMessage(peerId, {
       id: nextId('m'),
       senderId: peerId,
@@ -281,17 +293,53 @@ const friendPort: ChatFriendPort = {
     await wait();
     if (!friendIds.delete(userId)) throw new ApiError('친구 목록에 없는 사용자입니다.', 404);
   },
+
+  async blockUser(userId) {
+    await wait();
+    requirePeer(userId);
+    blockedIds.add(userId);
+    friendIds.delete(userId);
+  },
+
+  async unblockUser(userId) {
+    await wait();
+    if (!blockedIds.delete(userId)) throw new ApiError('차단한 사용자가 아닙니다.', 404);
+  },
 };
 
 const userPort: ChatUserPort = {
   async getMe(signal) {
     await wait(signal);
-    return { id: ME, name: '테스트', avatarUrl: null };
+    return { ...ME_USER };
   },
 
   async getUser(userId, signal) {
     await wait(signal);
     return requireUser(userId);
+  },
+
+  async searchUsers(query, signal) {
+    await wait(signal);
+    const keyword = query.trim().toLowerCase();
+    if (!keyword) return [];
+    return [ME_USER, ...users.values()]
+      .filter((user) => user.name.toLowerCase().includes(keyword))
+      .map((user) => ({ ...user }));
+  },
+};
+
+const typingPort: ChatTypingPort = {
+  async sendTyping() {},
+};
+
+export const mockTypingFeed: ChatTypingFeed = {
+  subscribeTyping(peerId, onTyping) {
+    const listeners = typingListeners.get(peerId) ?? new Set();
+    listeners.add(onTyping);
+    typingListeners.set(peerId, listeners);
+    return () => {
+      listeners.delete(onTyping);
+    };
   },
 };
 
@@ -300,4 +348,5 @@ export const mockChatAdapter: ChatAdapter = {
   messages: messagePort,
   friends: friendPort,
   users: userPort,
+  typing: typingPort,
 };

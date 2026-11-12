@@ -1,10 +1,7 @@
-import Link from 'next/link';
-
 import Badge from '@/components/common/Badge';
-import { buttonClassName } from '@/components/common/Button';
+import Icon from '@/components/common/Icon';
 
 import { fullBleedBackground, PAGE_BG } from './fullBleed';
-import { buttonHover } from './buttonHover';
 import Reveal from './Reveal';
 import SectionJumpLink from './SectionJumpLink';
 import TerminalWindow from './TerminalWindow';
@@ -127,7 +124,7 @@ function StreakCard() {
   );
 }
 
-// ① 히어로: 소개 문구 + 버튼 / 오른쪽 코드 창
+// ① 히어로: 소개 문구 / 오른쪽 코드 창 / 맨 아래 가운데 아래로 흐르는 화살표 안내
 export default function HeroSection() {
   return (
     <section
@@ -166,61 +163,36 @@ export default function HeroSection() {
           - 1440px 이상: 2열, 시안대로 코드 창 624px */}
       <div className="grid grid-cols-1 items-center gap-16 min-[75rem]:grid-cols-2 min-[90rem]:grid-cols-[minmax(0,1fr)_minmax(0,624px)]">
         {/* 왼쪽: 소개 (처음 열렸을 때 떠오르며 등장) */}
-        <Reveal className="flex min-w-0 flex-col items-start gap-8">
+        <Reveal className="flex min-w-0 flex-col items-start gap-10">
           <span className="flex items-center gap-2 rounded-full border border-(--color-border-brand-soft) bg-(--color-bg-surface) py-2 pr-4 pl-3.5 font-mono text-[13px] leading-[1.55] text-(--color-text-brand)">
             <span className="size-2 rounded-full bg-(--color-text-success)" aria-hidden="true" />
             dailyfeed --onboarding
           </span>
 
-          {/* ⚠️ 56 · 64px 큰 제목은 팀 텍스트 스타일에 없는 크기예요. (Display 스타일 추가 요청 필요) */}
-          <h1 className="text-(--color-text-primary)">
-            <span className="block text-[40px] leading-tight font-light sm:text-[56px]">
+          {/* ⚠️ 큰 제목(64 · 76px)은 팀 텍스트 스타일에 없는 크기예요. (Display 스타일 추가 요청 필요)
+              버튼을 뺀 만큼 제목과 소개 글을 키워서 왼쪽이 비어 보이지 않게 했어요 */}
+          <h1 className="w-full text-(--color-text-primary)">
+            <span className="block text-[44px] leading-tight font-light sm:text-[64px]">
               매일 한 줄씩,
             </span>
-            <span className="flex items-center gap-6 text-[44px] leading-tight font-black sm:text-[64px]">
-              <span>
+            <span className="flex w-full items-center gap-6 text-[48px] leading-tight font-black sm:text-[76px]">
+              <span className="sm:whitespace-nowrap">
                 함께 쌓는 <span className="text-[#6157E9]">기록</span>
               </span>
-              {/* 제목 옆 가로선: 공간이 넉넉할 때만 (640~1199px 한 줄 배치 또는 1440px 이상) */}
+              {/* 제목 옆 가로선: 공간이 넉넉할 때만 (640~1199px 한 줄 배치 또는 1440px 이상). 남는 폭에 맞춰 32~120px 로 줄어들어요 */}
               <span
                 aria-hidden="true"
-                className="hidden h-1 w-30 bg-[#1F1D2B] sm:max-[75rem]:block min-[90rem]:block"
+                className="hidden h-1 max-w-30 min-w-8 flex-1 bg-[#1F1D2B] sm:max-[75rem]:block min-[90rem]:block"
               />
             </span>
           </h1>
 
-          <p className="text-[16px] leading-[1.5] font-normal text-(--color-text-secondary)">
+          <p className="text-[17px] leading-[1.6] font-normal text-(--color-text-secondary) sm:text-[19px]">
             {/* 줄바꿈(br)은 넓은 화면에서만. 휴대폰에서는 화면 폭에 맞춰 자연스럽게 줄바꿈돼요. */}
             DailyFeed는 오늘 배운 것을 TIL로 남기고, <br className="hidden sm:block" />
             게시판에서 자료와 고민을 나누는 개발자 커뮤니티예요. <br className="hidden sm:block" />
             작은 기록이 쌓여 나와 팀의 자산이 돼요.
           </p>
-
-          <div className="flex gap-3">
-            {/* 메인이 곧 온보딩이라 기존 유저도 누를 수 있어 /login 으로 보냄 (로그인 화면에 회원가입 링크 있음) */}
-            {/* 마우스를 올리면 한 단계 진한 색 + 살짝 떠오름 (누를 수 있다는 느낌) */}
-            <Link
-              href="/login"
-              className={buttonClassName({
-                variant: 'primary',
-                size: 'lg',
-                className: buttonHover.primary,
-              })}
-            >
-              시작하기
-            </Link>
-            {/* 같은 페이지 안 "TIL 작성은 왜 필요할까요?"(#why-til)로 부드럽게 내려가요. 누를 때마다 동작해요 */}
-            <SectionJumpLink
-              targetId="why-til"
-              className={buttonClassName({
-                variant: 'outline',
-                size: 'lg',
-                className: buttonHover.outline,
-              })}
-            >
-              둘러보기
-            </SectionJumpLink>
-          </div>
         </Reveal>
 
         {/* 오른쪽: 코드 창 + 떠 있는 카드 2개 (왼쪽보다 조금 늦게, 떠 있는 카드는 더 늦게 등장) */}
@@ -240,6 +212,28 @@ export default function HeroSection() {
             </Reveal>
           </div>
         </Reveal>
+      </div>
+
+      {/* 아래로 읽어 내려가라는 안내: 히어로 맨 아래 가운데에 크고 연한 화살표 2개를 세로로 겹쳐 둬요
+          위에서 아래로 차례로 은은하게 밝아졌다 흐려져서, 아래로 흐르는 느낌을 줘요. ("동작 줄이기" 사용자에게는 멈춰 있어요)
+          버튼처럼 보이지 않게 테두리 · 배경 없이 두었고, 누르면 다음 섹션(기능 소개 #features)으로 내려가요 */}
+      <div className="absolute inset-x-0 bottom-2 flex justify-center lg:bottom-5">
+        <SectionJumpLink
+          targetId="features"
+          className="flex flex-col items-center text-[#8A7FF3] opacity-50 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-(--color-border-brand)"
+        >
+          <span className="sr-only">아래로 내려서 둘러보기</span>
+          <Icon
+            name="chevron-down"
+            size={44}
+            className="animate-pulse motion-reduce:animate-none"
+          />
+          <Icon
+            name="chevron-down"
+            size={44}
+            className="-mt-7 animate-pulse [animation-delay:300ms] motion-reduce:animate-none"
+          />
+        </SectionJumpLink>
       </div>
     </section>
   );

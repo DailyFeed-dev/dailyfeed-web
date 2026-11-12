@@ -13,10 +13,12 @@ import { buildTimeline } from './chatTimeline';
 import FirstChatIntro from './FirstChatIntro';
 import MessageComposer from './MessageComposer';
 import MessageList from './MessageList';
+import TypingIndicator from './TypingIndicator';
 import { useChatPeer } from './useChatPeer';
 import { useChatRoom } from './useChatRoom';
 import { peerListStatusOf, useFriendRelation } from './useFriendRelation';
 import type { FriendsState } from './useFriends';
+import { usePeerTyping, useTypingSender } from './useTyping';
 
 type ChatRoomProps = {
   peerId: ChatUserId;
@@ -42,9 +44,21 @@ export default function ChatRoom({ peerId, knownPeer, friendsState }: ChatRoomPr
   const items = buildTimeline(room.messages, room.pending, peerId);
   const canDm = relationState.relation?.canDm !== false;
   const isFirstChat = room.status === 'ready' && items.length === 0 && !room.hasOlder;
+  const peerTyping = usePeerTyping(peerId);
+  const typingSender = useTypingSender(peerId, canDm);
+
+  const changeDraft = (text: string) => {
+    setDraft(text);
+    typingSender.onDraftChange(text);
+  };
+
+  const sendMessage = (text: string) => {
+    typingSender.stopTyping();
+    room.send(text);
+  };
 
   const pickReply = (text: string) => {
-    setDraft(text);
+    changeDraft(text);
     inputRef.current?.focus();
   };
 
@@ -92,10 +106,12 @@ export default function ChatRoom({ peerId, knownPeer, friendsState }: ChatRoomPr
         />
       )}
 
+      {room.status === 'ready' && <TypingIndicator name={peer.name} typing={peerTyping} />}
+
       <MessageComposer
         value={draft}
-        onValueChange={setDraft}
-        onSend={room.send}
+        onValueChange={changeDraft}
+        onSend={sendMessage}
         disabled={room.status !== 'ready' || !canDm}
         placeholder={canDm ? undefined : '메시지를 보낼 수 없어요'}
         inputRef={inputRef}

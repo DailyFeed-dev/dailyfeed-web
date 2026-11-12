@@ -68,11 +68,18 @@ export type ChatFriendPort = {
   acceptFriendRequest(userId: ChatUserId): Promise<void>;
   rejectFriendRequest(userId: ChatUserId): Promise<void>;
   removeFriend(userId: ChatUserId): Promise<void>;
+  blockUser(userId: ChatUserId): Promise<void>;
+  unblockUser(userId: ChatUserId): Promise<void>;
 };
 
 export type ChatUserPort = {
   getMe(signal?: AbortSignal): Promise<ChatUser>;
   getUser(userId: ChatUserId, signal?: AbortSignal): Promise<ChatUser>;
+  searchUsers(query: string, signal?: AbortSignal): Promise<ChatUser[]>;
+};
+
+export type ChatTypingPort = {
+  sendTyping(peerId: ChatUserId, typing: boolean): Promise<void>;
 };
 
 export type ChatAdapter = {
@@ -80,6 +87,7 @@ export type ChatAdapter = {
   messages: ChatMessagePort;
   friends: ChatFriendPort;
   users: ChatUserPort;
+  typing: ChatTypingPort;
 };
 
 export type ChatRoomEvent =
@@ -93,4 +101,7 @@ export type ChatListEvent =
 export type ChatRealtimePort = {
   subscribeRoom(peerId: ChatUserId, onEvent: (event: ChatRoomEvent) => void): () => void;
   subscribeConversations(onEvent: (event: ChatListEvent) => void): () => void;
+  subscribeTyping(peerId: ChatUserId, onTyping: (typing: boolean) => void): () => void;
 };
+
+export type ChatTypingFeed = Pick<ChatRealtimePort, 'subscribeTyping'>;

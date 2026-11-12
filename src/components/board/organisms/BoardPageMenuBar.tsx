@@ -30,7 +30,7 @@ export default function BoardPageMenuBar({ category }: { category?: BoardCategor
               href={tab.href}
               role="tab"
               aria-selected={isSelected}
-              className={`-mb-px flex flex-col items-stretch gap-2 pt-2 text-sm leading-[1.5] ${
+              className={`-mb-px flex flex-col items-stretch gap-2 pt-2 text-sm leading-normal ${
                 isSelected
                   ? 'font-semibold text-[#1F1D2B]'
                   : 'font-medium text-[#6C6980] hover:text-[#1F1D2B]'
@@ -60,13 +60,13 @@ export default function BoardPageMenuBar({ category }: { category?: BoardCategor
           </label>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-5 py-2.5 text-sm leading-[1.5] font-semibold text-[#1F1D2B] hover:bg-zinc-50"
+            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-5 py-2.5 text-sm leading-normal font-semibold text-[#1F1D2B] hover:bg-zinc-50"
           >
             검색
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-5 py-2.5 text-sm leading-[1.5] font-semibold text-[#1F1D2B] hover:bg-zinc-50"
+            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 bg-white px-5 py-2.5 text-sm leading-normal font-semibold text-[#1F1D2B] hover:bg-zinc-50"
           >
             최신순
             <ChevronDownIcon className="size-4" />

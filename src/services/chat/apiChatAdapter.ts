@@ -8,19 +8,24 @@ import type {
   ChatMessage,
   ChatMessagePort,
   ChatRelationStatus,
+  ChatTypingPort,
   ChatUser,
   ChatUserPort,
 } from '@/types/chat';
 
 const DM_PATH = '/api/v1/dm/conversations';
 const FRIENDS_PATH = '/api/v1/friends';
+const BLOCKS_PATH = '/api/v1/blocks';
 const ME_PATH = '/api/v1/auth/me';
+const USERS_PATH = '/api/v1/users';
 const DEFAULT_PAGE_SIZE = 20;
+const SEARCH_LIMIT = 20;
 
 type DmMessage = Schemas['GlobalDmMessageResult'];
 type DmConversation = Schemas['GlobalDmConversationResult'];
 type FriendUser = Schemas['FriendUserResult'];
 type FriendRequest = Schemas['FriendRequestResult'];
+type PublicUser = Schemas['PublicUserProfileResult'];
 type Relationship = NonNullable<Schemas['RelationshipResult']['relationship']>;
 
 const relationStatuses: Record<Relationship, ChatRelationStatus> = {
@@ -73,6 +78,11 @@ function toConversation(item: DmConversation): ChatConversation | null {
 function toFriend(item: FriendUser): ChatUser | null {
   if (item.userId === undefined) return null;
   return { id: item.userId, name: item.name ?? '', avatarUrl: item.avatarUrl ?? null };
+}
+
+function toPublicUser(item: PublicUser | null | undefined): ChatUser | null {
+  if (item?.id === undefined) return null;
+  return { id: item.id, name: item.name ?? '', avatarUrl: item.avatarUrl ?? null };
 }
 
 function toFriendRequest(item: FriendRequest, side: 'sent' | 'received'): ChatFriendRequest | null {
@@ -179,6 +189,15 @@ const friendPort: ChatFriendPort = {
   async removeFriend(userId) {
     await api.delete(`${FRIENDS_PATH}/${userId}`);
   },
+
+  async blockUser(userId) {
+    const body: Schemas['BlockBody'] = { userId };
+    await api.post(BLOCKS_PATH, body);
+  },
+
+  async unblockUser(userId) {
+    await api.delete(`${BLOCKS_PATH}/${userId}`);
+  },
 };
 
 const userPort: ChatUserPort = {
@@ -188,8 +207,26 @@ const userPort: ChatUserPort = {
     return { id: me.userId, name: me.name ?? '', avatarUrl: me.avatarUrl ?? null };
   },
 
-  async getUser() {
-    throw new ApiError('사용자 조회 API가 아직 준비되지 않았습니다.', 501);
+  async getUser(userId, signal) {
+    const item = await api.get<PublicUser>(`${USERS_PATH}/${userId}`, { signal });
+    return toPublicUser(item) ?? invalidResponse();
+  },
+
+  async searchUsers(query, signal) {
+    const keyword = query.trim();
+    if (!keyword) return [];
+    const items = await api.get<PublicUser[]>(`${USERS_PATH}/search`, {
+      query: { q: keyword, limit: SEARCH_LIMIT },
+      signal,
+    });
+    return keepValid(items, toPublicUser);
+  },
+};
+
+const typingPort: ChatTypingPort = {
+  async sendTyping(peerId, typing) {
+    const body: Schemas['TypingBody'] = { typing };
+    await api.post(`${DM_PATH}/${peerId}/typing`, body);
   },
 };
 
@@ -198,4 +235,5 @@ export const apiChatAdapter: ChatAdapter = {
   messages: messagePort,
   friends: friendPort,
   users: userPort,
+  typing: typingPort,
 };
