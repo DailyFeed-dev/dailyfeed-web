@@ -24,10 +24,27 @@ import {
 const MAX_LENGTH = 500;
 const PAGE_SIZE = 3;
 
-type Sort = 'latest' | 'popular';
 type Comment = Schemas['CommentResponse'];
 
 const timeOf = (iso?: string) => (iso ? new Date(iso).getTime() : 0);
+
+// 정렬 버튼 (왼쪽부터 순서대로). 전체는 오래된 순 — 대화가 이어진 순서대로 읽혀요.
+const SORTS = {
+  all: {
+    label: '전체',
+    compare: (a: Comment, b: Comment) => timeOf(a.createdAt) - timeOf(b.createdAt),
+  },
+  latest: {
+    label: '최신순',
+    compare: (a: Comment, b: Comment) => timeOf(b.createdAt) - timeOf(a.createdAt),
+  },
+  popular: {
+    label: '인기순',
+    compare: (a: Comment, b: Comment) => (b.likeCount ?? 0) - (a.likeCount ?? 0),
+  },
+} as const;
+type Sort = keyof typeof SORTS;
+const SORT_KEYS = Object.keys(SORTS) as Sort[];
 
 type Props = {
   tilId: number;
@@ -49,21 +66,13 @@ export default function TilCommentSection({
   initialComments,
 }: Props) {
   const [comments, setComments] = useState(initialComments);
-  const [sort, setSort] = useState<Sort>('latest');
+  const [sort, setSort] = useState<Sort>('all');
   const [draft, setDraft] = useState('');
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [submitting, setSubmitting] = useState(false);
   const [likePending, setLikePending] = useState<number | null>(null);
 
-  const sorted = useMemo(
-    () =>
-      [...comments].sort((a, b) =>
-        sort === 'popular'
-          ? (b.likeCount ?? 0) - (a.likeCount ?? 0)
-          : timeOf(b.createdAt) - timeOf(a.createdAt),
-      ),
-    [comments, sort],
-  );
+  const sorted = useMemo(() => [...comments].sort(SORTS[sort].compare), [comments, sort]);
 
   const updateComment = (id: number, patch: Partial<Comment>) =>
     setComments((list) => list.map((c) => (c.id === id ? { ...c, ...patch } : c)));
@@ -75,7 +84,9 @@ export default function TilCommentSection({
     try {
       const created = await addTilComment(tilId, content);
       setComments((list) => [...list, created]);
-      setVisible((n) => n + 1); // 보고 있던 댓글이 밀려 사라지지 않게
+      // 전체(오래된 순)에서는 새 댓글이 맨 끝에 붙어서, 방금 쓴 댓글까지 펼쳐 보여 줘요.
+      // 다른 정렬에서는 보고 있던 댓글이 밀려 사라지지 않게 한 칸만 늘려요.
+      setVisible((n) => (sort === 'all' ? Math.max(n, comments.length) + 1 : n + 1));
       setDraft('');
     } catch (error) {
       window.alert(tilErrorMessage(error, '댓글을 작성하지 못했어요.'));
@@ -206,7 +217,7 @@ export default function TilCommentSection({
           댓글 <span className="ml-0.5 text-[#685cf0]">{comments.length}</span>
         </h2>
         <div role="radiogroup" aria-label="정렬" className="flex gap-3">
-          {(['latest', 'popular'] as const).map((s) => (
+          {SORT_KEYS.map((s) => (
             <button
               key={s}
               type="button"
@@ -217,7 +228,7 @@ export default function TilCommentSection({
                 sort === s ? 'font-semibold text-[#1f1d2b]' : 'font-medium text-[#9a99a8]'
               }`}
             >
-              {s === 'latest' ? '최신순' : '인기순'}
+              {SORTS[s].label}
             </button>
           ))}
         </div>
