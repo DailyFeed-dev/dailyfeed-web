@@ -10,7 +10,7 @@ export default function BoardDetailTopBar({ category }: { category?: string }) {
       >
         ← 게시판 목록으로
       </Link>
-      <p className="text-xs leading-[1.5] text-[#74717F]">
+      <p className="text-xs leading-normal text-[#74717F]">
         {category ? `게시판 / ${category}` : '게시판'}
       </p>
     </div>

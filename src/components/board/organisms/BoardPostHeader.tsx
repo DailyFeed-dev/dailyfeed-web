@@ -4,7 +4,7 @@ import { POST_GRID } from '../molecules/BoardPostRow';
 export default function BoardPostHeader() {
   return (
     <div
-      className={`${POST_GRID} h-11 bg-zinc-100 text-xs leading-[1.5] text-[#6C6980]`}
+      className={`${POST_GRID} h-11 bg-zinc-100 text-xs leading-normal text-[#6C6980]`}
       role="presentation"
     >
       <span>카테고리</span>

@@ -7,6 +7,10 @@ import type { BoardCategory } from '../boardCategories';
 import BoardPagination from '../organisms/BoardPagination';
 import BoardPostHeader from '../organisms/BoardPostHeader';
 import BoardPostRow from '../molecules/BoardPostRow';
+import BoardPostRowSkeleton from '../molecules/BoardPostRowSkeleton';
+
+// 불러오는 동안 보여 줄 자리 표시 줄 수
+const SKELETON_ROWS = 10;
 
 // 글 메인 (게시글 목록)
 // category 가 없으면 전체 글을 가져옵니다. 한 번에 20개씩 보여 주고, 페이지는 주소의 ?page= 로 옮깁니다. (주소는 1부터, API 는 0부터)
@@ -26,7 +30,13 @@ export default function BoardPostList({
     <section aria-label="게시글 목록">
       <div className="overflow-hidden rounded-t-lg">
         <BoardPostHeader />
-        {loading && <ListMessage>글을 불러오는 중이에요.</ListMessage>}
+        {loading && (
+          <div role="status" aria-label="글을 불러오는 중" className="animate-pulse">
+            {Array.from({ length: SKELETON_ROWS }, (_, index) => (
+              <BoardPostRowSkeleton key={index} />
+            ))}
+          </div>
+        )}
         {!loading && error !== undefined && (
           <ListMessage>
             {error instanceof ApiError ? error.message : '글을 불러오지 못했어요.'}

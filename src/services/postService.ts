@@ -37,3 +37,11 @@ export function getPosts({ page, size, category }: GetPostsParams = {}, signal?:
 export function getPost(postId: number, signal?: AbortSignal) {
   return api.get<Post>(`/api/v1/posts/${postId}`, { signal });
 }
+
+/** 글 작성 요청. title·category·tags 는 선택, content 는 필수, 태그는 최대 5개 */
+export type CreatePostBody = Schemas['CreatePostRequest'];
+
+/** 피드 글 작성. 로그인한 사용자의 토큰이 필요하고, 만들어진 글을 돌려줍니다. */
+export function createPost(body: CreatePostBody, signal?: AbortSignal) {
+  return api.post<Post>('/api/v1/posts', body, { signal });
+}
