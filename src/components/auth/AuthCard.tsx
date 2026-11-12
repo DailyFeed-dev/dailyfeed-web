@@ -17,7 +17,7 @@ type AuthCardProps = {
  */
 export default function AuthCard({ eyebrow, title, description, children, footer }: AuthCardProps) {
   return (
-    <section className="rounded-[20px] border border-(--auth-border-default) bg-white p-6 break-keep lg:min-h-[730px] lg:px-[54px] lg:py-[55px]">
+    <section className="rounded-[20px] border border-(--color-border-default) bg-white p-6 break-keep lg:min-h-[730px] lg:px-[54px] lg:py-[55px]">
       <p className="text-[13px] leading-4 font-semibold text-[#6b5ff2]">{eyebrow}</p>
       <h1 className="mt-[19px] text-[30px] leading-[43px] font-bold">{title}</h1>
       {description && (
@@ -27,7 +27,7 @@ export default function AuthCard({ eyebrow, title, description, children, footer
       <div className="mt-[45px]">{children}</div>
 
       {footer && (
-        <div className="mt-[43px] border-t border-(--auth-border-default) pt-8">{footer}</div>
+        <div className="mt-[43px] border-t border-(--color-border-default) pt-8">{footer}</div>
       )}
     </section>
   );

@@ -9,7 +9,7 @@ export default function AuthHeader() {
       </Link>
       <Link
         href="/"
-        className="flex items-center gap-2 text-[15px] font-medium whitespace-nowrap text-[#706d81] hover:text-(--auth-text-primary)"
+        className="flex items-center gap-2 text-[15px] font-medium whitespace-nowrap text-[#706d81] hover:text-(--color-text-primary)"
       >
         메인으로 돌아가기
         <span aria-hidden="true">→</span>

@@ -13,7 +13,7 @@ export default function LoginPage() {
       footer={
         <p className="flex flex-wrap items-center justify-center gap-x-2 text-sm">
           <span className="text-[#888698]">아직 계정이 없으신가요?</span>
-          <Link href="/signup" className="font-bold text-(--auth-primary) hover:underline">
+          <Link href="/signup" className="font-bold text-(--color-text-brand) hover:underline">
             회원가입
           </Link>
         </p>
