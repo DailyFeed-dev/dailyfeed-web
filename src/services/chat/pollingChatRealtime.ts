@@ -3,6 +3,7 @@ import type {
   ChatMessagePage,
   ChatMessagePort,
   ChatRealtimePort,
+  ChatTypingFeed,
   ChatUserId,
 } from '@/types/chat';
 
@@ -20,10 +21,6 @@ export function fixedIntervalSignal(intervalMs: number): ChatSyncSignal {
     subscribe: () => () => {},
   };
 }
-
-export type ChatTypingFeed = {
-  subscribeTyping(peerId: ChatUserId, onTyping: (typing: boolean) => void): () => void;
-};
 
 export const noTypingFeed: ChatTypingFeed = {
   subscribeTyping: () => () => {},
