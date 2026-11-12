@@ -14,9 +14,7 @@ import { tokenStorage } from '@/lib/api';
  *
  * 로그인 여부는 팀 공용 tokenStorage 의 로그인 토큰이 있는지로 판단해요. (브라우저 저장소라 클라이언트 컴포넌트)
  *
- * TODO: 로그인 화면이 ?next= 를 읽어 로그인 후 그 주소로 보내 주도록 로그인 담당(#4)에 요청.
- *       (지금 로그인 화면은 성공하면 항상 메인(/)으로 이동해요)
- * TODO(common): 다른 화면에서도 필요해지면 common/ 으로 옮기기
+ * 로그인 화면이 ?next= 를 읽어 로그인 후 그 주소로 보내 줘요. (#42 · auth/nextPath.ts)
  */
 export default function LoginRequiredLink({
   href,

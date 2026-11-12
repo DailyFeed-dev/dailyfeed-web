@@ -4,19 +4,10 @@ import Badge from '@/components/common/Badge';
 import { buttonClassName } from '@/components/common/Button';
 
 import { fullBleedBackground, PAGE_BG } from './fullBleed';
-import { BookOpenIcon, MessageSquareTextIcon } from './icons';
 import { buttonHover } from './buttonHover';
-import CountUp from './CountUp';
 import Reveal from './Reveal';
 import SectionJumpLink from './SectionJumpLink';
 import TerminalWindow from './TerminalWindow';
-
-// TODO: 숫자는 예시입니다. 로그인 없이 볼 수 있는 공개 통계 API 가 없어서 (백엔드 요청 중) 안 되면 이 영역을 뺍니다.
-// 숫자는 화면에 보일 때 0부터 올라가서 이 값에 멈춰요 (CountUp). API 가 생기면 이 값만 실제 숫자로 바꾸면 돼요.
-const STATS = [
-  { value: 1284, label: '누적 TIL', icon: BookOpenIcon },
-  { value: 3920, label: '게시글', icon: MessageSquareTextIcon },
-];
 
 // 연속 기록 카드의 7일 칸 (brand/50 → brand/600)
 const WEEK = [
@@ -99,7 +90,7 @@ function CodeEditorMock() {
   );
 }
 
-/** 04 · Tag (Soft · Outline): 여백 6/12 · Label/S · radius/full. TODO(common): 공통 Tag 로 교체 */
+/** 04 · Tag (Soft · Outline): 여백 6/12 · Label/S · radius/full. */
 function FloatingTags() {
   const tag =
     'rounded-full px-3 py-1.5 text-[13px] leading-[1.5] font-medium text-(--color-text-brand)';
@@ -136,7 +127,7 @@ function StreakCard() {
   );
 }
 
-// ① 히어로: 소개 문구 + 버튼 + 숫자 / 오른쪽 코드 창
+// ① 히어로: 소개 문구 + 버튼 / 오른쪽 코드 창
 export default function HeroSection() {
   return (
     <section
@@ -206,7 +197,7 @@ export default function HeroSection() {
           </p>
 
           <div className="flex gap-3">
-            {/* TODO: 회원가입 페이지 주소를 로그인 담당(#4)과 확인. 지금은 /login 으로 보냄 */}
+            {/* 메인이 곧 온보딩이라 기존 유저도 누를 수 있어 /login 으로 보냄 (로그인 화면에 회원가입 링크 있음) */}
             {/* 마우스를 올리면 한 단계 진한 색 + 살짝 떠오름 (누를 수 있다는 느낌) */}
             <Link
               href="/login"
@@ -230,30 +221,6 @@ export default function HeroSection() {
               둘러보기
             </SectionJumpLink>
           </div>
-
-          {/* 숫자 2개를 작은 카드로: 아이콘 + 큰 숫자(끝에 보라 +) + 이름 */}
-          <dl className="flex flex-wrap gap-4">
-            {STATS.map(({ value, label, icon: StatIcon }) => (
-              <div
-                key={label}
-                className="flex items-center gap-4 rounded-2xl border border-(--color-border-default) bg-(--color-bg-surface) py-4 pr-6 pl-4 shadow-[inset_0_1px_0_#FFFFFF,0_8px_24px_rgba(97,87,233,0.10)]"
-              >
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-(--color-bg-brand-soft) text-[#6157E9]">
-                  <StatIcon className="size-5.5" />
-                </span>
-                <div className="flex flex-col-reverse">
-                  <dt className="text-[13px] leading-[1.5] font-medium text-(--color-text-muted)">
-                    {label}
-                  </dt>
-                  <dd className="text-[32px] leading-[1.15] font-bold tracking-tight text-(--color-text-primary)">
-                    {/* 카드가 떠오르는 동안 기다렸다가 숫자가 올라가기 시작해요 */}
-                    <CountUp value={value} delay={300} />
-                    <span className="text-[#6157E9]">+</span>
-                  </dd>
-                </div>
-              </div>
-            ))}
-          </dl>
         </Reveal>
 
         {/* 오른쪽: 코드 창 + 떠 있는 카드 2개 (왼쪽보다 조금 늦게, 떠 있는 카드는 더 늦게 등장) */}
