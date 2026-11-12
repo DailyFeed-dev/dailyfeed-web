@@ -1,5 +1,7 @@
 import type { Schemas } from '@/lib/api';
 
+import { sampleActivity, samplePosts, sampleProjects } from './profileSampleData';
+
 const sampleProfile: Schemas['AuthResponse'] = {
   userId: 1,
   name: '테스트',
@@ -48,4 +50,31 @@ export async function deleteMyAvatar() {
   currentProfile = { ...currentProfile, avatarUrl: undefined };
 
   return { ...currentProfile };
+}
+
+export async function getProfileActivity(signal?: AbortSignal) {
+  signal?.throwIfAborted();
+  return structuredClone(sampleActivity);
+}
+
+export async function getMyProfileProjects(
+  signal?: AbortSignal,
+): Promise<Schemas['ProjectResponse'][]> {
+  signal?.throwIfAborted();
+  return structuredClone(sampleProjects);
+}
+
+export async function getMyProfilePosts(
+  page: number,
+  signal?: AbortSignal,
+): Promise<Schemas['PageResponsePostResponse']> {
+  signal?.throwIfAborted();
+  if (!Number.isSafeInteger(page) || page < 0) throw new Error('페이지 번호를 확인해 주세요.');
+  const size = 3;
+  return structuredClone({
+    items: samplePosts.slice(page * size, (page + 1) * size),
+    page,
+    size,
+    totalElements: samplePosts.length,
+  });
 }

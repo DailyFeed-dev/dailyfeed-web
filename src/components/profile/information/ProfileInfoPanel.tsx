@@ -1,23 +1,18 @@
 import type { Schemas } from '@/lib/api';
 
-import ProfileInfoItem from './ProfileInfoItem';
-import { presenceOptions, roleLabels } from './profileOptions';
-
+import ProfileInfoItem from '../shared/components/ProfileInfoItem';
+import {
+  accountLabels,
+  platformLabels,
+  presenceOptions,
+  roleLabels,
+} from '../shared/model/profileOptions';
+// 내 정보 탭을 선택했을 때 본문에 나오는 화면
 type ProfileInfoPanelProps = {
   profile: Schemas['AuthResponse'];
   onEdit: () => void;
 };
 
-const platformLabels = {
-  USER: '일반 사용자',
-  COMPANY_ADMIN: '조직 관리자',
-  PLATFORM_ADMIN: '플랫폼 관리자',
-};
-const accountLabels = {
-  PENDING_APPROVAL: '승인 대기',
-  ACTIVE: '정상 이용 중',
-  REJECTED: '승인 거절',
-};
 export default function ProfileInfoPanel({ profile, onEdit }: ProfileInfoPanelProps) {
   return (
     <section className="mt-8" aria-labelledby="profile-information-title">
@@ -65,7 +60,7 @@ export default function ProfileInfoPanel({ profile, onEdit }: ProfileInfoPanelPr
 
         <div className="space-y-6">
           <section
-            className="rounded-2xl bg-white p-6 sm:min-h-[180px] sm:p-7"
+            className="rounded-2xl bg-white p-6 sm:min-h-45 sm:p-7"
             aria-labelledby="profile-company-title"
           >
             <h3 id="profile-company-title" className="font-semibold">
@@ -76,7 +71,7 @@ export default function ProfileInfoPanel({ profile, onEdit }: ProfileInfoPanelPr
             </p>
           </section>
           <section
-            className="rounded-2xl bg-white p-6 sm:min-h-[268px] sm:p-7"
+            className="rounded-2xl bg-white p-6 sm:min-h-67 sm:p-7"
             aria-labelledby="profile-status-title"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">

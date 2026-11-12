@@ -1,7 +1,9 @@
 import type { Schemas } from '@/lib/api';
 
 import type { ProfileValidationResult } from './profileFormState';
-import { presenceOptions } from './profileOptions';
+import { presenceOptions } from '../../shared/model/profileOptions';
+
+// 상황에 맞는 대응을 하는 부분으로 함수를 통해서 검증하게 한다.
 
 function readText(form: FormData, key: string) {
   const value = form.get(key);

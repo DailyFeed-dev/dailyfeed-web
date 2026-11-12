@@ -1,4 +1,3 @@
-// api에 사용할 데이터 임시 저장
 export const presenceOptions = [
   { value: 'ONLINE', label: '온라인' },
   { value: 'AWAY', label: '자리 비움' },
@@ -16,4 +15,15 @@ export const roleLabels = {
   PLANNER: '기획자',
   DESIGNER: '디자이너',
   DEVELOPER: '개발자',
+};
+
+export const platformLabels = {
+  USER: '일반 사용자',
+  COMPANY_ADMIN: '조직 관리자',
+  PLATFORM_ADMIN: '플랫폼 관리자',
+};
+export const accountLabels = {
+  PENDING_APPROVAL: '승인 대기',
+  ACTIVE: '정상 이용 중',
+  REJECTED: '승인 거절',
 };

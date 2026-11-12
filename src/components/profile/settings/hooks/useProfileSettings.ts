@@ -4,14 +4,18 @@ import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'r
 
 import type { Schemas } from '@/lib/api';
 
-import { removeProfileAvatar, submitProfileAvatar, submitProfileStatus } from './profileActions';
+import {
+  removeProfileAvatar,
+  submitProfileAvatar,
+  submitProfileStatus,
+} from '../model/profileActions';
 import {
   initialProfileFormState,
   type ProfileAction,
   type ProfileActionResult,
   type ProfileFormState,
   type ProfileSubmitAction,
-} from './profileFormState';
+} from '../model/profileFormState';
 
 const submitActions = {
   status: submitProfileStatus,

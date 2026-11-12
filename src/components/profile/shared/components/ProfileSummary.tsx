@@ -3,21 +3,22 @@
 import type { Schemas } from '@/lib/api';
 
 import ProfileAvatar from './ProfileAvatar';
-import { presenceOptions, roleLabels } from './profileOptions';
+import { presenceOptions, roleLabels } from '../model/profileOptions';
 
 type ProfileSummaryProps = {
   profile: Schemas['AuthResponse'];
   onEdit: () => void;
+  showEdit?: boolean;
 };
 
-export default function ProfileSummary({ profile, onEdit }: ProfileSummaryProps) {
+export default function ProfileSummary({ profile, onEdit, showEdit = true }: ProfileSummaryProps) {
   const presenceLabel = presenceOptions.find(
     (option) => option.value === profile.presenceStatus,
   )?.label;
 
   return (
     <section
-      className="relative overflow-hidden rounded-3xl bg-[#6157E9] p-6 text-white sm:flex sm:min-h-[208px] sm:items-center sm:justify-between sm:gap-6 sm:px-8 sm:py-6"
+      className="relative overflow-hidden rounded-3xl bg-[#6157E9] p-6 text-white sm:flex sm:min-h-52 sm:items-center sm:justify-between sm:gap-6 sm:px-8 sm:py-6"
       aria-label="내 프로필 요약"
     >
       <div
@@ -52,13 +53,15 @@ export default function ProfileSummary({ profile, onEdit }: ProfileSummaryProps)
           <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
           {presenceLabel || '상태 정보 없음'}
         </span>
-        <button
-          type="button"
-          onClick={onEdit}
-          className="rounded-lg border border-[#E5E2F3] bg-white px-5 py-3 text-sm font-semibold text-[#454257] hover:bg-[#F3F2F8]"
-        >
-          프로필 설정
-        </button>
+        {showEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="rounded-lg border border-[#E5E2F3] bg-white px-5 py-3 text-sm font-semibold text-[#454257] hover:bg-[#F3F2F8]"
+          >
+            프로필 설정
+          </button>
+        )}
       </div>
     </section>
   );
