@@ -10,7 +10,10 @@ export type IconName =
   | 'check'
   | 'send'
   | 'more'
-  | 'chevron-down';
+  | 'chevron-down'
+  | 'message'
+  | 'warning'
+  | 'refresh';
 
 type IconProps = Omit<ComponentProps<'span'>, 'children'> & {
   name: IconName;
