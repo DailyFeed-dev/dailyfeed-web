@@ -11,12 +11,13 @@ import {
   type SubmitEvent,
 } from 'react';
 
+import { getBlockedAccountMessage } from '@/components/auth/accountStatus';
 import { getAuthErrorMessage } from '@/components/auth/authErrorMessage';
 import AuthFormError from '@/components/auth/AuthFormError';
 import { validateEmail, validateRequired } from '@/components/auth/validation';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
-import { tokenStorage, type Schemas } from '@/lib/api';
+import { tokenStorage } from '@/lib/api';
 import { login } from '@/services/authService';
 
 type Field = 'email' | 'password';
@@ -30,16 +31,6 @@ const VALIDATORS: Record<Field, (value: string) => string | undefined> = {
   // 로그인에서는 비밀번호 길이 규칙을 검사하지 않습니다. (회원가입에서 검사)
   password: (value) => validateRequired(value, '비밀번호를 입력해 주세요.'),
 };
-
-type AccountStatus = NonNullable<Schemas['AuthResponse']['accountStatus']>;
-
-// 로그인 API 는 성공했지만 아직 서비스를 쓸 수 없는 계정 상태와 안내 문구입니다.
-// 'ACTIVE' 만 로그인을 허용하고, 여기에 없는 값은 UNKNOWN_ACCOUNT_STATUS_MESSAGE 를 보여줍니다.
-const BLOCKED_ACCOUNT_MESSAGES: Partial<Record<AccountStatus, string>> = {
-  PENDING_APPROVAL: '가입 승인 대기 중인 계정이에요. 승인 후 로그인할 수 있어요.',
-  REJECTED: '가입이 승인되지 않은 계정이에요.',
-};
-const UNKNOWN_ACCOUNT_STATUS_MESSAGE = '로그인할 수 없는 계정 상태예요. 관리자에게 문의해 주세요.';
 
 /**
  * 로그인 입력 폼입니다. 입력값·에러 상태를 다루므로 클라이언트 컴포넌트입니다.
@@ -112,7 +103,8 @@ export default function LoginForm() {
     try {
       const auth = await login({ email: values.email.trim(), password: values.password });
 
-      if (auth.accountStatus === 'ACTIVE') {
+      const blockedMessage = getBlockedAccountMessage(auth.accountStatus);
+      if (!blockedMessage) {
         // 뒤로 가기로 로그인 화면에 돌아오지 않도록 push 대신 replace 로 이동합니다.
         // 이동이 끝날 때까지 버튼은 "로그인 중..." 상태로 둡니다.
         shouldResetRef.current = true;
@@ -122,10 +114,7 @@ export default function LoginForm() {
 
       // 승인 대기·거절·알 수 없는 상태의 계정은 로그인 상태로 두지 않습니다.
       tokenStorage.clear();
-      setFormError(
-        (auth.accountStatus && BLOCKED_ACCOUNT_MESSAGES[auth.accountStatus]) ||
-          UNKNOWN_ACCOUNT_STATUS_MESSAGE,
-      );
+      setFormError(blockedMessage);
     } catch (error) {
       setFormError(getAuthErrorMessage(error));
     }
