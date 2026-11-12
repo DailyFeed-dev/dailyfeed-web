@@ -1,5 +1,5 @@
 import Avatar from '@/components/common/Avatar';
-import type { Post } from '@/services/postService';
+import { getPostAuthor, type Post } from '@/services/postService';
 import BoardCategoryBadge from '../atoms/BoardCategoryBadge';
 import { formatDateTime } from '../boardFormat';
 import BoardPostLikeButton from '../organisms/BoardPostLikeButton';
@@ -8,7 +8,7 @@ import BoardProfileTrigger from '../organisms/BoardProfileTrigger';
 // 게시글 상세 카드 — 제목, 작성자(누르면 프로필 팝오버), 본문, 태그, 좋아요
 // isMe: 내가 쓴 글이면 작성자를 눌러도 프로필 팝오버가 열리지 않습니다.
 export default function BoardDetailPost({ post, isMe = false }: { post: Post; isMe?: boolean }) {
-  const author = { id: post.authorId, name: post.authorName };
+  const author = getPostAuthor(post);
 
   return (
     <article className="rounded-2xl border border-zinc-200 bg-white p-8">
@@ -21,9 +21,9 @@ export default function BoardDetailPost({ post, isMe = false }: { post: Post; is
           triggerClassName="-my-1 -ml-1.5 gap-3 rounded-[10px] py-1 pr-3 pl-1.5 transition-colors hover:bg-[#f0eefe]/60"
           openClassName="bg-[#f0eefe] hover:bg-[#f0eefe]"
         >
-          <Avatar name={post.authorName} size={40} color="#1f1d2b" />
+          <Avatar name={author.name} src={author.avatarUrl} size={40} color="#1f1d2b" />
           <span className="flex flex-col gap-0.5 leading-[1.4]">
-            <span className="text-[15px] font-semibold text-[#1f1d2b]">{post.authorName}</span>
+            <span className="text-[15px] font-semibold text-[#1f1d2b]">{author.name}</span>
             <span className="text-[13px] text-[#9a99a8]">{formatDateTime(post.createdAt)}</span>
           </span>
         </BoardProfileTrigger>
