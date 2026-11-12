@@ -10,6 +10,7 @@ export type IconName =
   | 'check'
   | 'send'
   | 'more'
+  | 'more-vertical'
   | 'chevron-down'
   | 'message'
   | 'warning'
