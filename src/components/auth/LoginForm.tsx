@@ -11,9 +11,9 @@ import {
   type SubmitEvent,
 } from 'react';
 
-import AuthButton from '@/components/auth/AuthButton';
-import AuthInput from '@/components/auth/AuthInput';
 import { validateEmail, validateRequired } from '@/components/auth/validation';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
 import { ApiError, tokenStorage, type Schemas } from '@/lib/api';
 import { login } from '@/services/authService';
 
@@ -151,7 +151,7 @@ export default function LoginForm() {
   return (
     <form noValidate onSubmit={handleSubmit}>
       <div className="flex flex-col gap-[25px]">
-        <AuthInput
+        <Input
           ref={emailRef}
           id={emailId}
           name="email"
@@ -163,7 +163,7 @@ export default function LoginForm() {
           onChange={handleChange}
           error={errors.email}
         />
-        <AuthInput
+        <Input
           ref={passwordRef}
           id={passwordId}
           name="password"
@@ -186,14 +186,20 @@ export default function LoginForm() {
         </Link>
       </div>
 
-      <AuthButton type="submit" disabled={pending} className="mt-[30px]">
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        disabled={pending}
+        className="mt-[30px] w-full"
+      >
         {pending ? '로그인 중...' : '로그인'}
-      </AuthButton>
+      </Button>
 
       {/* 스크린 리더가 문구를 바로 읽을 수 있도록 role="alert" 영역은 항상 렌더링합니다. */}
       <div role="alert">
         {formError && (
-          <p className="mt-4 rounded-[10px] bg-(--auth-danger-soft) px-4 py-3 text-center text-sm text-(--auth-danger)">
+          <p className="mt-4 rounded-[10px] bg-(--color-bg-danger-soft) px-4 py-3 text-center text-sm text-(--color-text-danger)">
             {formError}
           </p>
         )}
