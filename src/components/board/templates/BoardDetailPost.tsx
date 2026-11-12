@@ -48,7 +48,7 @@ export default function BoardDetailPost({ post, isMe = false }: { post: Post; is
         </ul>
       )}
 
-      <div className="mt-6 border-t border-zinc-200 pt-5">
+      <div className="mt-6 flex justify-center border-t border-zinc-200 pt-5">
         <BoardPostLikeButton postId={post.id ?? 0} initialLikeCount={post.likeCount ?? 0} />
       </div>
     </article>
