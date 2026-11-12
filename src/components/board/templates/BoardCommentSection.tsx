@@ -1,78 +1,55 @@
-import BoardCommentItem, { type BoardCommentData } from '../organisms/BoardCommentItem';
+'use client';
 
-// 임시 데이터입니다. 댓글 API 연결 후 props 로 받도록 바꿔 주세요.
-const COMMENTS: BoardCommentData[] = [
-  {
-    id: 1,
-    author: '박서연',
-    createdAt: '10분 전',
-    content: '체크리스트 항목이 실무에 바로 쓰기 좋게 정리되어 있네요. 우리 팀 킥오프에 써볼게요.',
-    likes: 3,
-    replies: [
-      {
-        id: 11,
-        author: '서지연',
-        createdAt: '5분 전',
-        content: '도움이 되었다니 다행이에요! 써보시고 부족한 부분 알려 주세요.',
-        likes: 1,
-      },
-    ],
-  },
-  {
-    id: 2,
-    author: '최동하',
-    createdAt: '1시간 전',
-    content: '역할과 책임 부분이 특히 도움이 됐어요. 감사합니다!',
-    likes: 2,
-  },
-  {
-    id: 3,
-    author: '이상민',
-    createdAt: '어제',
-    content: '일정 합의 항목은 노션 템플릿으로도 공유해 주시면 좋겠어요.',
-    likes: 0,
-  },
-];
+import { ApiError } from '@/lib/api';
+import { useApiData } from '@/hooks/useApiData';
+import { getCurrentUser } from '@/services/authService';
+import { getComments } from '@/services/commentService';
+import BoardCommentThread from './BoardCommentThread';
 
-// 댓글 영역 — 제목, 입력창, 목록, 더보기
-export default function BoardCommentSection() {
+// 댓글 영역 — 제목, 입력창, 목록. 댓글과 내 정보를 가져온 뒤 BoardCommentThread 가 보여 줍니다.
+export default function BoardCommentSection({ postId }: { postId: number }) {
+  const comments = useApiData(`comments:${postId}`, (signal) => getComments(postId, signal));
+  // 로그인하지 않았으면 이 요청이 401 로 실패합니다. 그 경우 댓글은 읽을 수만 있습니다.
+  const me = useApiData('me', (signal) => getCurrentUser(signal));
+  const loading = comments.loading || me.loading;
+
   return (
     <section aria-label="댓글" className="mt-10">
-      <h2 className="text-base leading-normal font-semibold text-[#201D2B]">
-        댓글 <span className="text-indigo-600">4</span>
-      </h2>
+      <h2 className="text-base leading-normal font-semibold text-[#201D2B]">댓글</h2>
 
-      <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-indigo-200 bg-white p-4">
-        <textarea
-          aria-label="댓글 입력"
-          rows={2}
-          placeholder="댓글을 입력해 주세요."
-          className="w-full resize-none bg-transparent text-sm leading-[1.6] text-[#2E2D3A] outline-none placeholder:text-[#74717F]"
-        />
-        <div className="flex items-center justify-end">
-          <button
-            type="button"
-            className="rounded-full bg-indigo-600 px-4 py-1.5 text-[13px] leading-normal font-semibold text-white hover:bg-indigo-700"
-          >
-            댓글 작성
-          </button>
+      {loading && (
+        <div role="status" aria-label="댓글을 불러오는 중" className="mt-4 animate-pulse">
+          <div className="h-[88px] rounded-2xl bg-zinc-100" />
+          <div className="mt-6 flex flex-col gap-6">
+            {[0, 1].map((index) => (
+              <div key={index} className="flex gap-3">
+                <span className="size-9 shrink-0 rounded-full bg-zinc-200" />
+                <div className="flex flex-1 flex-col gap-2 pt-1">
+                  <span className="h-3 w-24 rounded bg-zinc-200" />
+                  <span className="h-3.5 w-3/4 rounded bg-zinc-100" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      <ul className="mt-6 flex flex-col gap-6">
-        {COMMENTS.map((comment) => (
-          <BoardCommentItem key={comment.id} comment={comment} />
-        ))}
-      </ul>
+      {!loading && comments.error !== undefined && (
+        <p className="py-10 text-center text-sm text-[#74717F]">
+          {comments.error instanceof ApiError
+            ? comments.error.message
+            : '댓글을 불러오지 못했어요.'}
+        </p>
+      )}
 
-      <div className="mt-8 flex justify-center">
-        <button
-          type="button"
-          className="rounded-full border border-zinc-300 bg-white px-5 py-2 text-[13px] leading-normal font-semibold text-[#201D2B] hover:bg-zinc-50"
-        >
-          댓글 더보기 ⌄
-        </button>
-      </div>
+      {!loading && comments.error === undefined && (
+        <BoardCommentThread
+          key={postId}
+          postId={postId}
+          initialComments={comments.data ?? []}
+          meId={me.data?.id}
+        />
+      )}
     </section>
   );
 }
