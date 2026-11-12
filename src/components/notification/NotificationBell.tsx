@@ -10,8 +10,9 @@ export default function NotificationBell() {
 
   useEffect(() => {
     const loadUnreadCount = async () => {
-      const data = await notificationService.fetchNotifications();
-      setUnreadCount(data.length);
+      // 🚀 무거운 전체 목록 대신, 숫자만 가볍게 가져오는 전용 API로 변경!
+      const count = await notificationService.getUnreadCount();
+      setUnreadCount(count);
     };
 
     // 1. 처음 마운트될 때 개수 불러오기
