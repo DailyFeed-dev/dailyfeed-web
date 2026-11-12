@@ -92,12 +92,10 @@ export async function logout(): Promise<void> {
 }
 
 /**
- * 지금 로그인한 사용자(id, name)를 돌려줍니다. 로그인하지 않았으면 ApiError(401)를 던집니다.
+ * 지금 로그인한 사용자(id, name, avatarUrl)를 돌려줍니다. 댓글 작성자와 같은 모양(AuthorResponse)이라 바로 비교할 수 있습니다. 로그인하지 않았으면 ApiError(401)를 던집니다.
  * 작성자 id 와 비교해 "내 글/내 댓글"을 구분할 때 씁니다.
  */
-export async function getCurrentUser(
-  signal?: AbortSignal,
-): Promise<{ id?: number; name?: string }> {
+export async function getCurrentUser(signal?: AbortSignal): Promise<Schemas['AuthorResponse']> {
   const me = await api.get<Schemas['AuthResponse']>('/api/v1/auth/me', { signal });
-  return { id: me.userId, name: me.name };
+  return { id: me.userId, name: me.name, avatarUrl: me.avatarUrl };
 }

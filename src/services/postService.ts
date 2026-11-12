@@ -45,3 +45,15 @@ export type CreatePostBody = Schemas['CreatePostRequest'];
 export function createPost(body: CreatePostBody, signal?: AbortSignal) {
   return api.post<Post>('/api/v1/posts', body, { signal });
 }
+
+export type PostLike = Schemas['LikeResponse'];
+
+/** 내가 이 글을 좋아요했는지. 로그인하지 않았으면 ApiError(401) */
+export function getPostLikedByMe(postId: number, signal?: AbortSignal) {
+  return api.get<Schemas['LikedMeResponse']>(`/api/v1/posts/${postId}/likes/me`, { signal });
+}
+
+/** 글 좋아요 토글. 안 눌렀으면 켜고, 눌렀으면 취소합니다. 바뀐 상태(liked)와 좋아요 수를 돌려줍니다. */
+export function togglePostLike(postId: number, signal?: AbortSignal) {
+  return api.post<PostLike>(`/api/v1/posts/${postId}/likes`, undefined, { signal });
+}
