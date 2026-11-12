@@ -109,7 +109,9 @@ export default function ChatRoomMenu({ peerName, relationState }: ChatRoomMenuPr
       <Modal
         open={confirmAction === 'block'}
         title={`${peerName}님을 차단할까요?`}
-        body={'차단하면 서로 메시지를 보낼 수 없어요.\n차단은 이 메뉴에서 언제든 풀 수 있어요.'}
+        body={
+          '차단하면 친구에서도 삭제되고, 서로 메시지를 보낼 수 없어요.\n차단은 이 메뉴에서 언제든 풀 수 있어요.'
+        }
         confirmLabel="차단"
         cancelLabel="취소"
         onConfirm={runConfirmedAction}

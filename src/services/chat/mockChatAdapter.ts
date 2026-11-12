@@ -287,6 +287,7 @@ const friendPort: ChatFriendPort = {
     await wait();
     requirePeer(userId);
     blockedIds.add(userId);
+    friendIds.delete(userId);
   },
 
   async unblockUser(userId) {
