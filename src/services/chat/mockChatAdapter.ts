@@ -282,6 +282,17 @@ const friendPort: ChatFriendPort = {
     await wait();
     if (!friendIds.delete(userId)) throw new ApiError('친구 목록에 없는 사용자입니다.', 404);
   },
+
+  async blockUser(userId) {
+    await wait();
+    requirePeer(userId);
+    blockedIds.add(userId);
+  },
+
+  async unblockUser(userId) {
+    await wait();
+    if (!blockedIds.delete(userId)) throw new ApiError('차단한 사용자가 아닙니다.', 404);
+  },
 };
 
 const userPort: ChatUserPort = {

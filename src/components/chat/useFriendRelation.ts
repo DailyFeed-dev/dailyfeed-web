@@ -78,9 +78,29 @@ export function useFriendRelation(
   const accept = () =>
     runAction(() => friendService.acceptFriendRequest(peerId), '친구 요청을 수락하지 못했어요.');
 
+  const removeFriend = () =>
+    runAction(() => friendService.removeFriend(peerId), '친구를 삭제하지 못했어요.');
+
+  const block = () => runAction(() => friendService.blockUser(peerId), '차단하지 못했어요.');
+
+  const unblock = () =>
+    runAction(() => friendService.unblockUser(peerId), '차단을 해제하지 못했어요.');
+
   const retryLoad = () => load();
 
-  return { relation, loadFailed, busy, actionError, request, cancel, accept, retryLoad };
+  return {
+    relation,
+    loadFailed,
+    busy,
+    actionError,
+    request,
+    cancel,
+    accept,
+    removeFriend,
+    block,
+    unblock,
+    retryLoad,
+  };
 }
 
 export type FriendRelationState = ReturnType<typeof useFriendRelation>;
