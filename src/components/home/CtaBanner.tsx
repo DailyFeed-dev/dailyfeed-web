@@ -31,27 +31,15 @@ export default function CtaBanner() {
           <h2 className="text-[32px] leading-tight font-bold sm:text-[40px]">
             오늘의 첫 기록을 남겨 보세요
           </h2>
-          {/* ⚠️ 회원가입은 관리자 승인제예요. "1분" 문구는 승인제에 맞게 고칠 예정 (보류) */}
           <p className="text-[16px] leading-[1.5] font-normal opacity-90">
-            가입은 1분이면 끝나요. 작은 TIL 하나가 성장의 시작이에요.
+            작은 TIL 하나, 나눈 정보 하나가 성장의 시작이에요.
           </p>
         </div>
 
-        {/* 시안은 흰 버튼 · 투명 버튼이지만, 공통 Button 에 보라 배경용 버튼이 없어 Soft · Outline 을 씁니다. */}
+        {/* 시안은 투명 버튼이지만, 공통 Button 에 보라 배경용 버튼이 없어 Outline 을 씁니다. */}
         <div className="relative flex shrink-0 gap-3">
-          {/* 기존 유저도 누를 수 있어 /login 으로 보냄 (로그인 화면에 회원가입 링크 있음) */}
-          {/* 마우스를 올리면 한 단계 진한 색 + 살짝 떠오름 (누를 수 있다는 느낌) */}
-          <Link
-            href="/login"
-            className={buttonClassName({
-              variant: 'soft',
-              size: 'lg',
-              className: buttonHover.soft,
-            })}
-          >
-            시작하기
-          </Link>
-          {/* FAQ 화면으로 이동 (누구나 볼 수 있어 로그인 필요 없음) */}
+          {/* FAQ 화면으로 이동 (누구나 볼 수 있어 로그인 필요 없음)
+              마우스를 올리면 한 단계 진한 색 + 살짝 떠오름 (누를 수 있다는 느낌) */}
           <Link
             href="/faq"
             className={buttonClassName({
