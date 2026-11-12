@@ -1,7 +1,7 @@
 import { io, type Socket } from 'socket.io-client';
 
-import type { ChatSyncSignal, ChatTypingFeed } from '@/services/chat/pollingChatRealtime';
-import type { ChatUserId } from '@/types/chat';
+import type { ChatSyncSignal } from '@/services/chat/pollingChatRealtime';
+import type { ChatTypingFeed, ChatUserId } from '@/types/chat';
 
 export type ChatJoinPayload = {
   accessToken: string;

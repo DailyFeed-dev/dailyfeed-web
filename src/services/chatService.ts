@@ -6,10 +6,9 @@ import {
   fixedIntervalSignal,
   noTypingFeed,
   type ChatSyncSignal,
-  type ChatTypingFeed,
 } from '@/services/chat/pollingChatRealtime';
 import { createSocketChatSignal, type ChatJoinPayload } from '@/services/chat/socketChatSignal';
-import type { ChatAdapter } from '@/types/chat';
+import type { ChatAdapter, ChatTypingFeed } from '@/types/chat';
 
 const POLL_INTERVAL_MS = 3000;
 const SOCKET_SAFETY_INTERVAL_MS = 10000;

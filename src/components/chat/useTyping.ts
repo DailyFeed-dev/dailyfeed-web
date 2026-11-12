@@ -31,13 +31,13 @@ export function usePeerTyping(peerId: ChatUserId) {
 }
 
 export function useTypingSender(peerId: ChatUserId, enabled: boolean) {
-  const isTyping = useRef(false);
+  const sentTyping = useRef(false);
   const lastTypingSentAt = useRef(0);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const send = useCallback(
     (typing: boolean) => {
-      isTyping.current = typing;
+      sentTyping.current = typing;
       typingService.sendTyping(peerId, typing).catch(() => undefined);
     },
     [peerId],
@@ -46,7 +46,7 @@ export function useTypingSender(peerId: ChatUserId, enabled: boolean) {
   const stopTyping = useCallback(() => {
     if (idleTimer.current) clearTimeout(idleTimer.current);
     idleTimer.current = null;
-    if (isTyping.current) send(false);
+    if (sentTyping.current) send(false);
   }, [send]);
 
   const onDraftChange = (text: string) => {
@@ -55,13 +55,17 @@ export function useTypingSender(peerId: ChatUserId, enabled: boolean) {
       return;
     }
     const now = Date.now();
-    if (!isTyping.current || now - lastTypingSentAt.current >= RESEND_TYPING_EVERY_MS) {
+    if (!sentTyping.current || now - lastTypingSentAt.current >= RESEND_TYPING_EVERY_MS) {
       lastTypingSentAt.current = now;
       send(true);
     }
     if (idleTimer.current) clearTimeout(idleTimer.current);
     idleTimer.current = setTimeout(stopTyping, STOP_TYPING_AFTER_IDLE_MS);
   };
+
+  useEffect(() => {
+    if (!enabled) stopTyping();
+  }, [enabled, stopTyping]);
 
   useEffect(() => stopTyping, [stopTyping]);
 
