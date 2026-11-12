@@ -3,7 +3,7 @@ import type { BoardCategory } from '../boardCategories';
 import { boardListHref } from '../boardUrl';
 
 const BUTTON =
-  'inline-flex h-9 items-center rounded-full border border-zinc-300 bg-white px-4 text-[13px] leading-[1.5] font-semibold text-[#1F1D2B] hover:bg-zinc-50';
+  'inline-flex h-9 items-center rounded-full border border-zinc-300 bg-white px-4 text-[13px] leading-normal font-semibold text-[#1F1D2B] hover:bg-zinc-50';
 const DISABLED = `${BUTTON} pointer-events-none opacity-40`;
 
 // 게시글 목록 하단 — 이전 / 현재 페이지 / 다음

@@ -33,10 +33,10 @@ export default function BoardCommentItem({
           <span className="text-[13px] leading-[1.55] font-semibold text-[#201D2B]">
             {comment.author}
           </span>
-          <span className="text-xs leading-[1.5] text-[#74717F]">{comment.createdAt}</span>
+          <span className="text-xs leading-normal text-[#74717F]">{comment.createdAt}</span>
         </div>
         <p className="mt-1 text-[15px] leading-[1.7] text-[#2E2D3A]">{comment.content}</p>
-        <div className="mt-1.5 flex items-center gap-3 text-xs leading-[1.5] text-[#74717F]">
+        <div className="mt-1.5 flex items-center gap-3 text-xs leading-normal text-[#74717F]">
           <button type="button" className="hover:text-[#201D2B]">
             ♡ {comment.likes}
           </button>
@@ -51,7 +51,7 @@ export default function BoardCommentItem({
           <div className="mt-3">
             <button
               type="button"
-              className="text-xs leading-[1.5] font-medium text-indigo-600 hover:text-indigo-700"
+              className="text-xs leading-normal font-medium text-indigo-600 hover:text-indigo-700"
             >
               ▾ 답글 {replies.length}개 숨기기
             </button>

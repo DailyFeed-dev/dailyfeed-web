@@ -21,7 +21,7 @@ export default function BoardWriteActions() {
         </button>
         <button
           type="button"
-          className="h-[42px] w-[113px] rounded-[20px] bg-[#6157E9] text-[13px] leading-[1.5] font-medium text-white transition-colors hover:bg-[#4B3FD6]"
+          className="h-[42px] w-[113px] rounded-[20px] bg-[#6157E9] text-[13px] leading-normal font-medium text-white transition-colors hover:bg-[#4B3FD6]"
         >
           글 등록하기
         </button>

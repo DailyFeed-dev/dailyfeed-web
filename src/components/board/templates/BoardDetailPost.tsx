@@ -7,7 +7,7 @@ export default function BoardDetailPost({ post }: { post: Post }) {
   return (
     <article className="rounded-2xl border border-zinc-200 bg-white p-8">
       {post.category && (
-        <span className="inline-block rounded-full bg-indigo-50 px-2.5 py-0.5 text-[13px] leading-[1.5] font-medium text-indigo-600">
+        <span className="inline-block rounded-full bg-indigo-50 px-2.5 py-0.5 text-[13px] leading-normal font-medium text-indigo-600">
           {getCategoryLabel(post.category)}
         </span>
       )}
@@ -27,7 +27,7 @@ export default function BoardDetailPost({ post }: { post: Post }) {
           {post.tags.map((tag) => (
             <li
               key={tag}
-              className="rounded-full bg-zinc-100 px-3 py-1 text-xs leading-[1.5] text-[#6C6980]"
+              className="rounded-full bg-zinc-100 px-3 py-1 text-xs leading-normal text-[#6C6980]"
             >
               #{tag}
             </li>
@@ -38,7 +38,7 @@ export default function BoardDetailPost({ post }: { post: Post }) {
       <div className="mt-6 border-t border-zinc-200 pt-5">
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-[13px] leading-[1.5] font-semibold text-indigo-600 hover:bg-indigo-100"
+          className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-[13px] leading-normal font-semibold text-indigo-600 hover:bg-indigo-100"
         >
           👍 좋아요 {post.likeCount ?? 0}
         </button>

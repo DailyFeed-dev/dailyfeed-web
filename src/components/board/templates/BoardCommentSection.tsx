@@ -38,7 +38,7 @@ const COMMENTS: BoardCommentData[] = [
 export default function BoardCommentSection() {
   return (
     <section aria-label="댓글" className="mt-10">
-      <h2 className="text-base leading-[1.5] font-semibold text-[#201D2B]">
+      <h2 className="text-base leading-normal font-semibold text-[#201D2B]">
         댓글 <span className="text-indigo-600">4</span>
       </h2>
 
@@ -52,7 +52,7 @@ export default function BoardCommentSection() {
         <div className="flex items-center justify-end">
           <button
             type="button"
-            className="rounded-full bg-indigo-600 px-4 py-1.5 text-[13px] leading-[1.5] font-semibold text-white hover:bg-indigo-700"
+            className="rounded-full bg-indigo-600 px-4 py-1.5 text-[13px] leading-normal font-semibold text-white hover:bg-indigo-700"
           >
             댓글 작성
           </button>
@@ -68,7 +68,7 @@ export default function BoardCommentSection() {
       <div className="mt-8 flex justify-center">
         <button
           type="button"
-          className="rounded-full border border-zinc-300 bg-white px-5 py-2 text-[13px] leading-[1.5] font-semibold text-[#201D2B] hover:bg-zinc-50"
+          className="rounded-full border border-zinc-300 bg-white px-5 py-2 text-[13px] leading-normal font-semibold text-[#201D2B] hover:bg-zinc-50"
         >
           댓글 더보기 ⌄
         </button>
