@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Badge from '@/components/common/Badge';
 import Button from '@/components/common/Button';
 import Icon from '@/components/common/Icon';
+import type { Schemas } from '@/lib/api';
 import { getProfileActivity } from '@/services/profileService';
 
 import ProfileLearningCalendar from './components/ProfileLearningCalendar';
@@ -15,20 +16,19 @@ import {
   getProfileMonth,
   getProfileProjectName,
   reflectionLabels,
-  type ProfileReflection,
 } from '../profileActivity';
 import { useProfileResource } from '../shared/hooks/useProfileResource';
 
 //학습 회고 탭의 전채 본문을 조합하는 컴포넌트 즉 TIL의 본문
 
 export default function ProfileReflections() {
-  const [selected, setSelected] = useState<ProfileReflection | null>(null);
+  const [selected, setSelected] = useState<Schemas['ReflectionResponse'] | null>(null);
   const [showAll, setShowAll] = useState(false);
   const { data, isLoading, error, retry } = useProfileResource('reflections', getProfileActivity);
   const month = data?.month ?? '2026-11';
   const records = data
     ? [...data.reflections].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        (a, b) => (Date.parse(b.createdAt ?? '') || 0) - (Date.parse(a.createdAt ?? '') || 0),
       )
     : [];
 
@@ -44,7 +44,7 @@ export default function ProfileReflections() {
       ) : selected ? (
         <ProfileRecordDetail
           record={selected}
-          category={reflectionLabels[selected.kind] || '학습 회고'}
+          category={reflectionLabels[selected.kind ?? ''] || '학습 회고'}
           onBack={() => setSelected(null)}
         />
       ) : (
@@ -102,7 +102,7 @@ export default function ProfileReflections() {
                           <p className="mt-2 font-semibold wrap-anywhere">{record.title}</p>
                           <p className="mt-1 text-xs text-(--color-text-muted)">
                             {getProfileProjectName(data.projects, record.projectId)} ·{' '}
-                            {reflectionLabels[record.kind] || '학습 회고'}
+                            {reflectionLabels[record.kind ?? ''] || '학습 회고'}
                           </p>
                         </div>
                         <Icon

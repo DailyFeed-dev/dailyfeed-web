@@ -1,6 +1,6 @@
 import type { Schemas } from '@/lib/api';
-import type { ProfilePostPage } from '@/components/profile/profileActivity';
-import { sampleActivity, samplePosts } from '@/components/profile/profileSampleData';
+
+import { sampleActivity, samplePosts, sampleProjects } from './profileSampleData';
 
 const sampleProfile: Schemas['AuthResponse'] = {
   userId: 1,
@@ -57,10 +57,17 @@ export async function getProfileActivity(signal?: AbortSignal) {
   return structuredClone(sampleActivity);
 }
 
+export async function getMyProfileProjects(
+  signal?: AbortSignal,
+): Promise<Schemas['ProjectResponse'][]> {
+  signal?.throwIfAborted();
+  return structuredClone(sampleProjects);
+}
+
 export async function getMyProfilePosts(
   page: number,
   signal?: AbortSignal,
-): Promise<ProfilePostPage> {
+): Promise<Schemas['PageResponsePostResponse']> {
   signal?.throwIfAborted();
   if (!Number.isSafeInteger(page) || page < 0) throw new Error('페이지 번호를 확인해 주세요.');
   const size = 3;

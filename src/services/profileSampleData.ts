@@ -1,6 +1,7 @@
-import type { ProfileActivity, ProfileRecord } from './profileActivity';
+import type { Schemas } from '@/lib/api';
+
 // api 연결하기 전까지 사용하는 샘플 데이터
-const projects = [
+export const sampleProjects: Schemas['ProjectResponse'][] = [
   { id: 1, name: 'DailyFeed', description: '프론트엔드 개발' },
   { id: 2, name: '프론트엔드 스터디', description: '함께 공부하고 기록하는 공간' },
 ];
@@ -20,12 +21,11 @@ const titles = [
   '프로젝트 첫 화면을 만들었습니다',
 ];
 
-export const samplePosts: ProfileRecord[] = titles.map((title, index) => {
-  const project = projects[index % 2];
+export const samplePosts: Schemas['PostResponse'][] = titles.map((title, index) => {
+  const project = sampleProjects[index % 2];
   return {
     id: index + 1,
     projectId: project.id,
-    projectName: project.name,
     title,
     body: `${title}\n\n이번 작업에서 확인한 내용을 정리했습니다. 화면, 입력값, 상태가 어떻게 이어지는지 살펴보고 다음 작업에 적용합니다.`,
     createdAt: `2026-11-${String(11 - Math.floor(index / 2)).padStart(2, '0')}T10:00:00+09:00`,
@@ -44,10 +44,10 @@ const dailyCounts = new Map([
   ['2026-11-11', 1],
 ]);
 
-export const sampleActivity: ProfileActivity = {
+export const sampleActivity = {
   month: '2026-11',
   postCount: samplePosts.length,
-  projects,
+  projects: sampleProjects,
   reflections: Array.from({ length: 8 }, (_, index) => ({
     id: index + 101,
     projectId: (index % 2) + 1,
@@ -58,15 +58,18 @@ export const sampleActivity: ProfileActivity = {
     ][index % 3],
     body: '오늘 배운 내용과 어려웠던 점을 기록합니다.\n\n다음에는 문제를 더 작은 단계로 나눠 직접 확인하며 진행하겠습니다.',
     createdAt: `2026-11-${String(10 - index).padStart(2, '0')}T18:00:00+09:00`,
-    kind: ['DAILY', 'WEEKLY', 'TEAM'][index % 3],
-  })),
+    kind: (['DAILY', 'WEEKLY', 'TEAM'] as const)[index % 3],
+  })) satisfies Schemas['ReflectionResponse'][],
   tilStats: {
     totalTilCount: 14,
     consecutiveWritingDays: 4,
     thisWeekWriteCount: 4,
     last13WeeksDailyWriteCounts: Array.from({ length: 91 }, (_, index) => {
       const date = new Date(Date.UTC(2026, 10, 11 - (90 - index))).toISOString().slice(0, 10);
-      return { date, count: dailyCounts.get(date) ?? 0 };
+      return {
+        date,
+        count: dailyCounts.get(date) ?? 0,
+      } satisfies Schemas['DailyWriteCountResponse'];
     }),
-  },
+  } satisfies Schemas['MyStatsResponse'],
 };

@@ -1,9 +1,14 @@
 import Button from '@/components/common/Button';
 import Badge from '@/components/common/Badge';
+import type { Schemas } from '@/lib/api';
 
-import { formatProfileDate, type ProfileRecord } from '../../profileActivity';
+import { formatProfileDate } from '../../profileActivity';
 
-type Props = { record: ProfileRecord; category: string; onBack: () => void };
+type Props = {
+  record: Schemas['PostResponse'] | Schemas['ReflectionResponse'];
+  category: string;
+  onBack: () => void;
+};
 
 // posts에서 글을 눌렀을 대 보여주는 상세 화면 UI
 

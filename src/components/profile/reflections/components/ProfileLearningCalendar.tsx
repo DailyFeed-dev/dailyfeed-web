@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import type { ProfileTilStats } from '../../profileActivity';
+import type { Schemas } from '@/lib/api';
 
-type Props = { stats: ProfileTilStats; month: string };
+type Props = { stats: Schemas['MyStatsResponse']; month: string };
 const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
 
 export default function ProfileLearningCalendar({ stats, month }: Props) {
@@ -10,7 +10,9 @@ export default function ProfileLearningCalendar({ stats, month }: Props) {
   const [year, monthNumber] = month.split('-').map(Number);
   const offset = new Date(Date.UTC(year, monthNumber - 1, 1)).getUTCDay();
   const days = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
-  const counts = new Map(stats.last13WeeksDailyWriteCounts.map((day) => [day.date, day.count]));
+  const counts = new Map(
+    (stats.last13WeeksDailyWriteCounts ?? []).map((day) => [day.date, day.count ?? 0]),
+  );
 
   return (
     <section className="rounded-2xl bg-white p-6 sm:p-7" aria-labelledby="profile-calendar-title">
@@ -21,7 +23,7 @@ export default function ProfileLearningCalendar({ stats, month }: Props) {
         <p className="text-xs text-(--color-text-muted)">{year}</p>
       </div>
       <p className="mt-2 text-xs text-(--color-text-muted)">
-        TIL 작성 수 기준 · 총 {stats.totalTilCount}개
+        TIL 작성 수 기준 · 총 {stats.totalTilCount ?? 0}개
       </p>
       <div className="mt-5 grid grid-cols-7 gap-2 text-center text-xs">
         {weekdays.map((day) => (
@@ -56,7 +58,7 @@ export default function ProfileLearningCalendar({ stats, month }: Props) {
           : '날짜를 누르면 해당 날짜의 TIL 작성 수가 보입니다.'}
       </p>
       <p className="mt-2 text-xs text-(--color-text-muted)">
-        연속 {stats.consecutiveWritingDays}일 · 이번 주 {stats.thisWeekWriteCount}개
+        연속 {stats.consecutiveWritingDays ?? 0}일 · 이번 주 {stats.thisWeekWriteCount ?? 0}개
       </p>
     </section>
   );

@@ -1,35 +1,6 @@
-export type ProfileView = 'overview' | 'information' | 'posts' | 'reflections' | 'settings';
+import type { Schemas } from '@/lib/api';
 
-export type ProfileProject = { id: number; name: string; description: string };
-export type ProfileRecord = {
-  id: number;
-  projectId?: number;
-  projectName?: string;
-  title: string;
-  body: string;
-  createdAt: string;
-};
-export type ProfileReflection = ProfileRecord & { kind: string };
-export type ProfilePostPage = {
-  items: ProfileRecord[];
-  page: number;
-  size: number;
-  totalElements: number;
-};
-export type ProfileDailyCount = { date: string; count: number };
-export type ProfileTilStats = {
-  totalTilCount: number;
-  consecutiveWritingDays: number;
-  thisWeekWriteCount: number;
-  last13WeeksDailyWriteCounts: ProfileDailyCount[];
-};
-export type ProfileActivity = {
-  month: string;
-  postCount: number;
-  projects: ProfileProject[];
-  reflections: ProfileReflection[];
-  tilStats: ProfileTilStats;
-};
+export type ProfileView = 'overview' | 'information' | 'posts' | 'reflections' | 'settings';
 
 export const reflectionLabels: Record<string, string> = {
   DAILY: '일간 회고',
@@ -38,7 +9,9 @@ export const reflectionLabels: Record<string, string> = {
   TEAM: '팀 회고',
 };
 
-export function formatProfileDate(value: string) {
+export function formatProfileDate(value?: string) {
+  if (!value) return '날짜 정보 없음';
+
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '날짜 정보 없음';
   return new Intl.DateTimeFormat('ko-KR', {
@@ -49,7 +22,9 @@ export function formatProfileDate(value: string) {
   }).format(date);
 }
 
-export function getProfileMonth(value: string) {
+export function getProfileMonth(value?: string) {
+  if (!value) return '';
+
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '';
   return new Intl.DateTimeFormat('sv-SE', {
@@ -59,9 +34,8 @@ export function getProfileMonth(value: string) {
   }).format(date);
 }
 
-export function getProfileProjectName(projects: ProfileProject[], id?: number) {
-  return (
-    projects.find((project) => project.id === id)?.name ??
-    (id === undefined ? '프로젝트 정보 없음' : `프로젝트 ${id}`)
-  );
+export function getProfileProjectName(projects: Schemas['ProjectResponse'][], id?: number) {
+  if (id === undefined) return '프로젝트 정보 없음';
+
+  return projects.find((project) => project.id === id)?.name ?? `프로젝트 ${id}`;
 }
