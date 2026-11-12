@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import BoardWriteActions from './templates/BoardWriteActions';
 import BoardWriteForm from './templates/BoardWriteForm';
@@ -18,8 +20,15 @@ export default function BoardWritePage() {
           일하는 경험과 생각을 나누고, 함께 이야기해요.
         </p>
       </header>
-      <BoardWriteForm />
-      <BoardWriteActions />
+      <form
+        className="flex flex-col gap-6"
+        onSubmit={(event) => {
+          event.preventDefault();
+        }}
+      >
+        <BoardWriteForm />
+        <BoardWriteActions />
+      </form>
     </div>
   );
 }

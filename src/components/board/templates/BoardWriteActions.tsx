@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 // 게시글 작성 하단 — 취소, 임시저장, 글 등록하기
-// 임시저장과 등록은 아직 동작하지 않습니다. API 연결 후 붙여 주세요.
+// 글 등록하기는 제출 버튼이라 필수 항목(카테고리)을 검사합니다. 저장·등록은 아직 동작하지 않습니다. API 연결 후 붙여 주세요.
 export default function BoardWriteActions() {
   return (
     <div className="flex flex-col gap-3">
@@ -20,7 +20,7 @@ export default function BoardWriteActions() {
           임시저장
         </button>
         <button
-          type="button"
+          type="submit"
           className="h-[42px] w-[113px] rounded-[20px] bg-[#6157E9] text-[13px] leading-normal font-medium text-white transition-colors hover:bg-[#4B3FD6]"
         >
           글 등록하기
