@@ -1,6 +1,6 @@
 import type { Schemas } from '@/lib/api';
 
-export type ProfileView = 'overview' | 'information' | 'posts' | 'reflections' | 'settings';
+export type ProfileView = 'overview' | 'information' | 'posts' | 'reflections';
 
 export const reflectionLabels: Record<string, string> = {
   DAILY: '일간 회고',

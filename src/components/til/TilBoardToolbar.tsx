@@ -47,8 +47,8 @@ export default function TilBoardToolbar({ query }: { query: TilListQuery }) {
       </nav>
 
       <div className="flex items-center justify-end gap-3">
-        {/* 인기 탭은 좋아요 순으로 고정이라 정렬 메뉴를 숨깁니다. */}
-        {query.tab !== 'popular' && (
+        {/* 정렬은 전체 탭만 고를 수 있습니다. (인기 · 내 TIL · 북마크 API 는 순서가 정해져 있음) */}
+        {query.tab === 'all' && (
           /* <details> 로 JS 없이 열고 닫는 정렬 메뉴. key 를 바꿔 이동 후 메뉴를 닫습니다. */
           <details key={`${query.tab}-${query.sort}`} className="group relative">
             <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-[40px] border border-[#e2defd] bg-white py-2.5 pr-3.5 pl-4 text-sm leading-[1.4] font-medium text-[#1f1d2b] select-none [&::-webkit-details-marker]:hidden">
