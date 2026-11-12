@@ -8,26 +8,37 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const token =
-      typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
-    if (token) {
-      notificationService
-        .getUnreadCount()
-        .then(setUnreadCount)
-        .catch(() => setUnreadCount(0));
-    }
+    // 빨간 점 숫자를 가져오는 함수
+    const fetchCount = async () => {
+      const token =
+        typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
+      if (token && token !== 'null' && token !== 'undefined' && token !== '') {
+        const count = await notificationService.getUnreadCount();
+        setUnreadCount(count);
+      }
+    };
+
+    fetchCount();
+
+    // 알림을 지웠을 때 빨간 점 실시간 동기화
+    window.addEventListener('notification-updated', fetchCount);
+    return () => window.removeEventListener('notification-updated', fetchCount);
   }, []);
 
-  // 🔔 종 아이콘 클릭 핸들러 (오직 여기서만 팝업을 띄우고 페이지 이동을 막습니다)
-  const handleBellClick = () => {
+  // 🔔 종 아이콘 클릭 핸들러
+  const handleBellClick = (e: React.MouseEvent) => {
     const token =
       typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
 
-    if (!token) {
-      alert('로그인이 필요합니다.'); // 👈 여기서 딱 1번만 뜹니다!
+    // 🚨 비로그인 상태일 때만! 페이지 이동을 꽉 막고 팝업을 띄웁니다.
+    if (!token || token === 'null' || token === 'undefined' || token === '') {
+      e.preventDefault();
+      e.stopPropagation();
+      alert('로그인이 필요합니다.');
       return;
     }
 
+    // ✅ 로그인 상태일 때는 막지 않고 통과시켜서 정상적으로 알림창으로 넘어가게 합니다.
     setIsOpen((prev) => !prev);
   };
 
@@ -53,10 +64,11 @@ export default function NotificationBell() {
           />
         </svg>
 
+        {/* 미읽음 빨간 점(뱃지): 숫자가 1 이상일 때만 표시 */}
         {unreadCount > 0 && (
-          <span className="absolute top-2 right-2 flex h-2 w-2">
+          <span className="absolute top-2 right-2 flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500"></span>
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-rose-500"></span>
           </span>
         )}
       </button>

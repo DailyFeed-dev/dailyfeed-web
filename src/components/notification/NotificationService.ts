@@ -12,7 +12,7 @@ export const notificationService = {
   fetchNotifications: async (): Promise<NotificationItem[]> => {
     try {
       const token = getAuthToken();
-      if (!token) return []; // 팝업 없이 조용히 빈 배열 반환
+      if (!token) return [];
 
       const response = await fetch('/api/v1/notifications', {
         method: 'GET',
@@ -25,7 +25,7 @@ export const notificationService = {
       if (!response.ok) throw new Error('알림 목록 조회 실패');
       const result = await response.json();
 
-      return result.data.map((item: any) => ({
+      return (result.data || []).map((item: any) => ({
         id: item.id.toString(),
         type: item.type === 'CHAT_MESSAGE' ? 'message' : 'post',
         title: item.title || item.actorName || '알림',
@@ -81,7 +81,20 @@ export const notificationService = {
 
       if (!response.ok) return 0;
       const result = await response.json();
-      return typeof result.data === 'number' ? result.data : Number(result.data || 0);
+
+      // 🚨 빨간 점 데이터를 놓치지 않기 위한 4중 방어 (백엔드가 데이터를 어떻게 줄지 모르므로)
+      let count = 0;
+      if (typeof result.data === 'number') {
+        count = result.data;
+      } else if (result.data && typeof result.data.count === 'number') {
+        count = result.data.count;
+      } else if (result.data && typeof result.data.unreadCount === 'number') {
+        count = result.data.unreadCount;
+      } else {
+        count = Number(result.data) || 0;
+      }
+
+      return isNaN(count) ? 0 : count;
     } catch (error) {
       console.error(error);
       return 0;
