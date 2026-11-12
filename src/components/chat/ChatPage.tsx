@@ -1,6 +1,15 @@
-import PagePlaceholder from '@/components/common/PagePlaceholder';
+import { Suspense } from 'react';
 
-// 채팅 화면 (이슈 #3) — 담당자는 이 폴더(src/components/chat) 안에서 작업합니다.
+import ChatScreen from './ChatScreen';
+
 export default function ChatPage() {
-  return <PagePlaceholder title="채팅" issue={3} />;
+  return (
+    <Suspense
+      fallback={
+        <div className="mb-6 h-[calc(100dvh-7.75rem)] min-h-[520px] rounded-3xl bg-(--color-bg-subtle)" />
+      }
+    >
+      <ChatScreen />
+    </Suspense>
+  );
 }

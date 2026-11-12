@@ -3,6 +3,29 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --color-text-primary: #1f1d2b;
+  --color-text-secondary: #5f5c75;
+  --color-text-muted: #6c6980;
+  --color-text-disabled: #a9a8b6;
+  --color-text-brand: #4b3fd6;
+  --color-text-on-brand: #ffffff;
+  --color-text-danger: #d41717;
+  --color-text-success: #22c55e;
+
+  --color-bg-surface: #ffffff;
+  --color-bg-subtle: #f3f2f8;
+  --color-bg-brand: #6157e9;
+  --color-bg-brand-soft: #f0eefe;
+  --color-bg-brand-muted: #e2defd;
+  --color-bg-success-soft: #edf7f3;
+  --color-bg-danger-soft: #fdecec;
+
+  --color-border-default: #eceaf4;
+  --color-border-strong: #dfdde8;
+  --color-border-brand: #6157e9;
+  --color-border-brand-soft: #e2defd;
+  --color-border-danger: #d41717;
 }
 
 @theme inline {

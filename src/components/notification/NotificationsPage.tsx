@@ -11,24 +11,28 @@ export default function NotificationsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // 화면이 켜지면 스스로 데이터를 불러옵니다.
     notificationService.fetchNotifications().then((data) => {
       setNotifications(data);
       setIsLoading(false);
     });
   }, []);
 
-  // X 버튼 클릭 시: 화면에서 지우고 서버(Mock)에도 삭제 요청
+  const triggerUpdateEvent = () => {
+    // 확실하게 브라우저 전역에 알림 업데이트 신호를 보냅니다.
+    window.dispatchEvent(new CustomEvent('notification-updated'));
+  };
+
   const handleDeleteOnly = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setNotifications((prev) => prev.filter((item) => item.id !== id));
     await notificationService.deleteNotification(id);
+    triggerUpdateEvent();
   };
 
-  // 카드 클릭 시: 알림 지우고 페이지 이동
   const handleNotificationClick = async (noti: NotificationItem) => {
     setNotifications((prev) => prev.filter((item) => item.id !== noti.id));
     await notificationService.deleteNotification(noti.id);
+    triggerUpdateEvent();
     if (noti.linkUrl) router.push(noti.linkUrl);
   };
 

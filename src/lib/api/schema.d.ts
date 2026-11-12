@@ -21,6 +21,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tils/{tilId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** TIL 상세 (Markdown body) */
+        get: operations["get"];
+        /** TIL 수정 (작성자만) */
+        put: operations["update"];
+        post?: never;
+        /** TIL 삭제 (작성자만) */
+        delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studies/{studyId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 스터디 상세 (비회원 가능)
+         * @description 로그인 시 myApplicationStatus·bookmarked 반영.
+         */
+        get: operations["get_1"];
+        /** 스터디 수정 (스터디장만) */
+        put: operations["update_1"];
+        post?: never;
+        /** 스터디 삭제 (스터디장만) */
+        delete: operations["delete_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/rooms/{roomId}": {
         parameters: {
             query?: never;
@@ -29,12 +70,29 @@ export interface paths {
             cookie?: never;
         };
         /** 회의실 상세 */
-        get: operations["get"];
+        get: operations["get_2"];
         /** 회의실 수정 (슈퍼관리자 또는 해당 기업관리자) */
-        put: operations["update"];
+        put: operations["update_2"];
         post?: never;
         /** 회의실 삭제 (슈퍼관리자 또는 해당 기업관리자) */
-        delete: operations["delete"];
+        delete: operations["delete_2"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rooms/{roomId}/photos/{photoId}/cover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 회의실 대표 사진 지정 (슈퍼관리자 또는 해당 기업관리자) */
+        put: operations["setCoverPhoto"];
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -47,10 +105,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_1"];
-        put: operations["update_1"];
+        get: operations["get_3"];
+        put: operations["update_3"];
         post?: never;
-        delete: operations["delete_1"];
+        delete: operations["delete_3"];
         options?: never;
         head?: never;
         patch?: never;
@@ -64,12 +122,12 @@ export interface paths {
             cookie?: never;
         };
         /** 프로젝트 상세 */
-        get: operations["get_2"];
-        /** 프로젝트 수정 (소유자 또는 OPERATOR) */
-        put: operations["update_2"];
+        get: operations["get_4"];
+        /** 프로젝트 수정 (이름: 생성자만 / 설명: 생성자·PM·PL·교육운영자) */
+        put: operations["update_4"];
         post?: never;
         /** 프로젝트 삭제 (소유자 또는 OPERATOR) */
-        delete: operations["delete_2"];
+        delete: operations["delete_4"];
         options?: never;
         head?: never;
         patch?: never;
@@ -83,12 +141,12 @@ export interface paths {
             cookie?: never;
         };
         /** 위키 페이지 조회 */
-        get: operations["get_3"];
+        get: operations["get_5"];
         /** 위키 페이지 수정 */
-        put: operations["update_3"];
+        put: operations["update_5"];
         post?: never;
         /** 위키 페이지 삭제 */
-        delete: operations["delete_3"];
+        delete: operations["delete_5"];
         options?: never;
         head?: never;
         patch?: never;
@@ -103,10 +161,10 @@ export interface paths {
         };
         get?: never;
         /** WBS 작업 수정 */
-        put: operations["update_4"];
+        put: operations["update_6"];
         post?: never;
         /** WBS 작업 삭제 */
-        delete: operations["delete_4"];
+        delete: operations["delete_6"];
         options?: never;
         head?: never;
         patch?: never;
@@ -138,9 +196,9 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["update_5"];
+        put: operations["update_7"];
         post?: never;
-        delete: operations["delete_5"];
+        delete: operations["delete_7"];
         options?: never;
         head?: never;
         patch?: never;
@@ -153,10 +211,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_4"];
-        put: operations["update_6"];
+        get: operations["get_6"];
+        put: operations["update_8"];
         post?: never;
-        delete: operations["delete_6"];
+        delete: operations["delete_8"];
         options?: never;
         head?: never;
         patch?: never;
@@ -223,9 +281,28 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["update_7"];
+        put: operations["update_9"];
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 피드 글 상세 (조회수 +1) */
+        get: operations["get_9"];
+        /** 피드 글 수정 (작성자만) */
+        put: operations["update_10"];
+        post?: never;
+        /** 피드 글 삭제 (작성자만) */
+        delete: operations["delete_10"];
         options?: never;
         head?: never;
         patch?: never;
@@ -238,47 +315,46 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_6"];
-        put: operations["update_8"];
+        get: operations["get_10"];
+        put: operations["update_11"];
         post?: never;
-        delete: operations["delete_8"];
+        delete: operations["delete_11"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/curriculum/modules/{moduleId}": {
+    "/api/v1/me/todos/{todoId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 커리큘럼 모듈 상세 */
-        get: operations["getModule"];
-        /** 커리큘럼 모듈 수정 (운영자·기업관리자) */
-        put: operations["updateModule"];
+        get?: never;
+        /** 할 일 수정 (본인만) */
+        put: operations["update_12"];
         post?: never;
-        /** 커리큘럼 모듈 삭제 (운영자·기업관리자) */
-        delete: operations["deleteModule"];
+        /** 할 일 삭제 (본인만) */
+        delete: operations["delete_12"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/curricula/{id}": {
+    "/api/v1/todos/{todoId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["get_7"];
-        /** 커리큘럼 수정 (운영자·기업관리자) */
-        put: operations["update_9"];
+        get?: never;
+        /** 할 일 수정 (본인만) */
+        put: operations["update_13"];
         post?: never;
-        /** 커리큘럼 삭제 (운영자·기업관리자) */
-        delete: operations["delete_9"];
+        /** 할 일 삭제 (본인만) */
+        delete: operations["delete_13"];
         options?: never;
         head?: never;
         patch?: never;
@@ -292,12 +368,11 @@ export interface paths {
             cookie?: never;
         };
         /** 과정 상세 */
-        get: operations["get_8"];
+        get: operations["get_12"];
         /** 과정 수정 (슈퍼관리자 또는 해당 기업관리자) */
-        put: operations["update_10"];
+        put: operations["update_14"];
         post?: never;
-        /** 과정 삭제(비활성) (운영자·기업관리자·슈퍼관리자) */
-        delete: operations["deactivate"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -328,9 +403,9 @@ export interface paths {
             cookie?: never;
         };
         /** 기업 상세 */
-        get: operations["get_9"];
+        get: operations["get_13"];
         /** 기업 수정 (슈퍼관리자) */
-        put: operations["update_11"];
+        put: operations["update_15"];
         post?: never;
         delete?: never;
         options?: never;
@@ -362,10 +437,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_10"];
-        put: operations["update_12"];
+        get: operations["get_14"];
+        put: operations["update_16"];
         post?: never;
-        delete: operations["deactivate_1"];
+        delete: operations["deactivate"];
         options?: never;
         head?: never;
         patch?: never;
@@ -443,10 +518,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_12"];
-        put: operations["update_13"];
+        get: operations["get_16"];
+        put: operations["update_17"];
         post?: never;
-        delete: operations["deactivate_2"];
+        delete: operations["deactivate_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -460,9 +535,9 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["update_14"];
+        put: operations["update_18"];
         post?: never;
-        delete: operations["delete_10"];
+        delete: operations["delete_14"];
         options?: never;
         head?: never;
         patch?: never;
@@ -492,9 +567,9 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["updateModule_1"];
+        put: operations["updateModule"];
         post?: never;
-        delete: operations["deleteModule_1"];
+        delete: operations["deleteModule"];
         options?: never;
         head?: never;
         patch?: never;
@@ -507,10 +582,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_13"];
-        put: operations["update_15"];
+        get: operations["get_17"];
+        put: operations["update_19"];
         post?: never;
-        delete: operations["deactivate_3"];
+        delete: operations["deactivate_2"];
         options?: never;
         head?: never;
         patch?: never;
@@ -524,9 +599,9 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put: operations["update_16"];
+        put: operations["update_20"];
         post?: never;
-        delete: operations["delete_11"];
+        delete: operations["delete_15"];
         options?: never;
         head?: never;
         patch?: never;
@@ -601,6 +676,173 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tils": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * TIL 목록
+         * @description sort=latest(기본) | oldest. page/size 페이지네이션.
+         */
+        get: operations["list"];
+        put?: never;
+        /**
+         * TIL 작성
+         * @description title 필수(≤200), body 필수 Markdown(≤50000).
+         */
+        post: operations["create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tils/{tilId}/likes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 좋아요 토글 */
+        post: operations["toggleLike"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tils/{tilId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 댓글 목록 (오래된 순) */
+        get: operations["listComments"];
+        put?: never;
+        /** 댓글 작성 */
+        post: operations["createComment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tils/{tilId}/comments/{commentId}/likes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 댓글 좋아요 토글 */
+        post: operations["toggleCommentLike"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tils/{tilId}/bookmarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 북마크 토글 */
+        post: operations["toggleBookmark"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 스터디 목록 (비회원 가능)
+         * @description page/size, q(제목·태그), category, sort=latest|oldest. openCount/closedCount/categoryCounts 포함.
+         */
+        get: operations["list_1"];
+        put?: never;
+        /** 스터디 등록 (회원) */
+        post: operations["create_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studies/{studyId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 댓글 목록 (비회원 가능) */
+        get: operations["listComments_1"];
+        put?: never;
+        /** 댓글 작성 (회원) */
+        post: operations["createComment_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studies/{studyId}/bookmarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 찜 토글 (회원) */
+        post: operations["toggleBookmark_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studies/{studyId}/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 신청자 목록 (스터디장만) */
+        get: operations["listApplications"];
+        put?: never;
+        /** 참여 신청 (회원) */
+        post: operations["apply"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/rooms/{roomId}/reservations": {
         parameters: {
             query?: never;
@@ -612,7 +854,7 @@ export interface paths {
         get: operations["listByRoom"];
         put?: never;
         /** 회의실 예약 */
-        post: operations["create"];
+        post: operations["create_2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -714,7 +956,7 @@ export interface paths {
         get: operations["listMine_1"];
         put?: never;
         /** 프로젝트 생성 */
-        post: operations["create_1"];
+        post: operations["create_3"];
         delete?: never;
         options?: never;
         head?: never;
@@ -729,10 +971,10 @@ export interface paths {
             cookie?: never;
         };
         /** 위키 페이지 목록 */
-        get: operations["list"];
+        get: operations["list_2"];
         put?: never;
         /** 위키 페이지 생성 */
-        post: operations["create_2"];
+        post: operations["create_4"];
         delete?: never;
         options?: never;
         head?: never;
@@ -764,10 +1006,10 @@ export interface paths {
             cookie?: never;
         };
         /** WBS 작업 목록 */
-        get: operations["list_1"];
+        get: operations["list_3"];
         put?: never;
         /** WBS 작업 생성 */
-        post: operations["create_3"];
+        post: operations["create_5"];
         delete?: never;
         options?: never;
         head?: never;
@@ -814,7 +1056,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listComments"];
+        get: operations["listComments_2"];
         put?: never;
         post: operations["addComment"];
         delete?: never;
@@ -862,9 +1104,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_2"];
+        get: operations["list_4"];
         put?: never;
-        post: operations["create_4"];
+        post: operations["create_6"];
         delete?: never;
         options?: never;
         head?: never;
@@ -933,7 +1175,7 @@ export interface paths {
         };
         get: operations["listByProject"];
         put?: never;
-        post: operations["create_5"];
+        post: operations["create_7"];
         delete?: never;
         options?: never;
         head?: never;
@@ -947,9 +1189,57 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_3"];
+        get: operations["list_5"];
         put?: never;
-        post: operations["create_6"];
+        post: operations["create_8"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/polls": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["create_9"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/polls/{pollId}/votes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["vote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{projectId}/polls/{pollId}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["close"];
         delete?: never;
         options?: never;
         head?: never;
@@ -997,9 +1287,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_6"];
+        get: operations["list_8"];
         put?: never;
-        post: operations["create_7"];
+        post: operations["create_10"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1015,7 +1305,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["close"];
+        post: operations["close_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1046,7 +1336,7 @@ export interface paths {
             cookie?: never;
         };
         /** 자료 목록 */
-        get: operations["list_7"];
+        get: operations["list_9"];
         put?: never;
         /** 자료 업로드 (디스크 저장) */
         post: operations["upload"];
@@ -1080,9 +1370,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_8"];
+        get: operations["list_10"];
         put?: never;
-        post: operations["create_8"];
+        post: operations["create_11"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1179,9 +1469,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_9"];
+        get: operations["list_11"];
         put?: never;
-        post: operations["create_9"];
+        post: operations["create_12"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1211,7 +1501,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listComments_1"];
+        get: operations["listComments_3"];
         put?: never;
         post: operations["addComment_1"];
         delete?: never;
@@ -1254,6 +1544,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 피드 글 목록 (최신순)
+         * @description category=FREE|QUESTION|INFO|REVIEW 로 필터 가능 (생략 시 전체)
+         */
+        get: operations["list_12"];
+        put?: never;
+        /** 피드 글 작성 (title 선택, content 필수, category/tags 선택, 태그 최대 5) */
+        post: operations["create_13"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}/likes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 게시글 좋아요 토글 */
+        post: operations["toggleLike_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 댓글 목록 (오래된 순, likeCount 포함) */
+        get: operations["listComments_4"];
+        put?: never;
+        /** 댓글 작성 */
+        post: operations["createComment_2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}/comments/{commentId}/likes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 댓글 좋아요 토글 */
+        post: operations["toggleCommentLike_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications/{notificationId}/read": {
         parameters: {
             query?: never;
@@ -1263,7 +1626,30 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 알림 단건 읽음 (POST) */
         post: operations["markRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 알림 단건 읽음 (PATCH alias) */
+        patch: operations["markReadPatch"];
+        trace?: never;
+    };
+    "/api/v1/notifications/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 알림 다건/전체 읽음
+         * @description body.ids 로 선택 읽음, 또는 body.readAll=true 로 전체 미읽음 읽음.
+         *     기존 POST /read-all 과 동일하게 updated 건수를 반환.
+         */
+        post: operations["markReadBulk"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1279,6 +1665,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * 내 미읽음 알림 전체 읽음 (레거시)
+         * @description POST /read {"readAll":true} 와 동일
+         */
         post: operations["markAllRead"];
         delete?: never;
         options?: never;
@@ -1293,9 +1683,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listMine_2"];
+        get: operations["listMine_3"];
         put?: never;
-        post: operations["create_10"];
+        post: operations["create_14"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1414,24 +1804,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/curricula": {
+    "/api/v1/me/todos": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["list_11"];
+        /** 할 일 목록 (date 생략 시 KST 오늘) */
+        get: operations["list_14"];
         put?: never;
-        /** 커리큘럼 생성 (운영자·관리자) */
-        post: operations["create_11"];
+        /** 할 일 생성 */
+        post: operations["create_15"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/curricula/{curriculumId}/modules": {
+    "/api/v1/todos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 할 일 목록 (date 생략 시 KST 오늘) */
+        get: operations["list_15"];
+        put?: never;
+        /** 할 일 생성 */
+        post: operations["create_16"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/friends/requests": {
         parameters: {
             query?: never;
             header?: never;
@@ -1440,44 +1849,111 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 커리큘럼 모듈 생성 (운영자·기업관리자) */
-        post: operations["createModule"];
+        /** 친구 요청 보내기 */
+        post: operations["sendRequest"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/courses/{courseId}/curriculum/modules": {
+    "/api/v1/friends/requests/{userId}/reject": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 과정 커리큘럼 모듈 목록 */
-        get: operations["listCourseModules"];
+        get?: never;
         put?: never;
-        /** 과정 커리큘럼 모듈 생성 (운영자·기업관리자) */
-        post: operations["createCourseModule"];
+        /** 친구 요청 거절 */
+        post: operations["reject_3"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/courses/{courseId}/curricula": {
+    "/api/v1/friends/requests/{userId}/accept": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 과정별 커리큘럼 목록 */
-        get: operations["listByCourse"];
+        get?: never;
         put?: never;
-        /** 과정에 커리큘럼 생성 (운영자·기업관리자) */
-        post: operations["createForCourse"];
+        /** 친구 요청 수락 */
+        post: operations["accept_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dm/conversations/{peerUserId}/typing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 타이핑 인디케이터 (Socket.IO chat:typing 팬아웃) */
+        post: operations["typing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dm/conversations/{peerUserId}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 1:1 메시지 읽음 처리 */
+        post: operations["markRead_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dm/conversations/{peerUserId}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 1:1 메시지 목록 (프로젝트 비종속) */
+        get: operations["listMessages"];
+        put?: never;
+        /** 1:1 메시지 전송 */
+        post: operations["send"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dm/attachments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 1:1 첨부 업로드 */
+        post: operations["upload_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1492,10 +1968,10 @@ export interface paths {
             cookie?: never;
         };
         /** 기업 목록 */
-        get: operations["list_12"];
+        get: operations["list_17"];
         put?: never;
         /** 기업 등록 (슈퍼관리자) */
-        post: operations["create_12"];
+        post: operations["create_17"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1513,7 +1989,7 @@ export interface paths {
         get: operations["listByCompany"];
         put?: never;
         /** 회의실 등록 (슈퍼관리자 또는 해당 기업관리자) */
-        post: operations["create_13"];
+        post: operations["create_18"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1531,7 +2007,25 @@ export interface paths {
         get: operations["listByCompany_1"];
         put?: never;
         /** 과정 생성 (슈퍼관리자 또는 해당 기업관리자) */
-        post: operations["create_14"];
+        post: operations["create_19"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내가 차단한 사용자 목록 */
+        get: operations["list_18"];
+        put?: never;
+        /** 사용자 차단 (친구 관계 제거, DM/친구 요청 차단) */
+        post: operations["block"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1564,7 +2058,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 액세스 토큰 갱신 */
+        /** 액세스 토큰 갱신 (리프레시 1회용 회전) */
         post: operations["refresh"];
         delete?: never;
         options?: never;
@@ -1581,7 +2075,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 비밀번호 재설정 (이메일 + 원타임 토큰) */
+        /** 비밀번호 재설정 (이메일 + 원타임 보안키) */
         post: operations["resetPassword"];
         delete?: never;
         options?: never;
@@ -1598,8 +2092,25 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 비밀번호 재설정 링크 요청 */
+        /** 비밀번호 재설정 보안키 요청 */
         post: operations["forgotPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 로그아웃 (발급 토큰 무효화) */
+        post: operations["logout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1632,8 +2143,42 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 아이디(이메일) 찾기 */
+        /** 아이디(이메일) 찾기 — 로그인 아이디를 이메일로 발송 */
         post: operations["findId"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/email/verify-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 이메일 인증번호 검증 */
+        post: operations["verifyEmailCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/email/send-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 이메일 인증번호 발송 */
+        post: operations["sendEmailCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1664,9 +2209,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_13"];
+        get: operations["list_19"];
         put?: never;
-        post: operations["create_15"];
+        post: operations["create_20"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1699,7 +2244,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 회원가입 거절 */
-        post: operations["reject_3"];
+        post: operations["reject_4"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1733,7 +2278,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 프로젝트 역할 변경 거절 (플랫폼 관리자) */
-        post: operations["reject_4"];
+        post: operations["reject_5"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1764,9 +2309,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_15"];
+        get: operations["list_21"];
         put?: never;
-        post: operations["create_16"];
+        post: operations["create_21"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1796,9 +2341,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_16"];
+        get: operations["list_22"];
         put?: never;
-        post: operations["create_17"];
+        post: operations["create_22"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1814,7 +2359,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["createModule_1"];
+        post: operations["createModule"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1844,9 +2389,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_17"];
+        get: operations["list_23"];
         put?: never;
-        post: operations["create_18"];
+        post: operations["create_23"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1876,9 +2421,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_18"];
+        get: operations["list_24"];
         put?: never;
-        post: operations["create_19"];
+        post: operations["create_24"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1918,6 +2463,43 @@ export interface paths {
         patch: operations["patchRecord"];
         trace?: never;
     };
+    "/api/v1/applications/{applicationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * 신청 승인/거절 (스터디장만)
+         * @description body.status = APPROVED | REJECTED. PENDING만 변경 가능.
+         */
+        patch: operations["decide"];
+        trace?: never;
+    };
+    "/api/v1/users/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공개 프로필 조회 (id, name, avatarUrl) — 채팅 상대 표시용 */
+        get: operations["getPublicProfile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/{userId}/avatar": {
         parameters: {
             query?: never;
@@ -1927,6 +2509,23 @@ export interface paths {
         };
         /** 사용자 아바타 이미지 */
         get: operations["getAvatar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 사용자 이름 검색 (채팅 상대 찾기) */
+        get: operations["search"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1962,6 +2561,88 @@ export interface paths {
         };
         /** 계정 역할 변경 대기 목록 (플랫폼 관리자) */
         get: operations["listPendingAccountRoleRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tils/rankings/weekly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 이번 주 TIL 작성자 랭킹
+         * @description KST 이번 주 월요일 00:00 ~ 다음 주 월요일 00:00(미포함). writeCount = 해당 기간 TIL 게시 수.
+         */
+        get: operations["weeklyRankings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tils/me/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 내 학습 현황 (보드 위젯)
+         * @description totalTilCount, consecutiveWritingDays(streak), thisWeekWriteCount,
+         *     last13WeeksDailyWriteCounts(91일, 오래된 날→오늘, KST).
+         *     streak: 오늘 작성 있으면 오늘부터, 없으면 어제부터 연속 일수. 어제·오늘 모두 없으면 0.
+         */
+        get: operations["myStats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 태그 추천 (비회원 가능)
+         * @description 사용된 기술 태그 중 q 포함, 많이 쓰인 순. 기본 size=10.
+         */
+        get: operations["suggest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studies/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 내 모집글 (회원)
+         * @description 스터디장 본인 글. pendingCount 포함.
+         */
+        get: operations["myStudies"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2086,14 +2767,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/projects/{projectId}/social/comments/counts": {
+    "/api/v1/projects/{projectId}/schedules/{scheduleId}/team-reflections": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["countComments"];
+        get: operations["listTeamBySchedule"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2119,6 +2800,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/projects/{projectId}/polls/{pollId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_7"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/projects/{projectId}/members": {
         parameters: {
             query?: never;
@@ -2127,7 +2824,7 @@ export interface paths {
             cookie?: never;
         };
         /** 멤버 목록 */
-        get: operations["list_4"];
+        get: operations["list_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2143,7 +2840,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_5"];
+        get: operations["list_7"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2210,11 +2907,11 @@ export interface paths {
             cookie?: never;
         };
         /** 자료 조회 */
-        get: operations["get_5"];
+        get: operations["get_8"];
         put?: never;
         post?: never;
         /** 자료 삭제 */
-        delete: operations["delete_7"];
+        delete: operations["delete_9"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2286,6 +2983,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/posts/{postId}/likes/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내가 이 글을 좋아요 했는지 */
+        get: operations["likedByMe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}/comments/likes/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 이 글에서 내가 좋아요한 댓글 ID 목록 */
+        get: operations["commentLikedByMe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/hot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * HOT/인기 게시글 (이번 주 위젯용)
+         * @description 랭킹 점수: hotScore = viewCount×1 + likeCount×3 + commentCount×5
+         *     sort: hot(기본) | latest | likes | comments | views
+         *     period: week(KST 이번 주 월요일 00:00~) | 생략(전체)
+         *     size 또는 limit 로 페이지 크기 지정
+         */
+        get: operations["listHot"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/popular": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * HOT/인기 게시글 (이번 주 위젯용)
+         * @description 랭킹 점수: hotScore = viewCount×1 + likeCount×3 + commentCount×5
+         *     sort: hot(기본) | latest | likes | comments | views
+         *     period: week(KST 이번 주 월요일 00:00~) | 생략(전체)
+         *     size 또는 limit 로 페이지 크기 지정
+         */
+        get: operations["listHot_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 내가 쓴 피드 글 목록 (최신순)
+         * @description 현재 로그인 사용자가 작성한 피드만. page/size 동일, 응답 형태는 목록과 동일.
+         */
+        get: operations["listMine_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications": {
         parameters: {
             query?: never;
@@ -2293,7 +3090,14 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_10"];
+        /**
+         * 내 알림 목록
+         * @description 기본값 unreadOnly=true → 미읽음만 반환 (이미 읽은 알림은 조회하지 않음).
+         *     전체 이력: unreadOnly=false.
+         *     read=true|false 가 있으면 unreadOnly 보다 우선.
+         *     각 항목에 read / unread / readAt 포함.
+         */
+        get: operations["list_13"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2309,6 +3113,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** 미읽음 알림 개수 (뱃지용) */
         get: operations["unreadCount"];
         put?: never;
         post?: never;
@@ -2345,7 +3150,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listMine_3"];
+        get: operations["listMine_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2362,7 +3167,7 @@ export interface paths {
             cookie?: never;
         };
         /** 내 회의실 예약 */
-        get: operations["listMine_4"];
+        get: operations["listMine_5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2378,7 +3183,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listMine_5"];
+        get: operations["listMine_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2394,7 +3199,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listMine_6"];
+        get: operations["listMine_7"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2426,7 +3231,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listMine_7"];
+        get: operations["listMine_8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2458,7 +3263,141 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listMine_8"];
+        get: operations["listMine_9"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/friends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 친구 목록 */
+        get: operations["listFriends"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/friends/requests/outgoing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 보낸 친구 요청 목록 */
+        get: operations["outgoing"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/friends/requests/incoming": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 받은 친구 요청 목록 */
+        get: operations["incoming"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/friends/relationship/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 관계 조회 (친구/요청/차단/DM 가능 여부) */
+        get: operations["relationship"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dm/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 1:1 대화 목록 */
+        get: operations["listConversations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dm/attachments/**": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 1:1 첨부 다운로드 */
+        get: operations["download_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/curricula": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_16"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/curricula/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_11"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2475,7 +3414,7 @@ export interface paths {
             cookie?: never;
         };
         /** 내 기업 과정 목록 */
-        get: operations["listMine_9"];
+        get: operations["listMine_10"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2535,6 +3474,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/applications/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 내가 신청한 스터디 목록 (회원)
+         * @description 토큰 기준 본인 신청만. PENDING/APPROVED/REJECTED 전부, 신청일 최신순.
+         */
+        get: operations["myApplications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/announcements/active": {
         parameters: {
             query?: never;
@@ -2575,7 +3534,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_14"];
+        get: operations["list_20"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2592,7 +3551,7 @@ export interface paths {
             cookie?: never;
         };
         /** 프로젝트 단건 조회 */
-        get: operations["get_11"];
+        get: operations["get_15"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2651,6 +3610,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tils/{tilId}/comments/{commentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 댓글 삭제 (작성자만) */
+        delete: operations["deleteComment"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/studies/{studyId}/applications/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 내 신청 취소 (회원) */
+        delete: operations["cancelMyApplication"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/projects/{projectId}/members/{userId}": {
         parameters: {
             query?: never;
@@ -2663,6 +3656,74 @@ export interface paths {
         post?: never;
         /** 멤버 추방 (OPERATOR) */
         delete: operations["remove_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}/comments/{commentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 댓글 삭제 (작성자만) */
+        delete: operations["deleteComment_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/friends/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 친구 삭제 */
+        delete: operations["remove_2"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/friends/requests/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 보낸 친구 요청 취소 */
+        delete: operations["cancelRequest"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/blocks/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 차단 해제 */
+        delete: operations["unblock"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2707,7 +3768,7 @@ export interface components {
         /** @description 계정 기본 역할 변경 요청 */
         ChangeAccountRoleRequest: {
             /** @enum {string} */
-            role: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
         AccountRoleChangeRequestResponse: {
             /** Format: int64 */
@@ -2716,9 +3777,9 @@ export interface components {
             requesterUserId?: number;
             requesterName?: string;
             /** @enum {string} */
-            fromRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            fromRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
-            toRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            toRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
             status?: "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
             /** Format: int64 */
@@ -2754,7 +3815,7 @@ export interface components {
             email?: string;
             name?: string;
             /** @enum {string} */
-            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
             platformRole?: "USER" | "COMPANY_ADMIN" | "PLATFORM_ADMIN";
             avatarUrl?: string;
@@ -2765,6 +3826,93 @@ export interface components {
             accountStatus?: "PENDING_APPROVAL" | "ACTIVE" | "REJECTED";
             /** Format: int64 */
             companyId?: number;
+        };
+        UpdateTilRequest: {
+            title?: string;
+            body?: string;
+        };
+        ApiResponseTilResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["TilResponse"];
+            code?: string;
+        };
+        AuthorResponse: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            avatarUrl?: string;
+        };
+        /** @description TIL 게시글 (본문 = Markdown) */
+        TilResponse: {
+            /** Format: int64 */
+            id?: number;
+            title?: string;
+            body?: string;
+            author?: components["schemas"]["AuthorResponse"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            /** Format: int64 */
+            likeCount?: number;
+            /** Format: int64 */
+            commentCount?: number;
+            /** Format: int64 */
+            bookmarkCount?: number;
+            likedByMe?: boolean;
+            bookmarkedByMe?: boolean;
+        };
+        UpdateStudyRequest: {
+            title: string;
+            category: string;
+            techTags?: string[];
+            /** Format: int32 */
+            maxMembers: number;
+            /** Format: date */
+            deadline: string;
+            mode: string;
+            content: string;
+        };
+        ApiResponseStudyDetailResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["StudyDetailResponse"];
+            code?: string;
+        };
+        /** @description 스터디 상세 */
+        StudyDetailResponse: {
+            /** Format: int64 */
+            id?: number;
+            title?: string;
+            /** @enum {string} */
+            category?: "FRONTEND" | "BACKEND" | "ALGORITHM" | "CS" | "INTERVIEW";
+            techTags?: string[];
+            /** @enum {string} */
+            status?: "OPEN" | "CLOSED";
+            /** Format: int32 */
+            currentMembers?: number;
+            /** Format: int32 */
+            maxMembers?: number;
+            /** Format: date */
+            deadline?: string;
+            /** @enum {string} */
+            mode?: "ONLINE" | "OFFLINE" | "BOTH";
+            content?: string;
+            /** Format: int64 */
+            authorId?: number;
+            authorName?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            /** @enum {string} */
+            myApplicationStatus?: "PENDING" | "APPROVED" | "REJECTED";
+            /** Format: int64 */
+            commentCount?: number;
+            /** Format: int64 */
+            bookmarkCount?: number;
+            bookmarked?: boolean;
         };
         HourBody: {
             /** @enum {string} */
@@ -2842,10 +3990,10 @@ export interface components {
             body?: string;
             /** Format: int64 */
             assignmentId?: number;
+            /** Format: int64 */
+            scheduleId?: number;
             /** @enum {string} */
-            scope?: "TEAM" | "PERSONAL";
-            /** @enum {string} */
-            kind?: "DAILY" | "WEEKLY" | "ASSIGNMENT";
+            kind?: "DAILY" | "WEEKLY" | "ASSIGNMENT" | "TEAM";
         };
         ApiResponseReflectionResponse: {
             success?: boolean;
@@ -2862,21 +4010,35 @@ export interface components {
             /** Format: int64 */
             authorId?: number;
             authorName?: string;
-            /** @enum {string} */
-            scope?: "TEAM" | "PERSONAL";
             title?: string;
             body?: string;
             /** Format: int64 */
             assignmentId?: number;
+            /** Format: int64 */
+            scheduleId?: number;
+            schedule?: components["schemas"]["ReflectionScheduleBrief"];
             /** Format: date-time */
             createdAt?: string;
             /** Format: date-time */
             updatedAt?: string;
             /** @enum {string} */
-            kind?: "DAILY" | "WEEKLY" | "ASSIGNMENT";
+            kind?: "DAILY" | "WEEKLY" | "ASSIGNMENT" | "TEAM";
         };
+        ReflectionScheduleBrief: {
+            /** Format: int64 */
+            id?: number;
+            title?: string;
+            description?: string;
+            /** Format: date-time */
+            startsAt?: string;
+            /** Format: date-time */
+            endsAt?: string;
+        };
+        /** @description 프로젝트 수정. 이름 변경은 생성자(owner)만 가능하고, 설명은 생성자·PM·PL·교육운영자가 변경할 수 있습니다. */
         UpdateProjectRequest: {
+            /** @description 프로젝트 이름 (생성자만 변경 가능). 생략 시 기존 이름 유지 */
             name?: string;
+            /** @description 프로젝트 설명. 생략 시 기존 설명 유지 */
             description?: string;
         };
         ApiResponseProjectResponse: {
@@ -2891,7 +4053,7 @@ export interface components {
             name?: string;
             avatarUrl?: string;
             /** @enum {string} */
-            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** Format: date-time */
             joinedAt?: string;
         };
@@ -3052,7 +4214,7 @@ export interface components {
         };
         ChangeRoleRequest: {
             /** @enum {string} */
-            role: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
         ApiResponseMemberResponse: {
             success?: boolean;
@@ -3097,6 +4259,17 @@ export interface components {
             /** Format: date-time */
             createdAt?: string;
         };
+        UpdatePostRequest: {
+            title?: string;
+            content?: string;
+            /**
+             * @description FREE | QUESTION | INFO | REVIEW (null이면 유지)
+             * @enum {string|null}
+             */
+            category?: "FREE" | "QUESTION" | "INFO" | "REVIEW" | null;
+            /** @description 최대 5개 (null이면 유지) */
+            tags?: (string | null)[] | null;
+        };
         ApiResponseMeetingResponse: {
             success?: boolean;
             message?: string;
@@ -3135,66 +4308,39 @@ export interface components {
             name?: string;
             avatarUrl?: string;
             /** @enum {string} */
-            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
-        ModuleBody: {
-            code?: string;
-            title: string;
+        UpdateTodoRequest: {
+            content?: string;
+            completed?: boolean;
             /** Format: int32 */
             sortOrder?: number;
+            /**
+             * Format: date
+             * @description YYYY-MM-DD
+             */
+            date?: string;
         };
-        ApiResponseModuleResponse: {
+        ApiResponseTodoResponse: {
             success?: boolean;
             message?: string;
-            data?: components["schemas"]["ModuleResponse"];
+            data?: components["schemas"]["TodoResponse"];
             code?: string;
         };
-        ModuleResponse: {
+        /** @description 오늘 할 일 */
+        TodoResponse: {
             /** Format: int64 */
             id?: number;
-            /** Format: int64 */
-            curriculumId?: number;
-            /** Format: int64 */
-            courseId?: number;
-            curriculumName?: string;
-            code?: string;
-            title?: string;
+            content?: string;
+            completed?: boolean;
             /** Format: int32 */
             sortOrder?: number;
-            phases?: components["schemas"]["PhaseResponse"][];
-        };
-        PhaseResponse: {
-            /** Format: int64 */
-            id?: number;
-            /** Format: int64 */
-            moduleId?: number;
-            /** @enum {string} */
-            phaseKey?: "Learning" | "Exploring" | "Building" | "Sharing" | "Embodied";
-            title?: string;
-            /** Format: int32 */
-            sortOrder?: number;
-            prerequisiteContentIds?: number[];
-        };
-        CurriculumBody: {
-            name: string;
-            description?: string;
-        };
-        ApiResponseCurriculumResponse: {
-            success?: boolean;
-            message?: string;
-            data?: components["schemas"]["CurriculumResponse"];
-            code?: string;
-        };
-        CurriculumResponse: {
-            /** Format: int64 */
-            id?: number;
-            /** Format: int64 */
-            courseId?: number;
-            name?: string;
-            description?: string;
+            /** Format: date */
+            date?: string;
             /** Format: date-time */
             createdAt?: string;
-            modules?: components["schemas"]["ModuleResponse"][];
+            /** Format: date-time */
+            updatedAt?: string;
         };
         UpdateCourseRequest: {
             name?: string;
@@ -3258,7 +4404,7 @@ export interface components {
             email?: string;
             name?: string;
             /** @enum {string} */
-            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
             platformRole?: "USER" | "COMPANY_ADMIN" | "PLATFORM_ADMIN";
             active?: boolean;
@@ -3269,7 +4415,7 @@ export interface components {
             email?: string;
             name?: string;
             /** @enum {string} */
-            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
             platformRole?: "USER" | "COMPANY_ADMIN" | "PLATFORM_ADMIN";
             active?: boolean;
@@ -3331,7 +4477,7 @@ export interface components {
         };
         ChangeMemberRoleBody: {
             /** @enum {string} */
-            role: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
         AdminProjectMemberResponse: {
             /** Format: int64 */
@@ -3340,7 +4486,7 @@ export interface components {
             email?: string;
             avatarUrl?: string;
             /** @enum {string} */
-            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** Format: date-time */
             joinedAt?: string;
         };
@@ -3374,6 +4520,48 @@ export interface components {
             /** Format: date-time */
             updatedAt?: string;
         };
+        CurriculumBody: {
+            name: string;
+            description?: string;
+        };
+        ApiResponseCurriculumResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["CurriculumResponse"];
+            code?: string;
+        };
+        CurriculumResponse: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            description?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            modules?: components["schemas"]["ModuleResponse"][];
+        };
+        ModuleResponse: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            curriculumId?: number;
+            code?: string;
+            title?: string;
+            /** Format: int32 */
+            sortOrder?: number;
+            phases?: components["schemas"]["PhaseResponse"][];
+        };
+        PhaseResponse: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            moduleId?: number;
+            /** @enum {string} */
+            phaseKey?: "Learning" | "Exploring" | "Building" | "Sharing" | "Embodied";
+            title?: string;
+            /** Format: int32 */
+            sortOrder?: number;
+            prerequisiteContentIds?: number[];
+        };
         PhaseBody: {
             /** @enum {string} */
             phaseKey?: "Learning" | "Exploring" | "Building" | "Sharing" | "Embodied";
@@ -3386,6 +4574,18 @@ export interface components {
             success?: boolean;
             message?: string;
             data?: components["schemas"]["PhaseResponse"];
+            code?: string;
+        };
+        ModuleBody: {
+            code?: string;
+            title: string;
+            /** Format: int32 */
+            sortOrder?: number;
+        };
+        ApiResponseModuleResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["ModuleResponse"];
             code?: string;
         };
         CourseBody: {
@@ -3479,6 +4679,99 @@ export interface components {
             data?: components["schemas"]["AccountRoleChangeRequestResponse"];
             code?: string;
         };
+        CreateTilRequest: {
+            title: string;
+            body: string;
+        };
+        ApiResponseLikeResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["LikeResponse"];
+            code?: string;
+        };
+        LikeResponse: {
+            liked?: boolean;
+            /** Format: int64 */
+            likeCount?: number;
+        };
+        CreateCommentRequest: {
+            content: string;
+        };
+        ApiResponseCommentResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["CommentResponse"];
+            code?: string;
+        };
+        CommentResponse: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            postId?: number;
+            content?: string;
+            author?: components["schemas"]["AuthorResponse"];
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            likeCount?: number;
+            likedByMe?: boolean;
+        };
+        ApiResponseCommentLikeResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["CommentLikeResponse"];
+            code?: string;
+        };
+        CommentLikeResponse: {
+            liked?: boolean;
+            /** Format: int64 */
+            likeCount?: number;
+        };
+        ApiResponseBookmarkResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["BookmarkResponse"];
+            code?: string;
+        };
+        BookmarkResponse: {
+            bookmarked?: boolean;
+            /** Format: int64 */
+            bookmarkCount?: number;
+        };
+        CreateStudyRequest: {
+            title: string;
+            category: string;
+            techTags?: string[];
+            /** Format: int32 */
+            maxMembers: number;
+            /** Format: date */
+            deadline: string;
+            mode: string;
+            content: string;
+        };
+        ApplyRequest: {
+            message?: string;
+        };
+        ApiResponseApplicationResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["ApplicationResponse"];
+            code?: string;
+        };
+        ApplicationResponse: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            studyId?: number;
+            /** Format: int64 */
+            applicantId?: number;
+            applicantName?: string;
+            message?: string;
+            /** @enum {string} */
+            status?: "PENDING" | "APPROVED" | "REJECTED";
+            /** Format: date-time */
+            createdAt?: string;
+        };
         CreateReservationRequest: {
             /** Format: date-time */
             startsAt: string;
@@ -3557,10 +4850,10 @@ export interface components {
             name: string;
             description?: string;
             /**
-             * @description 생성자 멤버십 역할. 생략 시 OPERATOR
+             * @description 생성자 멤버십 역할. 생략 시 PROJECT_MANAGER
              * @enum {string}
              */
-            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** Format: int64 */
             courseId?: number;
         };
@@ -3637,16 +4930,6 @@ export interface components {
             targetType: string;
             targetId: string;
             content: string;
-            quote?: string;
-            /** Format: int32 */
-            anchorStart?: number;
-            /** Format: int32 */
-            anchorEnd?: number;
-            color?: string;
-            tags?: string[];
-            kind?: string;
-            format?: string;
-            masked?: boolean;
         };
         ApiResponseSocialCommentResult: {
             success?: boolean;
@@ -3666,16 +4949,6 @@ export interface components {
             content?: string;
             /** Format: date-time */
             createdAt?: string;
-            quote?: string;
-            /** Format: int32 */
-            anchorStart?: number;
-            /** Format: int32 */
-            anchorEnd?: number;
-            color?: string;
-            tags?: string[];
-            kind?: string;
-            format?: string;
-            masked?: boolean;
         };
         ChatBody: {
             content: string;
@@ -3745,9 +5018,9 @@ export interface components {
             requesterUserId?: number;
             requesterName?: string;
             /** @enum {string} */
-            fromRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            fromRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
-            toRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            toRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
             status?: "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
             /** Format: int64 */
@@ -3759,7 +5032,7 @@ export interface components {
         };
         ChangeRoleBody: {
             /** @enum {string} */
-            role: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
         ApiResponseSelfRoleChangeResponse: {
             success?: boolean;
@@ -3771,6 +5044,61 @@ export interface components {
             applied?: boolean;
             member?: components["schemas"]["MemberResponse"];
             request?: components["schemas"]["RoleChangeRequestResponse"];
+        };
+        ApiResponseCreateResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["CreateResponse"];
+            code?: string;
+        };
+        CreateResponse: {
+            poll?: components["schemas"]["PollResponse"];
+            message?: components["schemas"]["ChatMessageResult"];
+        };
+        PollOptionResponse: {
+            /** Format: int64 */
+            id?: number;
+            label?: string;
+            /** Format: int32 */
+            sortOrder?: number;
+            /** Format: int32 */
+            voteCount?: number;
+        };
+        PollResponse: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            projectId?: number;
+            roomId?: string;
+            /** Format: int64 */
+            creatorId?: number;
+            creatorName?: string;
+            topic?: string;
+            /** @enum {string} */
+            status?: "OPEN" | "CLOSED";
+            /** Format: date-time */
+            closedAt?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            /** Format: int64 */
+            myOptionId?: number;
+            canClose?: boolean;
+            resultsVisible?: boolean;
+            /** Format: int32 */
+            participantCount?: number;
+            options?: components["schemas"]["PollOptionResponse"][];
+        };
+        VoteBody: {
+            /** Format: int64 */
+            optionId: number;
+        };
+        ApiResponsePollResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["PollResponse"];
+            code?: string;
         };
         InviteBody: {
             userIds: number[];
@@ -4000,6 +5328,22 @@ export interface components {
         };
         JoinProjectRequest: {
             inviteCode: string;
+            /**
+             * @description 참여 시 멤버십 역할. 생략 시 DEVELOPER
+             * @enum {string}
+             */
+            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
+        };
+        CreatePostRequest: {
+            title?: string;
+            content: string;
+            /**
+             * @description FREE | QUESTION | INFO | REVIEW (nullable)
+             * @enum {string|null}
+             */
+            category?: "FREE" | "QUESTION" | "INFO" | "REVIEW" | null;
+            /** @description 최대 5개 */
+            tags?: (string | null)[] | null;
         };
         ApiResponseNotificationResult: {
             success?: boolean;
@@ -4018,7 +5362,7 @@ export interface components {
             /** Format: int64 */
             projectId?: number;
             /** @enum {string} */
-            type?: "CHAT_MESSAGE" | "POST_CREATED" | "COMMENT_CREATED" | "COUNSELING_REQUESTED" | "COUNSELING_ACCEPTED" | "COUNSELING_REJECTED" | "MEETING_INVITED" | "PROJECT_INVITED" | "PROJECT_MEMBER_JOINED" | "ROLE_CHANGE_REQUESTED" | "ROLE_CHANGE_APPROVED" | "ROLE_CHANGE_REJECTED";
+            type?: "CHAT_MESSAGE" | "POST_CREATED" | "COMMENT_CREATED" | "POST_LIKED" | "COUNSELING_REQUESTED" | "COUNSELING_ACCEPTED" | "COUNSELING_REJECTED" | "MEETING_INVITED" | "PROJECT_INVITED" | "PROJECT_MEMBER_JOINED" | "ROLE_CHANGE_REQUESTED" | "ROLE_CHANGE_APPROVED" | "ROLE_CHANGE_REJECTED" | "FRIEND_REQUEST" | "FRIEND_ACCEPTED";
             resourceType?: string;
             resourceId?: string;
             title?: string;
@@ -4029,14 +5373,31 @@ export interface components {
             /** Format: date-time */
             createdAt?: string;
             unread?: boolean;
+            read?: boolean;
         };
-        ApiResponseMapStringInteger: {
+        /** @description 알림 읽음 처리 요청. ids 또는 readAll 중 하나 이상 필요. */
+        MarkReadRequest: {
+            /** @description 읽을 알림 id 목록 */
+            ids?: number[];
+            /**
+             * @description true면 내 미읽음 알림 전체 읽음
+             * @example false
+             */
+            readAll?: boolean;
+        };
+        ApiResponseMarkReadResponse: {
             success?: boolean;
             message?: string;
-            data?: {
-                [key: string]: number;
-            };
+            data?: components["schemas"]["MarkReadResponse"];
             code?: string;
+        };
+        /** @description 읽음 처리 결과 */
+        MarkReadResponse: {
+            /**
+             * Format: int32
+             * @description 이번에 읽음으로 바뀐 건수
+             */
+            updated?: number;
         };
         ApiResponseTokenResponse: {
             success?: boolean;
@@ -4051,6 +5412,124 @@ export interface components {
         };
         JoinBody: {
             inviteCode: string;
+        };
+        CreateTodoRequest: {
+            content: string;
+            /**
+             * Format: date
+             * @description YYYY-MM-DD, 생략 시 KST 오늘
+             */
+            date?: string;
+            /** Format: int32 */
+            sortOrder?: number;
+        };
+        TargetUserBody: {
+            /** Format: int64 */
+            userId: number;
+        };
+        ApiResponseFriendRequestResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["FriendRequestResult"];
+            code?: string;
+        };
+        FriendRequestResult: {
+            /** Format: int64 */
+            friendshipId?: number;
+            /** Format: int64 */
+            requesterId?: number;
+            requesterName?: string;
+            requesterAvatarUrl?: string;
+            /** Format: int64 */
+            addresseeId?: number;
+            addresseeName?: string;
+            addresseeAvatarUrl?: string;
+            /** @enum {string} */
+            status?: "PENDING" | "ACCEPTED" | "REJECTED";
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        TypingBody: {
+            typing?: boolean;
+        };
+        ApiResponseMapStringObject: {
+            success?: boolean;
+            message?: string;
+            data?: {
+                [key: string]: Record<string, never>;
+            };
+            code?: string;
+        };
+        ReadBody: {
+            messageId?: string;
+        };
+        ApiResponseGlobalDmConversationResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["GlobalDmConversationResult"];
+            code?: string;
+        };
+        GlobalDmConversationResult: {
+            /** Format: int64 */
+            conversationId?: number;
+            conversationKey?: string;
+            /** Format: int64 */
+            peerUserId?: number;
+            peerName?: string;
+            peerAvatarUrl?: string;
+            lastMessageId?: string;
+            lastMessagePreview?: string;
+            /** Format: int64 */
+            lastSenderId?: number;
+            /** Format: date-time */
+            lastMessageAt?: string;
+            /** Format: int32 */
+            unreadCount?: number;
+        };
+        SendFlexibleBody: {
+            content?: string;
+            kind?: string;
+            attachmentName?: string;
+            attachmentPath?: string;
+            attachmentMime?: string;
+            /** Format: int64 */
+            attachmentSize?: number;
+        };
+        ApiResponseGlobalDmMessageResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["GlobalDmMessageResult"];
+            code?: string;
+        };
+        GlobalDmMessageResult: {
+            id?: string;
+            conversationKey?: string;
+            /** Format: int64 */
+            senderId?: number;
+            senderName?: string;
+            senderAvatarUrl?: string;
+            content?: string;
+            kind?: string;
+            attachmentName?: string;
+            attachmentPath?: string;
+            attachmentMime?: string;
+            /** Format: int64 */
+            attachmentSize?: number;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        ApiResponseDmAttachmentResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["DmAttachmentResult"];
+            code?: string;
+        };
+        DmAttachmentResult: {
+            attachmentName?: string;
+            attachmentPath?: string;
+            attachmentMime?: string;
+            /** Format: int64 */
+            attachmentSize?: number;
         };
         /** @description 기업 등록 */
         CreateCompanyRequest: {
@@ -4074,6 +5553,24 @@ export interface components {
             code: string;
             overview?: string;
         };
+        BlockBody: {
+            /** Format: int64 */
+            userId: number;
+        };
+        ApiResponseBlockedUserResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["BlockedUserResult"];
+            code?: string;
+        };
+        BlockedUserResult: {
+            /** Format: int64 */
+            userId?: number;
+            name?: string;
+            avatarUrl?: string;
+            /** Format: date-time */
+            blockedAt?: string;
+        };
         /** @description 회원가입 요청 */
         RegisterRequest: {
             /** @example student@example.com */
@@ -4083,17 +5580,17 @@ export interface components {
             /** @example password12 */
             password: string;
             /**
-             * @example STUDENT
+             * @example DEVELOPER
              * @enum {string}
              */
-            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
         /** @description 토큰 갱신 요청 */
         RefreshRequest: {
             /** @description Refresh JWT */
             refreshToken: string;
         };
-        /** @description 비밀번호 재설정 확정 (이메일 + 원타임 토큰) */
+        /** @description 비밀번호 재설정 확정 (이메일 + 원타임 보안키) */
         ResetPasswordRequest: {
             /**
              * @description 재설정을 요청한 가입 이메일(아이디)
@@ -4101,7 +5598,7 @@ export interface components {
              */
             email: string;
             /**
-             * @description 메일 링크의 원타임 토큰 (로컬 데모에서는 forgot 응답 demoToken)
+             * @description 메일로 받은 원타임 보안키(token). 1회용이며 만료/사용 후 재사용 불가. 로컬/테스트(SMTP 미설정 + expose-demo-code)에서는 forgot 응답 demoToken 사용
              * @example dGhpc2lzYXNlY3VyZXJlc2V0dG9rZW4
              */
             token: string;
@@ -4133,10 +5630,18 @@ export interface components {
             /** @example password12 */
             password: string;
         };
-        /** @description 아이디(이메일) 찾기 요청 */
+        /** @description 아이디(이메일) 찾기 요청 — 이름 또는 이메일 중 하나 이상 필요 */
         FindIdRequest: {
-            /** @example 홍길동 */
-            name: string;
+            /**
+             * @description 가입 시 이름 (선택, 이메일과 둘 중 하나 이상)
+             * @example 홍길동
+             */
+            name?: string;
+            /**
+             * @description 등록 이메일 (선택, 이름과 둘 중 하나 이상)
+             * @example user@example.com
+             */
+            email?: string;
         };
         ApiResponseFindIdResponse: {
             success?: boolean;
@@ -4150,10 +5655,55 @@ export interface components {
             maskedEmails?: string[];
             /** @description 안내 문구 */
             hint?: string;
+            /** @description 이메일 발송 안내 */
+            message?: string;
+            /** @description 로그인 아이디 메일 발송 시도 여부 */
+            emailed?: boolean;
+        };
+        /** @description 이메일 인증번호 검증 요청 */
+        VerifyEmailCodeRequest: {
+            /** @example user@example.com */
+            email: string;
+            /**
+             * @description 메일로 받은 6자리 인증번호
+             * @example 123456
+             */
+            code: string;
+        };
+        ApiResponseVerifyEmailCodeResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["VerifyEmailCodeResponse"];
+            code?: string;
+        };
+        /** @description 이메일 인증번호 검증 응답 */
+        VerifyEmailCodeResponse: {
+            /** @description 인증 성공 여부 */
+            verified?: boolean;
+            /** @description 안내 메시지 */
+            message?: string;
+        };
+        /** @description 이메일 인증번호 발송 요청 */
+        SendEmailCodeRequest: {
+            /** @example user@example.com */
+            email: string;
+        };
+        ApiResponseSendEmailCodeResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["SendEmailCodeResponse"];
+            code?: string;
+        };
+        /** @description 이메일 인증번호 발송 응답 */
+        SendEmailCodeResponse: {
+            /** @description 공통 안내 메시지 */
+            message?: string;
+            /** @description 로컬/테스트 전용 인증번호 (SMTP 미설정 + expose-demo-code=true 일 때만). 운영에서는 항상 null. */
+            demoCode?: string;
         };
         /** @description 이메일 중복 확인 요청 */
         CheckEmailRequest: {
-            /** @example student@example.com */
+            /** @example user@example.com */
             email: string;
         };
         ApiResponseCheckEmailResponse: {
@@ -4164,15 +5714,17 @@ export interface components {
         };
         /** @description 이메일 중복 확인 응답 */
         CheckEmailResponse: {
-            /** @description 아직 가입되지 않아 사용 가능하면 true */
+            /** @description 가입에 사용 가능하면 true */
             available?: boolean;
+            /** @description 안내 메시지 */
+            message?: string;
         };
         CreateUserBody: {
             email?: string;
             name?: string;
             password?: string;
             /** @enum {string} */
-            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
             platformRole?: "USER" | "COMPANY_ADMIN" | "PLATFORM_ADMIN";
             /** Format: int64 */
@@ -4182,7 +5734,7 @@ export interface components {
             /** Format: int64 */
             courseId?: number;
             /** @enum {string} */
-            courseRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            courseRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** Format: int64 */
             companyId?: number;
         };
@@ -4199,9 +5751,9 @@ export interface components {
             requesterUserId?: number;
             requesterName?: string;
             /** @enum {string} */
-            fromRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            fromRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
-            toRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            toRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
             status?: "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
             /** Format: int64 */
@@ -4243,7 +5795,7 @@ export interface components {
             /** Format: int64 */
             userId?: number;
             /** @enum {string} */
-            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
         ApiResponseCourseMembership: {
             success?: boolean;
@@ -4259,7 +5811,7 @@ export interface components {
             /** Format: int64 */
             userId?: number;
             /** @enum {string} */
-            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
         /** @description 내 상태 변경 요청 */
         UpdateStatusRequest: {
@@ -4279,11 +5831,182 @@ export interface components {
             data?: components["schemas"]["RecordResponse"];
             code?: string;
         };
+        DecideApplicationRequest: {
+            status: string;
+        };
+        ApiResponsePublicUserProfileResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["PublicUserProfileResult"];
+            code?: string;
+        };
+        PublicUserProfileResult: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            avatarUrl?: string;
+        };
+        ApiResponseListPublicUserProfileResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["PublicUserProfileResult"][];
+            code?: string;
+        };
         ApiResponseListAccountRoleChangeRequestResponse: {
             success?: boolean;
             message?: string;
             data?: components["schemas"]["AccountRoleChangeRequestResponse"][];
             code?: string;
+        };
+        ApiResponseTilPageResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["TilPageResponse"];
+            code?: string;
+        };
+        TilPageResponse: {
+            items?: components["schemas"]["TilResponse"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            hasNext?: boolean;
+        };
+        ApiResponseListCommentResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["CommentResponse"][];
+            code?: string;
+        };
+        ApiResponseWeeklyRankingResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["WeeklyRankingResponse"];
+            code?: string;
+        };
+        RankingEntryResponse: {
+            /** Format: int32 */
+            rank?: number;
+            user?: components["schemas"]["AuthorResponse"];
+            /** Format: int64 */
+            writeCount?: number;
+        };
+        WeeklyRankingResponse: {
+            /** Format: date-time */
+            weekStart?: string;
+            /** Format: date-time */
+            weekEndExclusive?: string;
+            items?: components["schemas"]["RankingEntryResponse"][];
+        };
+        ApiResponseMyStatsResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["MyStatsResponse"];
+            code?: string;
+        };
+        DailyWriteCountResponse: {
+            /** Format: date */
+            date?: string;
+            /** Format: int64 */
+            count?: number;
+        };
+        MyStatsResponse: {
+            /** Format: int64 */
+            totalTilCount?: number;
+            /** Format: int32 */
+            consecutiveWritingDays?: number;
+            /** Format: int64 */
+            thisWeekWriteCount?: number;
+            last13WeeksDailyWriteCounts?: components["schemas"]["DailyWriteCountResponse"][];
+        };
+        ApiResponseListString: {
+            success?: boolean;
+            message?: string;
+            data?: string[];
+            code?: string;
+        };
+        ApiResponseStudyListResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["StudyListResponse"];
+            code?: string;
+        };
+        StudyListResponse: {
+            items?: components["schemas"]["StudySummaryResponse"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            /** Format: int64 */
+            openCount?: number;
+            /** Format: int64 */
+            closedCount?: number;
+            categoryCounts?: {
+                [key: string]: number;
+            };
+        };
+        /** @description 스터디 목록 항목 */
+        StudySummaryResponse: {
+            /** Format: int64 */
+            id?: number;
+            title?: string;
+            /** @enum {string} */
+            category?: "FRONTEND" | "BACKEND" | "ALGORITHM" | "CS" | "INTERVIEW";
+            techTags?: string[];
+            /** @enum {string} */
+            status?: "OPEN" | "CLOSED";
+            /** Format: int32 */
+            currentMembers?: number;
+            /** Format: int32 */
+            maxMembers?: number;
+            /** Format: date */
+            deadline?: string;
+            /** Format: int64 */
+            authorId?: number;
+            authorName?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: int64 */
+            pendingCount?: number;
+        };
+        ApiResponseListApplicationListItemResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["ApplicationListItemResponse"][];
+            code?: string;
+        };
+        ApplicationListItemResponse: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            applicantId?: number;
+            applicantName?: string;
+            message?: string;
+            /** @enum {string} */
+            status?: "PENDING" | "APPROVED" | "REJECTED";
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        ApiResponseMyStudiesResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["MyStudiesResponse"];
+            code?: string;
+        };
+        MyStudiesResponse: {
+            items?: components["schemas"]["StudySummaryResponse"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
         };
         ApiResponseListRoomResponse: {
             success?: boolean;
@@ -4379,16 +6102,16 @@ export interface components {
             /** Format: int32 */
             totalPages?: number;
         };
-        ApiResponseListRoleChangeRequestResponse: {
-            success?: boolean;
-            message?: string;
-            data?: components["schemas"]["RoleChangeRequestResponse"][];
-            code?: string;
-        };
         ApiResponseListReflectionResponse: {
             success?: boolean;
             message?: string;
             data?: components["schemas"]["ReflectionResponse"][];
+            code?: string;
+        };
+        ApiResponseListRoleChangeRequestResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["RoleChangeRequestResponse"][];
             code?: string;
         };
         ApiResponsePageResponsePostResponse: {
@@ -4432,7 +6155,6 @@ export interface components {
             name?: string;
             email?: string;
             avatarUrl?: string;
-            alreadyMember?: boolean;
         };
         ApiResponseListInquiryResponse: {
             success?: boolean;
@@ -4547,7 +6269,7 @@ export interface components {
             name?: string;
             avatarUrl?: string;
             /** @enum {string} */
-            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            role?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
         };
         ApiResponseListSessionResponse: {
             success?: boolean;
@@ -4573,11 +6295,57 @@ export interface components {
             data?: components["schemas"]["SubmissionCommentResponse"][];
             code?: string;
         };
+        ApiResponsePostPageResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["PostPageResponse"];
+            code?: string;
+        };
+        PostPageResponse: {
+            items?: components["schemas"]["PostResponse"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            hasNext?: boolean;
+        };
+        ApiResponseLikedMeResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["LikedMeResponse"];
+            code?: string;
+        };
+        LikedMeResponse: {
+            liked?: boolean;
+        };
+        ApiResponseCommentLikedMeResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["CommentLikedMeResponse"];
+            code?: string;
+        };
+        CommentLikedMeResponse: {
+            likedCommentIds?: number[];
+        };
         ApiResponseListNotificationResult: {
             success?: boolean;
             message?: string;
             data?: components["schemas"]["NotificationResult"][];
             code?: string;
+        };
+        ApiResponseUnreadCountResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["UnreadCountResponse"];
+            code?: string;
+        };
+        /** @description 미읽음 알림 개수 */
+        UnreadCountResponse: {
+            /**
+             * Format: int64
+             * @description 미읽음 수
+             */
+            count?: number;
         };
         /** @description 시그널링 엔드포인트 안내 */
         SignalingInfoResponse: {
@@ -4589,6 +6357,12 @@ export interface components {
             payloadNotes?: string;
             chatNote?: string;
             migrationNote?: string;
+        };
+        ApiResponseListTodoResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["TodoResponse"][];
+            code?: string;
         };
         ApiResponseGrowthProfileResult: {
             success?: boolean;
@@ -4642,6 +6416,54 @@ export interface components {
             body?: string;
             createdAt?: string;
         };
+        ApiResponseListFriendUserResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["FriendUserResult"][];
+            code?: string;
+        };
+        FriendUserResult: {
+            /** Format: int64 */
+            userId?: number;
+            name?: string;
+            avatarUrl?: string;
+            /** Format: date-time */
+            since?: string;
+        };
+        ApiResponseListFriendRequestResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["FriendRequestResult"][];
+            code?: string;
+        };
+        ApiResponseRelationshipResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["RelationshipResult"];
+            code?: string;
+        };
+        RelationshipResult: {
+            /** Format: int64 */
+            peerUserId?: number;
+            peerName?: string;
+            peerAvatarUrl?: string;
+            /** @enum {string} */
+            relationship?: "NONE" | "OUTGOING_REQUEST" | "INCOMING_REQUEST" | "FRIENDS" | "BLOCKED_BY_ME" | "BLOCKED_ME";
+            canDm?: boolean;
+            blockedEitherWay?: boolean;
+        };
+        ApiResponseListGlobalDmConversationResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["GlobalDmConversationResult"][];
+            code?: string;
+        };
+        ApiResponseListGlobalDmMessageResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["GlobalDmMessageResult"][];
+            code?: string;
+        };
         ApiResponseListCurriculumResponse: {
             success?: boolean;
             message?: string;
@@ -4673,11 +6495,57 @@ export interface components {
             name?: string;
             email?: string;
             /** @enum {string} */
-            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+            accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
             /** @enum {string} */
             platformRole?: "USER" | "COMPANY_ADMIN" | "PLATFORM_ADMIN";
             /** Format: int64 */
             companyId?: number;
+        };
+        ApiResponseListBlockedUserResult: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["BlockedUserResult"][];
+            code?: string;
+        };
+        ApiResponseMyApplicationsResponse: {
+            success?: boolean;
+            message?: string;
+            data?: components["schemas"]["MyApplicationsResponse"];
+            code?: string;
+        };
+        /** @description 신청 목록용 스터디 요약 */
+        AppliedStudyBriefResponse: {
+            /** Format: int64 */
+            id?: number;
+            title?: string;
+            /** @enum {string} */
+            category?: "FRONTEND" | "BACKEND" | "ALGORITHM" | "CS" | "INTERVIEW";
+            /** @enum {string} */
+            status?: "OPEN" | "CLOSED";
+            authorName?: string;
+        };
+        /** @description 내가 신청한 스터디 항목 */
+        MyApplicationItemResponse: {
+            /** Format: int64 */
+            id?: number;
+            /** @enum {string} */
+            status?: "PENDING" | "APPROVED" | "REJECTED";
+            message?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            study?: components["schemas"]["AppliedStudyBriefResponse"];
+        };
+        /** @description 내가 신청한 스터디 목록 페이지 */
+        MyApplicationsResponse: {
+            items?: components["schemas"]["MyApplicationItemResponse"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
         };
         ApiResponseListSystemAnnouncement: {
             success?: boolean;
@@ -4804,6 +6672,146 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                tilId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseTilResponse"];
+                };
+            };
+        };
+    };
+    update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tilId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTilRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseTilResponse"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tilId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    get_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseStudyDetailResponse"];
+                };
+            };
+        };
+    };
+    update_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateStudyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseStudyDetailResponse"];
+                };
+            };
+        };
+    };
+    delete_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    get_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
                 roomId: number;
             };
             cookie?: never;
@@ -4821,7 +6829,7 @@ export interface operations {
             };
         };
     };
-    update: {
+    update_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -4847,7 +6855,7 @@ export interface operations {
             };
         };
     };
-    delete: {
+    delete_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -4869,7 +6877,30 @@ export interface operations {
             };
         };
     };
-    get_1: {
+    setCoverPhoto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roomId: number;
+                photoId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseRoomResponse"];
+                };
+            };
+        };
+    };
+    get_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -4891,7 +6922,7 @@ export interface operations {
             };
         };
     };
-    update_1: {
+    update_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -4917,7 +6948,7 @@ export interface operations {
             };
         };
     };
-    delete_1: {
+    delete_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -4939,7 +6970,7 @@ export interface operations {
             };
         };
     };
-    get_2: {
+    get_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -4961,7 +6992,7 @@ export interface operations {
             };
         };
     };
-    update_2: {
+    update_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -4987,7 +7018,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -5009,7 +7040,7 @@ export interface operations {
             };
         };
     };
-    get_3: {
+    get_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -5032,7 +7063,7 @@ export interface operations {
             };
         };
     };
-    update_3: {
+    update_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -5059,7 +7090,7 @@ export interface operations {
             };
         };
     };
-    delete_3: {
+    delete_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -5082,7 +7113,7 @@ export interface operations {
             };
         };
     };
-    update_4: {
+    update_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -5109,7 +7140,7 @@ export interface operations {
             };
         };
     };
-    delete_4: {
+    delete_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -5180,7 +7211,7 @@ export interface operations {
             };
         };
     };
-    update_5: {
+    update_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -5207,7 +7238,7 @@ export interface operations {
             };
         };
     };
-    delete_5: {
+    delete_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -5230,7 +7261,7 @@ export interface operations {
             };
         };
     };
-    get_4: {
+    get_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -5253,7 +7284,7 @@ export interface operations {
             };
         };
     };
-    update_6: {
+    update_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -5280,7 +7311,7 @@ export interface operations {
             };
         };
     };
-    delete_6: {
+    delete_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -5426,7 +7457,7 @@ export interface operations {
             };
         };
     };
-    update_7: {
+    update_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -5453,7 +7484,77 @@ export interface operations {
             };
         };
     };
-    get_6: {
+    get_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePostResponse"];
+                };
+            };
+        };
+    };
+    update_10: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePostRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePostResponse"];
+                };
+            };
+        };
+    };
+    delete_10: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    get_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -5475,7 +7576,7 @@ export interface operations {
             };
         };
     };
-    update_8: {
+    update_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -5501,7 +7602,7 @@ export interface operations {
             };
         };
     };
-    delete_8: {
+    delete_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -5523,40 +7624,18 @@ export interface operations {
             };
         };
     };
-    getModule: {
+    update_12: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                moduleId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiResponseModuleResponse"];
-                };
-            };
-        };
-    };
-    updateModule: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                moduleId: number;
+                todoId: number;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ModuleBody"];
+                "application/json": components["schemas"]["UpdateTodoRequest"];
             };
         };
         responses: {
@@ -5566,17 +7645,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseModuleResponse"];
+                    "application/json": components["schemas"]["ApiResponseTodoResponse"];
                 };
             };
         };
     };
-    deleteModule: {
+    delete_12: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                moduleId: number;
+                todoId: number;
             };
             cookie?: never;
         };
@@ -5593,40 +7672,18 @@ export interface operations {
             };
         };
     };
-    get_7: {
+    update_13: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiResponseCurriculumResponse"];
-                };
-            };
-        };
-    };
-    update_9: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
+                todoId: number;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CurriculumBody"];
+                "application/json": components["schemas"]["UpdateTodoRequest"];
             };
         };
         responses: {
@@ -5636,17 +7693,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseCurriculumResponse"];
+                    "application/json": components["schemas"]["ApiResponseTodoResponse"];
                 };
             };
         };
     };
-    delete_9: {
+    delete_13: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                todoId: number;
             };
             cookie?: never;
         };
@@ -5663,7 +7720,7 @@ export interface operations {
             };
         };
     };
-    get_8: {
+    get_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -5685,7 +7742,7 @@ export interface operations {
             };
         };
     };
-    update_10: {
+    update_14: {
         parameters: {
             query?: never;
             header?: never;
@@ -5699,28 +7756,6 @@ export interface operations {
                 "application/json": components["schemas"]["UpdateCourseRequest"];
             };
         };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiResponseCourseResponse"];
-                };
-            };
-        };
-    };
-    deactivate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                courseId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
@@ -5759,7 +7794,7 @@ export interface operations {
             };
         };
     };
-    get_9: {
+    get_13: {
         parameters: {
             query?: never;
             header?: never;
@@ -5781,7 +7816,7 @@ export interface operations {
             };
         };
     };
-    update_11: {
+    update_15: {
         parameters: {
             query?: never;
             header?: never;
@@ -5830,7 +7865,7 @@ export interface operations {
             };
         };
     };
-    get_10: {
+    get_14: {
         parameters: {
             query?: never;
             header?: never;
@@ -5852,7 +7887,7 @@ export interface operations {
             };
         };
     };
-    update_12: {
+    update_16: {
         parameters: {
             query?: never;
             header?: never;
@@ -5878,7 +7913,7 @@ export interface operations {
             };
         };
     };
-    deactivate_1: {
+    deactivate: {
         parameters: {
             query?: never;
             header?: never;
@@ -6005,7 +8040,7 @@ export interface operations {
             };
         };
     };
-    get_12: {
+    get_16: {
         parameters: {
             query?: never;
             header?: never;
@@ -6027,7 +8062,7 @@ export interface operations {
             };
         };
     };
-    update_13: {
+    update_17: {
         parameters: {
             query?: never;
             header?: never;
@@ -6053,7 +8088,7 @@ export interface operations {
             };
         };
     };
-    deactivate_2: {
+    deactivate_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6075,7 +8110,7 @@ export interface operations {
             };
         };
     };
-    update_14: {
+    update_18: {
         parameters: {
             query?: never;
             header?: never;
@@ -6101,7 +8136,7 @@ export interface operations {
             };
         };
     };
-    delete_10: {
+    delete_14: {
         parameters: {
             query?: never;
             header?: never;
@@ -6171,7 +8206,7 @@ export interface operations {
             };
         };
     };
-    updateModule_1: {
+    updateModule: {
         parameters: {
             query?: never;
             header?: never;
@@ -6197,7 +8232,7 @@ export interface operations {
             };
         };
     };
-    deleteModule_1: {
+    deleteModule: {
         parameters: {
             query?: never;
             header?: never;
@@ -6219,7 +8254,7 @@ export interface operations {
             };
         };
     };
-    get_13: {
+    get_17: {
         parameters: {
             query?: never;
             header?: never;
@@ -6241,7 +8276,7 @@ export interface operations {
             };
         };
     };
-    update_15: {
+    update_19: {
         parameters: {
             query?: never;
             header?: never;
@@ -6267,7 +8302,7 @@ export interface operations {
             };
         };
     };
-    deactivate_3: {
+    deactivate_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -6289,7 +8324,7 @@ export interface operations {
             };
         };
     };
-    update_16: {
+    update_20: {
         parameters: {
             query?: never;
             header?: never;
@@ -6315,7 +8350,7 @@ export interface operations {
             };
         };
     };
-    delete_11: {
+    delete_15: {
         parameters: {
             query?: never;
             header?: never;
@@ -6452,6 +8487,337 @@ export interface operations {
             };
         };
     };
+    list: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+                sort?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseTilPageResponse"];
+                };
+            };
+        };
+    };
+    create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTilRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseTilResponse"];
+                };
+            };
+        };
+    };
+    toggleLike: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tilId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseLikeResponse"];
+                };
+            };
+        };
+    };
+    listComments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tilId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListCommentResponse"];
+                };
+            };
+        };
+    };
+    createComment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tilId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseCommentResponse"];
+                };
+            };
+        };
+    };
+    toggleCommentLike: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tilId: number;
+                commentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseCommentLikeResponse"];
+                };
+            };
+        };
+    };
+    toggleBookmark: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tilId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseBookmarkResponse"];
+                };
+            };
+        };
+    };
+    list_1: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+                q?: string;
+                category?: string;
+                sort?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseStudyListResponse"];
+                };
+            };
+        };
+    };
+    create_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateStudyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseStudyDetailResponse"];
+                };
+            };
+        };
+    };
+    listComments_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListCommentResponse"];
+                };
+            };
+        };
+    };
+    createComment_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseCommentResponse"];
+                };
+            };
+        };
+    };
+    toggleBookmark_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseBookmarkResponse"];
+                };
+            };
+        };
+    };
+    listApplications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListApplicationListItemResponse"];
+                };
+            };
+        };
+    };
+    apply: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ApplyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseApplicationResponse"];
+                };
+            };
+        };
+    };
     listByRoom: {
         parameters: {
             query?: {
@@ -6477,7 +8843,7 @@ export interface operations {
             };
         };
     };
-    create: {
+    create_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -6666,7 +9032,7 @@ export interface operations {
             };
         };
     };
-    create_1: {
+    create_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -6690,7 +9056,7 @@ export interface operations {
             };
         };
     };
-    list: {
+    list_2: {
         parameters: {
             query?: {
                 page?: number;
@@ -6716,7 +9082,7 @@ export interface operations {
             };
         };
     };
-    create_2: {
+    create_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -6774,7 +9140,7 @@ export interface operations {
             };
         };
     };
-    list_1: {
+    list_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -6796,7 +9162,7 @@ export interface operations {
             };
         };
     };
-    create_3: {
+    create_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -6875,7 +9241,7 @@ export interface operations {
             };
         };
     };
-    listComments: {
+    listComments_2: {
         parameters: {
             query: {
                 targetType: string;
@@ -7031,7 +9397,7 @@ export interface operations {
             };
         };
     };
-    list_2: {
+    list_4: {
         parameters: {
             query?: {
                 page?: number;
@@ -7056,7 +9422,7 @@ export interface operations {
             };
         };
     };
-    create_4: {
+    create_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -7220,7 +9586,7 @@ export interface operations {
             };
         };
     };
-    create_5: {
+    create_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -7246,7 +9612,7 @@ export interface operations {
             };
         };
     };
-    list_3: {
+    list_5: {
         parameters: {
             query?: {
                 kind?: "GENERAL" | "ANNOUNCEMENT";
@@ -7272,7 +9638,7 @@ export interface operations {
             };
         };
     };
-    create_6: {
+    create_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -7294,6 +9660,82 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResponsePostResponse"];
+                };
+            };
+        };
+    };
+    create_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                projectId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBody"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseCreateResponse"];
+                };
+            };
+        };
+    };
+    vote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                projectId: number;
+                pollId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoteBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePollResponse"];
+                };
+            };
+        };
+    };
+    close: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                projectId: number;
+                pollId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePollResponse"];
                 };
             };
         };
@@ -7346,7 +9788,7 @@ export interface operations {
             };
         };
     };
-    list_6: {
+    list_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -7368,7 +9810,7 @@ export interface operations {
             };
         };
     };
-    create_7: {
+    create_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -7394,7 +9836,7 @@ export interface operations {
             };
         };
     };
-    close: {
+    close_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -7444,7 +9886,7 @@ export interface operations {
             };
         };
     };
-    list_7: {
+    list_9: {
         parameters: {
             query?: {
                 page?: number;
@@ -7530,7 +9972,7 @@ export interface operations {
             };
         };
     };
-    list_8: {
+    list_10: {
         parameters: {
             query?: {
                 page?: number;
@@ -7555,7 +9997,7 @@ export interface operations {
             };
         };
     };
-    create_8: {
+    create_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -7725,7 +10167,7 @@ export interface operations {
             };
         };
     };
-    list_9: {
+    list_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -7747,7 +10189,7 @@ export interface operations {
             };
         };
     };
-    create_9: {
+    create_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -7823,7 +10265,7 @@ export interface operations {
             };
         };
     };
-    listComments_1: {
+    listComments_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -7919,6 +10361,147 @@ export interface operations {
             };
         };
     };
+    list_12: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+                category?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePostPageResponse"];
+                };
+            };
+        };
+    };
+    create_13: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePostRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePostResponse"];
+                };
+            };
+        };
+    };
+    toggleLike_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseLikeResponse"];
+                };
+            };
+        };
+    };
+    listComments_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListCommentResponse"];
+                };
+            };
+        };
+    };
+    createComment_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseCommentResponse"];
+                };
+            };
+        };
+    };
+    toggleCommentLike_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+                commentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseLikeResponse"];
+                };
+            };
+        };
+    };
     markRead: {
         parameters: {
             query?: never;
@@ -7941,6 +10524,52 @@ export interface operations {
             };
         };
     };
+    markReadPatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notificationId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseNotificationResult"];
+                };
+            };
+        };
+    };
+    markReadBulk: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["MarkReadRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseMarkReadResponse"];
+                };
+            };
+        };
+    };
     markAllRead: {
         parameters: {
             query?: never;
@@ -7956,12 +10585,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseMapStringInteger"];
+                    "application/json": components["schemas"]["ApiResponseMarkReadResponse"];
                 };
             };
         };
     };
-    listMine_2: {
+    listMine_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -7981,7 +10610,7 @@ export interface operations {
             };
         };
     };
-    create_10: {
+    create_14: {
         parameters: {
             query?: never;
             header?: never;
@@ -8167,9 +10796,11 @@ export interface operations {
             };
         };
     };
-    list_11: {
+    list_14: {
         parameters: {
-            query?: never;
+            query?: {
+                date?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -8182,12 +10813,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseListCurriculumResponse"];
+                    "application/json": components["schemas"]["ApiResponseListTodoResponse"];
                 };
             };
         };
     };
-    create_11: {
+    create_15: {
         parameters: {
             query?: never;
             header?: never;
@@ -8196,53 +10827,97 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CurriculumBody"];
+                "application/json": components["schemas"]["CreateTodoRequest"];
             };
         };
         responses: {
-            /** @description Created */
-            201: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseCurriculumResponse"];
+                    "application/json": components["schemas"]["ApiResponseTodoResponse"];
                 };
             };
         };
     };
-    createModule: {
+    list_15: {
+        parameters: {
+            query?: {
+                date?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListTodoResponse"];
+                };
+            };
+        };
+    };
+    create_16: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                curriculumId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ModuleBody"];
+                "application/json": components["schemas"]["CreateTodoRequest"];
             };
         };
         responses: {
-            /** @description Created */
-            201: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseModuleResponse"];
+                    "application/json": components["schemas"]["ApiResponseTodoResponse"];
                 };
             };
         };
     };
-    listCourseModules: {
+    sendRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TargetUserBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseFriendRequestResult"];
+                };
+            };
+        };
+    };
+    reject_3: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                courseId: number;
+                userId: number;
             };
             cookie?: never;
         };
@@ -8254,43 +10929,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseListLearnerModuleResponse"];
+                    "application/json": components["schemas"]["ApiResponseFriendRequestResult"];
                 };
             };
         };
     };
-    createCourseModule: {
+    accept_1: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                courseId: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ModuleBody"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiResponseModuleResponse"];
-                };
-            };
-        };
-    };
-    listByCourse: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                courseId: number;
+                userId: number;
             };
             cookie?: never;
         };
@@ -8302,38 +10951,142 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseListCurriculumResponse"];
+                    "application/json": components["schemas"]["ApiResponseFriendRequestResult"];
                 };
             };
         };
     };
-    createForCourse: {
+    typing: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                courseId: number;
+                peerUserId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["TypingBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseMapStringObject"];
+                };
+            };
+        };
+    };
+    markRead_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                peerUserId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReadBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseGlobalDmConversationResult"];
+                };
+            };
+        };
+    };
+    listMessages: {
+        parameters: {
+            query?: {
+                limit?: number;
+                before?: string;
+            };
+            header?: never;
+            path: {
+                peerUserId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListGlobalDmMessageResult"];
+                };
+            };
+        };
+    };
+    send: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                peerUserId: number;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CurriculumBody"];
+                "application/json": components["schemas"]["SendFlexibleBody"];
             };
         };
         responses: {
-            /** @description Created */
-            201: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseCurriculumResponse"];
+                    "application/json": components["schemas"]["ApiResponseGlobalDmMessageResult"];
                 };
             };
         };
     };
-    list_12: {
+    upload_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseDmAttachmentResult"];
+                };
+            };
+        };
+    };
+    list_17: {
         parameters: {
             query?: never;
             header?: never;
@@ -8353,7 +11106,7 @@ export interface operations {
             };
         };
     };
-    create_12: {
+    create_17: {
         parameters: {
             query?: never;
             header?: never;
@@ -8399,7 +11152,7 @@ export interface operations {
             };
         };
     };
-    create_13: {
+    create_18: {
         parameters: {
             query?: never;
             header?: never;
@@ -8447,7 +11200,7 @@ export interface operations {
             };
         };
     };
-    create_14: {
+    create_19: {
         parameters: {
             query?: never;
             header?: never;
@@ -8469,6 +11222,50 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResponseCourseResponse"];
+                };
+            };
+        };
+    };
+    list_18: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListBlockedUserResult"];
+                };
+            };
+        };
+    };
+    block: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BlockBody"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseBlockedUserResult"];
                 };
             };
         };
@@ -8569,6 +11366,26 @@ export interface operations {
             };
         };
     };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
     login: {
         parameters: {
             query?: never;
@@ -8617,6 +11434,54 @@ export interface operations {
             };
         };
     };
+    verifyEmailCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyEmailCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVerifyEmailCodeResponse"];
+                };
+            };
+        };
+    };
+    sendEmailCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendEmailCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseSendEmailCodeResponse"];
+                };
+            };
+        };
+    };
     checkEmail: {
         parameters: {
             query?: never;
@@ -8641,12 +11506,12 @@ export interface operations {
             };
         };
     };
-    list_13: {
+    list_19: {
         parameters: {
             query?: {
                 organizationId?: number;
                 courseId?: number;
-                accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR";
+                accountRole?: "STUDENT" | "MENTOR" | "INSTRUCTOR" | "OPERATOR" | "PROJECT_MANAGER" | "PROJECT_LEADER" | "PLANNER" | "DESIGNER" | "DEVELOPER";
                 companyId?: number;
             };
             header?: never;
@@ -8666,7 +11531,7 @@ export interface operations {
             };
         };
     };
-    create_15: {
+    create_20: {
         parameters: {
             query?: never;
             header?: never;
@@ -8716,7 +11581,7 @@ export interface operations {
             };
         };
     };
-    reject_3: {
+    reject_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -8760,7 +11625,7 @@ export interface operations {
             };
         };
     };
-    reject_4: {
+    reject_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -8804,7 +11669,7 @@ export interface operations {
             };
         };
     };
-    list_15: {
+    list_21: {
         parameters: {
             query?: never;
             header?: never;
@@ -8824,7 +11689,7 @@ export interface operations {
             };
         };
     };
-    create_16: {
+    create_21: {
         parameters: {
             query?: never;
             header?: never;
@@ -8896,7 +11761,7 @@ export interface operations {
             };
         };
     };
-    list_16: {
+    list_22: {
         parameters: {
             query?: never;
             header?: never;
@@ -8916,7 +11781,7 @@ export interface operations {
             };
         };
     };
-    create_17: {
+    create_22: {
         parameters: {
             query?: never;
             header?: never;
@@ -8940,7 +11805,7 @@ export interface operations {
             };
         };
     };
-    createModule_1: {
+    createModule: {
         parameters: {
             query?: never;
             header?: never;
@@ -8992,7 +11857,7 @@ export interface operations {
             };
         };
     };
-    list_17: {
+    list_23: {
         parameters: {
             query?: {
                 organizationId?: number;
@@ -9014,7 +11879,7 @@ export interface operations {
             };
         };
     };
-    create_18: {
+    create_23: {
         parameters: {
             query?: never;
             header?: never;
@@ -9086,7 +11951,7 @@ export interface operations {
             };
         };
     };
-    list_18: {
+    list_24: {
         parameters: {
             query?: never;
             header?: never;
@@ -9106,7 +11971,7 @@ export interface operations {
             };
         };
     };
-    create_19: {
+    create_24: {
         parameters: {
             query?: never;
             header?: never;
@@ -9181,6 +12046,54 @@ export interface operations {
             };
         };
     };
+    decide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                applicationId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideApplicationRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseApplicationResponse"];
+                };
+            };
+        };
+    };
+    getPublicProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePublicUserProfileResult"];
+                };
+            };
+        };
+    };
     getAvatar: {
         parameters: {
             query?: never;
@@ -9199,6 +12112,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": string;
+                };
+            };
+        };
+    };
+    search: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListPublicUserProfileResult"];
                 };
             };
         };
@@ -9259,6 +12195,94 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResponseListAccountRoleChangeRequestResponse"];
+                };
+            };
+        };
+    };
+    weeklyRankings: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseWeeklyRankingResponse"];
+                };
+            };
+        };
+    };
+    myStats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseMyStatsResponse"];
+                };
+            };
+        };
+    };
+    suggest: {
+        parameters: {
+            query?: {
+                q?: string;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListString"];
+                };
+            };
+        };
+    };
+    myStudies: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseMyStudiesResponse"];
                 };
             };
         };
@@ -9440,15 +12464,13 @@ export interface operations {
             };
         };
     };
-    countComments: {
+    listTeamBySchedule: {
         parameters: {
-            query: {
-                targetType: string;
-                targetIds?: string[];
-            };
+            query?: never;
             header?: never;
             path: {
                 projectId: number;
+                scheduleId: number;
             };
             cookie?: never;
         };
@@ -9460,7 +12482,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseMapStringLong"];
+                    "application/json": components["schemas"]["ApiResponseListReflectionResponse"];
                 };
             };
         };
@@ -9487,7 +12509,30 @@ export interface operations {
             };
         };
     };
-    list_4: {
+    get_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                projectId: number;
+                pollId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePollResponse"];
+                };
+            };
+        };
+    };
+    list_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -9509,7 +12554,7 @@ export interface operations {
             };
         };
     };
-    list_5: {
+    list_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -9603,7 +12648,7 @@ export interface operations {
             };
         };
     };
-    get_5: {
+    get_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -9626,7 +12671,7 @@ export interface operations {
             };
         };
     };
-    delete_7: {
+    delete_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -9738,10 +12783,134 @@ export interface operations {
             };
         };
     };
-    list_10: {
+    likedByMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseLikedMeResponse"];
+                };
+            };
+        };
+    };
+    commentLikedByMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseCommentLikedMeResponse"];
+                };
+            };
+        };
+    };
+    listHot: {
         parameters: {
             query?: {
+                page?: number;
+                size?: number;
                 limit?: number;
+                sort?: string;
+                period?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePostPageResponse"];
+                };
+            };
+        };
+    };
+    listHot_1: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+                limit?: number;
+                sort?: string;
+                period?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePostPageResponse"];
+                };
+            };
+        };
+    };
+    listMine_2: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponsePostPageResponse"];
+                };
+            };
+        };
+    };
+    list_13: {
+        parameters: {
+            query?: {
+                /** @description 최대 개수 (기본 50, 최대 100) */
+                limit?: number;
+                /** @description true면 미읽음만 (기본 true). false면 전체 */
+                unreadOnly?: boolean;
+                /** @description 있으면 우선: false=미읽음, true=읽음만 */
+                read?: boolean;
             };
             header?: never;
             path?: never;
@@ -9775,7 +12944,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResponseMapStringLong"];
+                    "application/json": components["schemas"]["ApiResponseUnreadCountResponse"];
                 };
             };
         };
@@ -9800,7 +12969,7 @@ export interface operations {
             };
         };
     };
-    listMine_3: {
+    listMine_4: {
         parameters: {
             query?: {
                 page?: number;
@@ -9823,7 +12992,7 @@ export interface operations {
             };
         };
     };
-    listMine_4: {
+    listMine_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -9843,7 +13012,7 @@ export interface operations {
             };
         };
     };
-    listMine_5: {
+    listMine_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -9863,7 +13032,7 @@ export interface operations {
             };
         };
     };
-    listMine_6: {
+    listMine_7: {
         parameters: {
             query?: {
                 page?: number;
@@ -9906,7 +13075,7 @@ export interface operations {
             };
         };
     };
-    listMine_7: {
+    listMine_8: {
         parameters: {
             query?: {
                 projectId?: number;
@@ -9949,7 +13118,7 @@ export interface operations {
             };
         };
     };
-    listMine_8: {
+    listMine_9: {
         parameters: {
             query?: {
                 page?: number;
@@ -9973,7 +13142,173 @@ export interface operations {
             };
         };
     };
-    listMine_9: {
+    listFriends: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListFriendUserResult"];
+                };
+            };
+        };
+    };
+    outgoing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListFriendRequestResult"];
+                };
+            };
+        };
+    };
+    incoming: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListFriendRequestResult"];
+                };
+            };
+        };
+    };
+    relationship: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseRelationshipResult"];
+                };
+            };
+        };
+    };
+    listConversations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListGlobalDmConversationResult"];
+                };
+            };
+        };
+    };
+    download_1: {
+        parameters: {
+            query?: {
+                peerUserId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
+    };
+    list_16: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseListCurriculumResponse"];
+                };
+            };
+        };
+    };
+    get_11: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseCurriculumResponse"];
+                };
+            };
+        };
+    };
+    listMine_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -10055,6 +13390,29 @@ export interface operations {
             };
         };
     };
+    myApplications: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseMyApplicationsResponse"];
+                };
+            };
+        };
+    };
     active: {
         parameters: {
             query?: never;
@@ -10095,7 +13453,7 @@ export interface operations {
             };
         };
     };
-    list_14: {
+    list_20: {
         parameters: {
             query?: {
                 organizationId?: number;
@@ -10118,7 +13476,7 @@ export interface operations {
             };
         };
     };
-    get_11: {
+    get_15: {
         parameters: {
             query?: never;
             header?: never;
@@ -10202,12 +13560,146 @@ export interface operations {
             };
         };
     };
+    deleteComment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tilId: number;
+                commentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    cancelMyApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                studyId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
     remove_1: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 projectId: number;
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    deleteComment_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+                commentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    remove_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    cancelRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    unblock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
                 userId: number;
             };
             cookie?: never;
