@@ -11,6 +11,7 @@ import TilEditorSkeleton from './TilEditorSkeleton';
 import TilNotice from './TilNotice';
 import {
   TIL_BOARD_BASE,
+  TIL_WRITE_HREF,
   formatTilDate,
   isUnauthorized,
   tilDetailHref,
@@ -52,7 +53,7 @@ export default function TilWritePage() {
               ? 'TIL을 쓰려면 로그인해 주세요.'
               : tilErrorMessage(state.error, '작성 화면을 불러오지 못했어요.')
           }
-          needLogin={isUnauthorized(state.error)}
+          loginReturnTo={isUnauthorized(state.error) ? TIL_WRITE_HREF : undefined}
           link={{ href: TIL_BOARD_BASE, label: 'TIL 게시판으로' }}
         />
       </div>

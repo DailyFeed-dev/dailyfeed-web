@@ -13,11 +13,12 @@ import TilAvatar from './TilAvatar';
 import { TilProfilePopoverTrigger } from './TilProfilePopover';
 import { TilIcon } from './TilTempUi';
 import {
-  LOGIN_HREF,
   formatTilRelativeTime,
   isSameUser,
   tilChatHref,
+  tilDetailHref,
   tilErrorMessage,
+  tilLoginHref,
 } from './tilBoardUrl';
 
 const MAX_LENGTH = 500;
@@ -257,7 +258,7 @@ export default function TilCommentSection({
         <p className="mb-3 rounded-xl border-[1.5px] border-[#e2defd] bg-white px-4.5 py-4 text-[15px] text-[#6b6a7b]">
           댓글을 쓰려면{' '}
           <Link
-            href={LOGIN_HREF}
+            href={tilLoginHref(tilDetailHref(tilId))}
             className="font-semibold text-[#4b3fd6] underline underline-offset-2"
           >
             로그인

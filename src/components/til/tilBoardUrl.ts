@@ -1,9 +1,18 @@
+import { NEXT_PARAM } from '@/components/auth/nextPath';
 import { ApiError } from '@/lib/api';
 import type { TilListQuery, TilListSort, TilListTab } from '@/types/til';
 
 export const TIL_BOARD_BASE = '/til';
 export const TIL_WRITE_HREF = '/til/write';
-export const LOGIN_HREF = '/login';
+
+/**
+ * 로그인 화면 주소. 로그인에 성공하면 returnTo(지금 보던 TIL 주소)로 돌아옵니다.
+ * 로그인 화면의 ?next= 규칙(components/auth/nextPath.ts)을 따릅니다.
+ * 예) tilLoginHref('/til/view?id=3') → /login?next=%2Ftil%2Fview%3Fid%3D3
+ */
+export function tilLoginHref(returnTo: string) {
+  return `/login?${NEXT_PARAM}=${encodeURIComponent(returnTo)}`;
+}
 
 const TABS: TilListTab[] = ['all', 'popular', 'mine', 'bookmarks'];
 const SORTS: TilListSort[] = ['latest', 'oldest'];

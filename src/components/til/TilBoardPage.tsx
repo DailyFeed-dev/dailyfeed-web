@@ -92,7 +92,8 @@ export default function TilBoardPage({ query }: { query: TilListQuery }) {
       return (
         <TilNotice
           message={tilErrorMessage(list.error, 'TIL 목록을 불러오지 못했어요.')}
-          needLogin={isUnauthorized(list.error)}
+          // 로그인하면 지금 보던 탭 · 정렬 · 페이지로 돌아옵니다.
+          loginReturnTo={isUnauthorized(list.error) ? queryKey : undefined}
         />
       );
     }
