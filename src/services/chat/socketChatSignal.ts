@@ -4,7 +4,7 @@ import type { ChatSyncSignal } from '@/services/chat/pollingChatRealtime';
 
 export type ChatJoinPayload = {
   accessToken: string;
-  userId: number;
+  userId: string;
   userName: string;
 };
 
@@ -53,7 +53,7 @@ export function createSocketChatSignal({
   };
 
   const open = () => {
-    const current = io(url, { path });
+    const current = io(url, { path, transports: ['websocket', 'polling'], withCredentials: true });
     socket = current;
     current.on('connect', () => void join(current));
     current.on('disconnect', forgetJoin);
