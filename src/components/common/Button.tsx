@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 
 import Icon, { type IconName } from './Icon';
 
-type ButtonVariant = 'primary' | 'soft' | 'outline';
+type ButtonVariant = 'primary' | 'soft' | 'outline' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 type ButtonProps = ComponentProps<'button'> & {
@@ -16,6 +16,7 @@ const VARIANT_CLASS: Record<ButtonVariant, string> = {
   soft: 'bg-(--color-bg-brand-soft) text-(--color-text-brand)',
   outline:
     'border border-(--color-border-strong) bg-(--color-bg-surface) text-(--color-text-primary)',
+  danger: 'bg-(--color-text-danger) text-(--color-text-on-brand)',
 };
 
 const SIZE_CLASS: Record<ButtonSize, string> = {
