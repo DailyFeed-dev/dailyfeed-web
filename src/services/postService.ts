@@ -3,9 +3,11 @@ import { api, type Schemas } from '@/lib/api';
 // 피드 글 API (/api/v1/posts) 호출 함수 모음입니다.
 // 컴포넌트에서는 api 를 직접 부르지 않고 이 함수들을 씁니다.
 
-// ⚠️ schema.d.ts 가 아직 최신이 아니라서 새로 생긴 필드(category, tags, likeCount, viewCount)를 여기서 보충합니다.
+// ⚠️ schema.d.ts 가 아직 최신이 아니라서 새로 생긴 필드(author, category, tags, likeCount, viewCount)를 여기서 보충합니다.
 //    `npm run api:types` 로 타입을 다시 만든 뒤에는 Schemas['PostResponse'] 만 쓰면 됩니다.
 export type Post = Schemas['PostResponse'] & {
+  /** 작성자. 실제 서버는 authorId · authorName 대신 이 객체로 줍니다. */
+  author?: Schemas['AuthorResponse'];
   category?: string | null;
   tags?: string[];
   likeCount?: number;
@@ -56,4 +58,16 @@ export function getPostLikedByMe(postId: number, signal?: AbortSignal) {
 /** 글 좋아요 토글. 안 눌렀으면 켜고, 눌렀으면 취소합니다. 바뀐 상태(liked)와 좋아요 수를 돌려줍니다. */
 export function togglePostLike(postId: number, signal?: AbortSignal) {
   return api.post<PostLike>(`/api/v1/posts/${postId}/likes`, undefined, { signal });
+}
+
+/**
+ * 글 작성자 (id, name, avatarUrl). 서버가 주는 author 객체를 쓰고,
+ * 없으면(옛 응답 모양) authorId · authorName 으로 채웁니다.
+ */
+export function getPostAuthor(post: Post): Schemas['AuthorResponse'] {
+  return {
+    id: post.author?.id ?? post.authorId,
+    name: post.author?.name ?? post.authorName,
+    avatarUrl: post.author?.avatarUrl ?? undefined,
+  };
 }

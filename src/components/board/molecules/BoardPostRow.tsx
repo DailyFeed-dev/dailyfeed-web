@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { Post } from '@/services/postService';
+import { getPostAuthor, type Post } from '@/services/postService';
 import BoardCategoryBadge from '../atoms/BoardCategoryBadge';
 import { formatDate } from '../boardFormat';
 
@@ -22,7 +22,7 @@ export default function BoardPostRow({ post }: { post: Post }) {
         </p>
       </div>
       <span className="text-center text-[13px] leading-normal text-[#6C6980]">
-        {post.authorName}
+        {getPostAuthor(post).name}
       </span>
       <span className="text-center text-[13px] leading-normal text-[#6C6980]">
         {formatDate(post.createdAt)}
