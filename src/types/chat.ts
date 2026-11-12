@@ -68,6 +68,8 @@ export type ChatFriendPort = {
   acceptFriendRequest(userId: ChatUserId): Promise<void>;
   rejectFriendRequest(userId: ChatUserId): Promise<void>;
   removeFriend(userId: ChatUserId): Promise<void>;
+  blockUser(userId: ChatUserId): Promise<void>;
+  unblockUser(userId: ChatUserId): Promise<void>;
 };
 
 export type ChatUserPort = {

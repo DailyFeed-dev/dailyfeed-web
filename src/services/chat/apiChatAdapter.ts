@@ -15,6 +15,7 @@ import type {
 
 const DM_PATH = '/api/v1/dm/conversations';
 const FRIENDS_PATH = '/api/v1/friends';
+const BLOCKS_PATH = '/api/v1/blocks';
 const ME_PATH = '/api/v1/auth/me';
 const USERS_PATH = '/api/v1/users';
 const DEFAULT_PAGE_SIZE = 20;
@@ -187,6 +188,15 @@ const friendPort: ChatFriendPort = {
 
   async removeFriend(userId) {
     await api.delete(`${FRIENDS_PATH}/${userId}`);
+  },
+
+  async blockUser(userId) {
+    const body: Schemas['BlockBody'] = { userId };
+    await api.post(BLOCKS_PATH, body);
+  },
+
+  async unblockUser(userId) {
+    await api.delete(`${BLOCKS_PATH}/${userId}`);
   },
 };
 
