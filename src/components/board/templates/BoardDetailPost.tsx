@@ -31,8 +31,8 @@ export default function BoardDetailPost({ post, isMe = false }: { post: Post; is
       </div>
 
       {/* 본문은 줄바꿈을 그대로 보여 줍니다. 마크다운 렌더링은 필요해지면 추가해 주세요. */}
-      <div className="mt-6 text-[15px] leading-[1.7] whitespace-pre-wrap text-[#2E2D3A]">
-        {post.body}
+      <div className="mt-6 text-[15px] leading-[1.7] wrap-anywhere whitespace-pre-wrap text-[#2E2D3A]">
+        {post.content}
       </div>
 
       {post.tags && post.tags.length > 0 && (
