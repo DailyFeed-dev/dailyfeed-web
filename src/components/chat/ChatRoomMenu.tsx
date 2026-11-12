@@ -20,6 +20,7 @@ export default function ChatRoomMenu({ peerName, relationState }: ChatRoomMenuPr
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const wasBusy = useRef(false);
   const { relation, busy } = relationState;
 
   useEffect(() => {
@@ -42,6 +43,12 @@ export default function ChatRoomMenu({ peerName, relationState }: ChatRoomMenuPr
     };
   }, [open]);
 
+  useEffect(() => {
+    const actionFinished = wasBusy.current && !busy;
+    wasBusy.current = busy;
+    if (actionFinished && document.activeElement === document.body) buttonRef.current?.focus();
+  }, [busy]);
+
   if (!relation) return null;
 
   const askToConfirm = (action: ConfirmAction) => {
@@ -59,6 +66,11 @@ export default function ChatRoomMenu({ peerName, relationState }: ChatRoomMenuPr
     setConfirmAction(null);
     if (action === 'removeFriend') void relationState.removeFriend();
     if (action === 'block') void relationState.block();
+  };
+
+  const cancelConfirm = () => {
+    setConfirmAction(null);
+    buttonRef.current?.focus();
   };
 
   const items: SubMenuItem[] = [];
@@ -92,7 +104,7 @@ export default function ChatRoomMenu({ peerName, relationState }: ChatRoomMenuPr
         confirmLabel="삭제"
         cancelLabel="취소"
         onConfirm={runConfirmedAction}
-        onCancel={() => setConfirmAction(null)}
+        onCancel={cancelConfirm}
       />
       <Modal
         open={confirmAction === 'block'}
@@ -101,7 +113,7 @@ export default function ChatRoomMenu({ peerName, relationState }: ChatRoomMenuPr
         confirmLabel="차단"
         cancelLabel="취소"
         onConfirm={runConfirmedAction}
-        onCancel={() => setConfirmAction(null)}
+        onCancel={cancelConfirm}
       />
     </div>
   );
