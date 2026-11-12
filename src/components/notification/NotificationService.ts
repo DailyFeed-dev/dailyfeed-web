@@ -1,54 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NotificationItem } from './NotificationTypes';
 
-// ✅ 하드코딩된 서버 주소를 지우고 .env 파일에서 가져오도록 수정했습니다.
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: '1',
-    type: 'post',
-    title: '게시물 제목',
-    boardName: '자유게시판',
-    message: '내 게시물에 새로운 댓글이 달렸습니다.',
-    time: '오후 8:00',
-    linkUrl: '/board/1',
-  },
-  {
-    id: '2',
-    type: 'message',
-    title: '김민지',
-    message: '로그인 API 연결 끝났어요 🎉',
-    time: '오전 9:00',
-    avatarUrl: 'https://i.pravatar.cc/150?u=44',
-    linkUrl: '/chat?with=2',
-  },
-];
-
 const getAuthToken = () => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('accessToken');
+    // ✅ 1. 팀원이 정해둔 정확한 토큰 이름표(dailyfeed.accessToken)로 꺼내옵니다.
+    return localStorage.getItem('dailyfeed.accessToken');
   }
   return '';
 };
 
 export const notificationService = {
+  // 1. 알림 목록 불러오기
   fetchNotifications: async (): Promise<NotificationItem[]> => {
     try {
       const token = getAuthToken();
+      if (!token) return [];
 
-      if (!token) {
-        console.log('🔒 로그인 토큰이 없어 임시(Mock) 데이터를 표시합니다.');
-        if (typeof window !== 'undefined') {
-          if (!(window as any).__MOCK_DATA__) {
-            (window as any).__MOCK_DATA__ = [...INITIAL_NOTIFICATIONS];
-          }
-          return (window as any).__MOCK_DATA__;
-        }
-        return [];
-      }
-
-      const response = await fetch(`${BASE_URL}/api/v1/notifications`, {
+      // ✅ 2. BASE_URL을 빼고 프록시 설정에 맞게 상대 경로(/api/...)로 직접 찌릅니다.
+      const response = await fetch('/api/v1/notifications', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -80,20 +49,13 @@ export const notificationService = {
     }
   },
 
+  // 2. 알림 삭제(읽음) 처리
   deleteNotification: async (id: string): Promise<boolean> => {
     try {
       const token = getAuthToken();
+      if (!token) return false;
 
-      if (!token) {
-        if (typeof window !== 'undefined' && (window as any).__MOCK_DATA__) {
-          (window as any).__MOCK_DATA__ = (window as any).__MOCK_DATA__.filter(
-            (noti: NotificationItem) => noti.id !== id,
-          );
-        }
-        return true;
-      }
-
-      const response = await fetch(`${BASE_URL}/api/v1/notifications/${id}/read`, {
+      const response = await fetch(`/api/v1/notifications/${id}/read`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -108,18 +70,13 @@ export const notificationService = {
     }
   },
 
+  // 3. 미읽음 알림 개수 조회 (헤더 뱃지용)
   getUnreadCount: async (): Promise<number> => {
     try {
       const token = getAuthToken();
+      if (!token) return 0;
 
-      if (!token) {
-        if (typeof window !== 'undefined' && (window as any).__MOCK_DATA__) {
-          return (window as any).__MOCK_DATA__.length;
-        }
-        return INITIAL_NOTIFICATIONS.length;
-      }
-
-      const response = await fetch(`${BASE_URL}/api/v1/notifications/unread-count`, {
+      const response = await fetch('/api/v1/notifications/unread-count', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

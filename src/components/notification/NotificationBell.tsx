@@ -1,42 +1,31 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { BellIcon } from '@/components/common/icons';
-import { notificationService } from './NotificationService';
+import { useRouter } from 'next/navigation';
+// ... 기존에 임포트하신 다른 내용들
 
 export default function NotificationBell() {
-  const [unreadCount, setUnreadCount] = useState(0);
+  const router = useRouter();
 
-  useEffect(() => {
-    const loadUnreadCount = async () => {
-      const data = await notificationService.fetchNotifications();
-      setUnreadCount(data.length);
-    };
+  // 🔔 종 아이콘을 클릭했을 때 실행되는 핸들러 (혹은 직접 onClick에 연결된 함수)
+  const handleBellClick = () => {
+    // 1. 토큰이 있는지 확인
+    const token =
+      typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
 
-    // 1. 처음 마운트될 때 개수 불러오기
-    loadUnreadCount();
+    // 2. 로그인 전(토큰 없음)이라면 로그인 페이지로 이동!
+    if (!token) {
+      router.push('/login');
+      return; // 더 이상 알림창이 열리지 않도록 중단
+    }
 
-    // 2. 방송(이벤트)을 수신했을 때 실행될 함수
-    const handleUpdate = () => {
-      loadUnreadCount();
-    };
-
-    window.addEventListener('notification-updated', handleUpdate);
-
-    return () => {
-      window.removeEventListener('notification-updated', handleUpdate);
-    };
-  }, []);
-
-  const hasUnread = unreadCount > 0;
+    // 3. 로그인 후(토큰 있음)라면 원래대로 알림 목록 토글/조회 로직 실행
+    // 예: setIsOpen((prev) => !prev);
+  };
 
   return (
-    <>
-      <BellIcon className="size-5.5" />
-      {hasUnread && (
-        <span className="absolute top-2 right-2.5 size-2 rounded-full bg-red-600 ring-2 ring-white" />
-      )}
-    </>
+    // 유저님이 만드신 종 아이콘 버튼 컴포넌트의 onClick에 위 함수를 연결해 주세요!
+    <button onClick={handleBellClick} aria-label="알림">
+      {/* 종 아이콘 SVG 등등... */}
+    </button>
   );
 }
