@@ -293,6 +293,15 @@ const userPort: ChatUserPort = {
     await wait(signal);
     return requireUser(userId);
   },
+
+  async searchUsers(query, signal) {
+    await wait(signal);
+    const keyword = query.trim().toLowerCase();
+    if (!keyword) return [];
+    return [...users.values()]
+      .filter((user) => user.name.toLowerCase().includes(keyword))
+      .map((user) => ({ ...user }));
+  },
 };
 
 export const mockChatAdapter: ChatAdapter = {

@@ -32,7 +32,7 @@ function requireAccessToken() {
 async function getJoinPayload(): Promise<ChatJoinPayload> {
   requireAccessToken();
   const me = await adapter.users.getMe();
-  return { accessToken: requireAccessToken(), userId: me.id, userName: me.name };
+  return { accessToken: requireAccessToken(), userId: String(me.id), userName: me.name };
 }
 
 function selectSyncSignal() {

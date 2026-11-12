@@ -73,6 +73,7 @@ export type ChatFriendPort = {
 export type ChatUserPort = {
   getMe(signal?: AbortSignal): Promise<ChatUser>;
   getUser(userId: ChatUserId, signal?: AbortSignal): Promise<ChatUser>;
+  searchUsers(query: string, signal?: AbortSignal): Promise<ChatUser[]>;
 };
 
 export type ChatAdapter = {
