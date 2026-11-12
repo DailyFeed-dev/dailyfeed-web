@@ -15,6 +15,10 @@ const MULTIPART_MARGIN_BYTES = 64 * 1024;
 
 export const MAX_ATTACHMENT_BYTES = UPLOAD_BODY_LIMIT_BYTES - MULTIPART_MARGIN_BYTES;
 
+export function isTooLargeToSend(file: File) {
+  return file.size > MAX_ATTACHMENT_BYTES;
+}
+
 export function isPreviewImage(mime: string) {
   return PREVIEW_IMAGE_TYPES.includes(mime.toLowerCase());
 }

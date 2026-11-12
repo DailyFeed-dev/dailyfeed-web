@@ -2,7 +2,7 @@ import type { ChatMessage, ChatUser } from '@/types/chat';
 
 import AttachmentCard from './AttachmentCard';
 import ChatAvatar from './ChatAvatar';
-import { fileMetaOf } from './chatAttachment';
+import { fileMetaOf, isTooLargeToSend } from './chatAttachment';
 import { formatMessageTime } from './chatTime';
 import type { TimelineItem } from './chatTimeline';
 import MessageAttachment from './MessageAttachment';
@@ -75,6 +75,7 @@ export default function MessageRow({ item, peer, onRetry, onDiscard }: MessageRo
   const { message } = item;
   const failed = message.status === 'failed';
   const dimmed = failed ? '' : 'opacity-60';
+  const canRetry = !message.file || !isTooLargeToSend(message.file);
   return (
     <div className="flex flex-col items-end gap-1.5">
       {message.file ? (
@@ -89,13 +90,15 @@ export default function MessageRow({ item, peer, onRetry, onDiscard }: MessageRo
       {failed ? (
         <div className={`${META} text-(--color-text-danger)`} role="alert">
           <span>{message.errorMessage}</span>
-          <button
-            type="button"
-            onClick={() => onRetry(message.clientId)}
-            className="cursor-pointer font-semibold underline underline-offset-2"
-          >
-            다시 보내기
-          </button>
+          {canRetry && (
+            <button
+              type="button"
+              onClick={() => onRetry(message.clientId)}
+              className="cursor-pointer font-semibold underline underline-offset-2"
+            >
+              다시 보내기
+            </button>
+          )}
           <button
             type="button"
             onClick={() => onDiscard(message.clientId)}

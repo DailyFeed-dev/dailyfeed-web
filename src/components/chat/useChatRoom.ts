@@ -4,7 +4,7 @@ import { ApiError } from '@/lib/api';
 import { chatRealtime, conversationService, messageService } from '@/services/chatService';
 import type { ChatAttachment, ChatMessage, ChatUserId } from '@/types/chat';
 
-import { MAX_ATTACHMENT_BYTES } from './chatAttachment';
+import { isTooLargeToSend } from './chatAttachment';
 import { mergeMessages, type PendingMessage } from './chatTimeline';
 import { errorMessageOf } from './errorMessage';
 
@@ -88,7 +88,7 @@ export function useChatRoom(peerId: ChatUserId) {
 
   const sendFile = useCallback(
     async (clientId: string, file: File) => {
-      if (file.size > MAX_ATTACHMENT_BYTES) throw new Error(FILE_SIZE_LIMIT_MESSAGE);
+      if (isTooLargeToSend(file)) throw new Error(FILE_SIZE_LIMIT_MESSAGE);
       const attachment =
         uploadedAttachments.current.get(clientId) ?? (await messageService.uploadAttachment(file));
       uploadedAttachments.current.set(clientId, attachment);
