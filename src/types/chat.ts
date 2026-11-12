@@ -76,11 +76,16 @@ export type ChatUserPort = {
   searchUsers(query: string, signal?: AbortSignal): Promise<ChatUser[]>;
 };
 
+export type ChatTypingPort = {
+  sendTyping(peerId: ChatUserId, typing: boolean): Promise<void>;
+};
+
 export type ChatAdapter = {
   conversations: ChatConversationPort;
   messages: ChatMessagePort;
   friends: ChatFriendPort;
   users: ChatUserPort;
+  typing: ChatTypingPort;
 };
 
 export type ChatRoomEvent =
@@ -94,4 +99,5 @@ export type ChatListEvent =
 export type ChatRealtimePort = {
   subscribeRoom(peerId: ChatUserId, onEvent: (event: ChatRoomEvent) => void): () => void;
   subscribeConversations(onEvent: (event: ChatListEvent) => void): () => void;
+  subscribeTyping(peerId: ChatUserId, onTyping: (typing: boolean) => void): () => void;
 };
