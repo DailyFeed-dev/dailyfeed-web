@@ -88,14 +88,14 @@ export default function ProfileInfoPanel({ profile, onEdit }: ProfileInfoPanelPr
               {profile.statusMessage || '등록된 상태 메시지가 없습니다.'}
             </p>
             <p className="mt-2 text-xs leading-5 text-[#858297]">
-              프로필 이미지와 상태는 설정에서 변경할 수 있어요.
+              접속 상태와 상태 메시지는 상단 프로필 배너에서 변경할 수 있어요.
             </p>
             <button
               type="button"
               onClick={onEdit}
               className="mt-6 rounded-lg border border-[#ECEAF4] px-4 py-2.5 text-sm font-medium hover:bg-[#F3F2F8]"
             >
-              프로필 설정으로
+              상태 변경
             </button>
           </section>
         </div>

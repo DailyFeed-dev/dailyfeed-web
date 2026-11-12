@@ -22,13 +22,3 @@ export function validateProfileStatus(
 
   return { ok: true, value: { presenceStatus: selected.value, statusMessage } };
 }
-
-export function validateProfileAvatar(form: FormData): ProfileValidationResult<File> {
-  const file = form.get('avatar');
-
-  if (!(file instanceof File) || file.size === 0 || !file.type.startsWith('image/')) {
-    return { ok: false, errors: { avatar: '업로드할 이미지 파일을 선택해 주세요.' } };
-  }
-
-  return { ok: true, value: file };
-}
