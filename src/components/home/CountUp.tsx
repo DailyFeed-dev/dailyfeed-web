@@ -35,10 +35,9 @@ export default function CountUp({
     if (!el) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    let frame = 0;
     let timer = 0;
     // 화면에 보이기 전에는 0 으로 맞춰 둬요 (다음 화면 그리기 때)
-    frame = requestAnimationFrame(() => setShown(0));
+    let frame = requestAnimationFrame(() => setShown(0));
 
     const run = () => {
       const start = performance.now();

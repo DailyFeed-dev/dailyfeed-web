@@ -145,7 +145,6 @@ export default function FeatureSection() {
     <section id="features" className="flex scroll-mt-28 flex-col gap-14 py-24 lg:py-30">
       <Reveal>
         <SectionHeading
-          path="~/dailyfeed/features"
           title="DailyFeed에서 할 수 있는 일"
           description="기록하고, 나누고, 솔직하게 이야기해요. 필요한 공간이 모두 한곳에 있어요."
         />

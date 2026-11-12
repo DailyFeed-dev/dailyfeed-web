@@ -121,7 +121,6 @@ export default function ChatSection() {
     >
       <Reveal>
         <SectionHeading
-          path="~/dailyfeed/chat"
           title="막히면 바로 물어보세요, 채팅으로"
           description="프로젝트 팀원과 실시간으로 대화하고, 궁금한 건 1:1로 편하게 물어볼 수 있어요."
         />

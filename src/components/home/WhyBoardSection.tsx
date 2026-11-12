@@ -120,7 +120,6 @@ export default function WhyBoardSection() {
       </div>
       <Reveal>
         <SectionHeading
-          path="~/dailyfeed/board"
           title="게시판에서 함께 나누면 더 빨리 성장해요"
           description="혼자 막히던 문제도, 먼저 겪은 동료의 한마디로 풀릴 때가 많아요."
         />

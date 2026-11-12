@@ -67,7 +67,6 @@ export default function WhyTilSection() {
     >
       <Reveal>
         <SectionHeading
-          path="~/dailyfeed/why-til"
           title="TIL 작성은 왜 필요할까요?"
           description="TIL(Today I Learned)은 오늘 배운 것을 짧게 남기는 개발 기록이에요. 한 줄이어도 괜찮아요."
         />

@@ -29,7 +29,7 @@ export default function StepsSection() {
   return (
     <section className="flex flex-col gap-10 py-24 lg:py-30">
       <Reveal>
-        <SectionHeading path="$ dailyfeed --help" title="3단계로 시작해요" />
+        <SectionHeading title="3단계로 시작해요" />
       </Reveal>
 
       <Reveal>

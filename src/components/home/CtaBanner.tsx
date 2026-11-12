@@ -7,7 +7,7 @@ import { buttonHover } from './buttonHover';
 import LoginRequiredLink from './LoginRequiredLink';
 import Reveal from './Reveal';
 
-// ④ 마지막 시작하기 띠: 보라 그라데이션 박스 (왼쪽 아래 모서리가 크게 둥근 모양)
+// ⑦ 마지막 시작하기 띠: 보라 그라데이션 박스 (왼쪽 아래 모서리가 크게 둥근 모양)
 export default function CtaBanner() {
   return (
     <section
