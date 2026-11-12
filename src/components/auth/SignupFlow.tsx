@@ -3,7 +3,8 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 
 import AuthCard from '@/components/auth/AuthCard';
-import AuthTextLink from '@/components/auth/AuthTextLink';
+import AuthNextLink from '@/components/auth/AuthNextLink';
+import { authTextLinkClassName } from '@/components/auth/AuthTextLink';
 import SignupDetailsForm, { type SignupDetails } from '@/components/auth/SignupDetailsForm';
 import SignupVerifyForm from '@/components/auth/SignupVerifyForm';
 
@@ -71,7 +72,10 @@ export default function SignupFlow() {
       footerDivider={false}
       footer={
         <p className="text-center text-sm font-medium text-(--color-text-brand)">
-          이미 계정이 있나요? <AuthTextLink href="/login">로그인</AuthTextLink>
+          이미 계정이 있나요?{' '}
+          <AuthNextLink href="/login" className={authTextLinkClassName}>
+            로그인
+          </AuthNextLink>
         </p>
       }
     >

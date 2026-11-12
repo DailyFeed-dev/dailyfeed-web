@@ -4,6 +4,7 @@ import { api, tokenStorage, type Schemas } from '@/lib/api';
  * Auth API 함수입니다. (이슈 #4)
  * 화면 컴포넌트는 api 를 직접 부르지 않고 이 파일의 함수만 사용합니다.
  * 로그인·회원가입·비밀번호 찾기 요청에는 아직 토큰이 없으므로 skipAuth 로 Authorization 헤더를 붙이지 않습니다.
+ * (로그아웃만 토큰이 필요해서 skipAuth 를 쓰지 않습니다)
  */
 
 /** 로그인에 성공하면 토큰을 저장하고 응답(사용자 정보 포함)을 돌려줍니다. 실패하면 ApiError 를 던집니다. */
@@ -65,4 +66,27 @@ export async function register(body: Schemas['RegisterRequest']): Promise<Schema
   });
   tokenStorage.setTokens(auth);
   return auth;
+}
+
+/**
+ * 로그아웃합니다. 서버에 토큰 무효화를 요청하고, 이 브라우저에 저장된 토큰을 지웁니다.
+ * 서버 요청이 실패해도(401, 네트워크 오류 등) 토큰은 반드시 지우고, 오류를 던지지 않습니다.
+ * 그래서 호출한 쪽은 try/catch 없이 바로 다음 화면으로 이동하면 됩니다. 화면 이동은 이 함수가 하지 않습니다.
+ *
+ * @example
+ * const router = useRouter();
+ * async function handleLogout() {
+ *   await logout();
+ *   router.replace('/');
+ * }
+ */
+export async function logout(): Promise<void> {
+  try {
+    // 로그인한 사용자의 토큰을 무효화하는 요청이라 skipAuth 를 쓰지 않습니다. (Authorization 헤더 필요)
+    await api.post('/api/v1/auth/logout');
+  } catch {
+    // 서버가 실패해도 사용자는 로그아웃된 상태가 되어야 하므로 오류는 무시합니다.
+  } finally {
+    tokenStorage.clear();
+  }
 }
