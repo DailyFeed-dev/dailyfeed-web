@@ -5,14 +5,15 @@ import type { Schemas } from '@/lib/api';
 import { formatProfileDate } from '../../profileActivity';
 
 type Props = {
-  record: Schemas['PostResponse'] | Schemas['ReflectionResponse'];
+  record: Schemas['PostResponse'] | Schemas['TilResponse'];
   category: string;
+  body: string;
   onBack: () => void;
 };
 
 // posts에서 글을 눌렀을 대 보여주는 상세 화면 UI
 
-export default function ProfileRecordDetail({ record, category, onBack }: Props) {
+export default function ProfileRecordDetail({ record, category, body, onBack }: Props) {
   return (
     <article className="mt-6 rounded-2xl bg-white p-6 sm:p-7">
       <Button variant="outline" icon="arrow-left" onClick={onBack}>
@@ -25,10 +26,10 @@ export default function ProfileRecordDetail({ record, category, onBack }: Props)
         </time>
       </div>
       <h3 className="mt-4 text-xl font-bold wrap-anywhere text-(--color-text-primary)">
-        {record.title}
+        {record.title || '제목 없는 글'}
       </h3>
       <p className="mt-6 text-sm leading-7 wrap-anywhere whitespace-pre-wrap text-(--color-text-secondary)">
-        {record.body || '등록된 본문이 없습니다.'}
+        {body || '등록된 본문이 없습니다.'}
       </p>
     </article>
   );
