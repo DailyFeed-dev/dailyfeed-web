@@ -2,6 +2,7 @@
 
 import { Check, ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { focusFirstInvalid } from '@/lib/focus-first-invalid';
 
 export type DropdownOption = { value: string; label: string };
 
@@ -69,10 +70,11 @@ export default function Dropdown({
 
   const selectedLabel = options.find((option) => option.value === value)?.label;
 
-  // 에러는 빨간 테두리, 열림·선택·포커스는 흰 배경에 보라 테두리, 처음 상태는 회색 배경입니다.
+  // 열림·선택·포커스는 흰 배경에 보라 테두리, 처음 상태는 회색 배경입니다.
   const isActive = open || selectedLabel !== undefined;
+  // 에러여도 사용자가 직접 눌러 열면 보라색이 우선입니다. (코드가 포커스만 옮긴 경우에는 빨간색 유지)
   const fieldStyle = isError
-    ? 'border-[#D41717] bg-white'
+    ? `bg-white ${open ? 'border-[#6157E9]' : 'border-[#D41717]'}`
     : `${isActive ? 'border-[#6157E9] bg-white' : 'border-transparent bg-[#F3F2F8]'} focus-visible:border-[#6157E9] focus-visible:bg-white`;
 
   return (
@@ -90,10 +92,8 @@ export default function Dropdown({
             onInvalid={(event) => {
               event.preventDefault(); // 브라우저 기본 말풍선 대신 아래 에러 표시를 씁니다.
               setMissing(true);
-              // 비어 있는 칸이 여러 개면 맨 위 칸에만 포커스를 줍니다.
-              if (event.currentTarget.form?.querySelector(':invalid') === event.currentTarget) {
-                buttonRef.current?.focus();
-              }
+              // 맨 위 빈 칸이면 이 버튼으로 포커스를 주고 화면을 옮깁니다.
+              if (buttonRef.current) focusFirstInvalid(event.currentTarget, buttonRef.current);
             }}
             className="pointer-events-none absolute inset-x-0 bottom-0 h-0 opacity-0"
           />

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { focusFirstInvalid } from '@/lib/focus-first-invalid';
 import { BORDER_DEFAULT, BORDER_ERROR, BORDER_FILLED, LABEL } from '../boardWriteStyles';
 
 const MAX_LENGTH = 100;
@@ -9,6 +10,8 @@ const MAX_LENGTH = 100;
 export default function BoardTitleField() {
   const [value, setValue] = useState('');
   const [missing, setMissing] = useState(false);
+  // 사용자가 직접 누르거나 입력 중인지. 에러 색(빨강)과 포커스 색(보라) 중 무엇을 보여 줄지 정합니다.
+  const [engaged, setEngaged] = useState(false);
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -34,14 +37,24 @@ export default function BoardTitleField() {
         onInvalid={(event) => {
           event.preventDefault(); // 브라우저 기본 말풍선 대신 아래 에러 표시를 씁니다.
           setMissing(true);
-          // 비어 있는 칸이 여러 개면 맨 위 칸에만 포커스를 줍니다.
-          if (event.currentTarget.form?.querySelector(':invalid') === event.currentTarget) {
-            event.currentTarget.focus();
-          }
+          setEngaged(false);
+          focusFirstInvalid(event.currentTarget); // 맨 위 빈 칸으로 이동
         }}
+        // 에러가 처음 뜰 때는 코드가 포커스를 옮겨도 빨간색을 유지하고, 직접 누르거나 입력하면 보라색이 됩니다.
+        onPointerDown={() => setEngaged(true)}
+        onKeyDown={() => setEngaged(true)}
+        onBlur={() => setEngaged(false)}
         className={`rounded-lg border-[1.5px] bg-white ${
-          missing ? BORDER_ERROR : value.trim() ? BORDER_FILLED : BORDER_DEFAULT
-        } h-[46px] px-4 text-sm leading-[1.55] text-[#201D2B] outline-none placeholder:text-[#6C6980] focus:border-[#6157E9]`}
+          missing
+            ? engaged
+              ? BORDER_FILLED
+              : BORDER_ERROR
+            : value.trim()
+              ? BORDER_FILLED
+              : BORDER_DEFAULT
+        } h-[46px] px-4 text-sm leading-[1.55] text-[#201D2B] outline-none placeholder:text-[#6C6980] ${
+          missing ? '' : 'focus:border-[#6157E9]'
+        }`}
       />
       <div className="flex items-center gap-3">
         <p
