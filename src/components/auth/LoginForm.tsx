@@ -11,10 +11,12 @@ import {
   type SubmitEvent,
 } from 'react';
 
+import { getAuthErrorMessage } from '@/components/auth/authErrorMessage';
+import AuthFormError from '@/components/auth/AuthFormError';
 import { validateEmail, validateRequired } from '@/components/auth/validation';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
-import { ApiError, tokenStorage, type Schemas } from '@/lib/api';
+import { tokenStorage, type Schemas } from '@/lib/api';
 import { login } from '@/services/authService';
 
 type Field = 'email' | 'password';
@@ -38,22 +40,6 @@ const BLOCKED_ACCOUNT_MESSAGES: Partial<Record<AccountStatus, string>> = {
   REJECTED: '가입이 승인되지 않은 계정이에요.',
 };
 const UNKNOWN_ACCOUNT_STATUS_MESSAGE = '로그인할 수 없는 계정 상태예요. 관리자에게 문의해 주세요.';
-
-const NETWORK_ERROR_MESSAGE = '서버와 연결할 수 없어요. 잠시 후 다시 시도해 주세요.';
-
-/**
- * 로그인 실패 시 화면에 보여줄 문구를 고릅니다.
- * 서버가 문구를 보낸 4xx(예: 비밀번호 불일치)만 서버 문구를 그대로 쓰고,
- * 서버 오류(5xx)·JSON 이 아닌 응답(프록시 미설정 404 등)·네트워크 오류는 연결 오류 문구로 바꿉니다.
- */
-function getLoginErrorMessage(error: unknown): string {
-  if (!(error instanceof ApiError)) return NETWORK_ERROR_MESSAGE;
-  // 응답이 JSON 이 아니거나 message 가 없으면 lib/api/client.ts 가 이 기본 문구를 넣습니다.
-  // (client.ts 의 문구가 바뀌면 여기도 함께 바꿔야 합니다)
-  const isFallbackMessage = error.message === `요청에 실패했습니다. (${error.status})`;
-  if (error.status >= 500 || isFallbackMessage) return NETWORK_ERROR_MESSAGE;
-  return error.message;
-}
 
 /**
  * 로그인 입력 폼입니다. 입력값·에러 상태를 다루므로 클라이언트 컴포넌트입니다.
@@ -141,7 +127,7 @@ export default function LoginForm() {
           UNKNOWN_ACCOUNT_STATUS_MESSAGE,
       );
     } catch (error) {
-      setFormError(getLoginErrorMessage(error));
+      setFormError(getAuthErrorMessage(error));
     }
 
     submittingRef.current = false;
@@ -196,14 +182,7 @@ export default function LoginForm() {
         {pending ? '로그인 중...' : '로그인'}
       </Button>
 
-      {/* 스크린 리더가 문구를 바로 읽을 수 있도록 role="alert" 영역은 항상 렌더링합니다. */}
-      <div role="alert">
-        {formError && (
-          <p className="mt-4 rounded-[10px] bg-(--color-bg-danger-soft) px-4 py-3 text-center text-sm text-(--color-text-danger)">
-            {formError}
-          </p>
-        )}
-      </div>
+      <AuthFormError message={formError} />
     </form>
   );
 }
