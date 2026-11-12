@@ -28,7 +28,6 @@ export default function ForgotPasswordSentPage() {
       <AuthNotice className="mt-[55px]">
         메일이 오지 않았나요? 스팸함도 확인해 주세요.
         <br />
-        보안키는 30분 동안 유효해요.
       </AuthNotice>
 
       {/* 페이지 이동이라 버튼이 아닌 링크입니다. 모양만 공통 Button 과 같게 맞춥니다. */}
