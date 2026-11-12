@@ -8,6 +8,7 @@ import AuthFormError from '@/components/auth/AuthFormError';
 import AuthNotice from '@/components/auth/AuthNotice';
 import { authTextLinkClassName } from '@/components/auth/AuthTextLink';
 import type { SignupDetails } from '@/components/auth/SignupDetailsForm';
+import { getPostLoginPath } from '@/components/auth/nextPath';
 import { EMAIL_CODE_LENGTH, validateEmailCode } from '@/components/auth/validation';
 import Button, { buttonClassName } from '@/components/common/Button';
 import Input from '@/components/common/Input';
@@ -123,9 +124,9 @@ export default function SignupVerifyForm({
 
         const blockedMessage = getBlockedAccountMessage(auth.accountStatus);
         if (!blockedMessage) {
-          // 뒤로 가기로 가입 화면에 돌아오지 않도록 replace 로 이동합니다.
+          // ?next= 로 받은 원래 주소(없으면 메인)로, 뒤로 가기로 가입 화면에 돌아오지 않도록 replace 로 이동합니다.
           // 이동이 끝날 때까지 버튼은 "가입하는 중..." 상태로 둡니다.
-          router.replace('/');
+          router.replace(getPostLoginPath());
           return;
         }
 
