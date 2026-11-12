@@ -1,17 +1,17 @@
 import Icon from '@/components/common/Icon';
 
-import { FAQ_ITEMS } from './faqItems';
+import type { FaqItem } from './faqItems';
 
 /**
  * 질문을 누르면 답이 펼쳐지는 FAQ 목록 (아코디언)
- * - HTML 기본 기능(details · summary)이라 자바스크립트 없이 동작해요. (서버 컴포넌트)
+ * - HTML 기본 기능(details · summary)이라 열고 닫는 데 따로 코드가 필요 없어요.
  * - 키보드(Tab · Enter)로도 열고 닫을 수 있어요.
  * - 첫 번째 질문은 처음부터 열어 둬요. (어떻게 쓰는 목록인지 바로 보이도록)
  */
-export default function FaqList() {
+export default function FaqList({ items }: { items: FaqItem[] }) {
   return (
     <ul className="flex flex-col gap-3">
-      {FAQ_ITEMS.map((item, i) => (
+      {items.map((item, i) => (
         <li key={item.question}>
           <details
             open={i === 0}
@@ -34,8 +34,8 @@ export default function FaqList() {
                 className="shrink-0 text-(--color-text-muted) transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
               />
             </summary>
-            {/* 왼쪽 여백 = 바깥 여백 24 + Q 글자 폭 약 10 + 사이 간격 12 → 질문 글자와 줄을 맞춤 */}
-            <p className="px-6 pb-5 pl-[46px] text-[14px] leading-[1.55] text-(--color-text-secondary)">
+            {/* pl-[46px]: 질문 글자와 줄을 맞춤 · whitespace-pre-line: 답 속 \n 을 줄바꿈으로 · break-keep: 단어 중간에서 안 끊기게 */}
+            <p className="px-6 pb-5 pl-[46px] text-[14px] leading-[1.55] break-keep whitespace-pre-line text-(--color-text-secondary)">
               {item.answer}
             </p>
           </details>

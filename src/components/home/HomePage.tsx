@@ -1,6 +1,5 @@
 import ChatSection from './ChatSection';
 import CtaBanner from './CtaBanner';
-import FaqSection from './FaqSection';
 import FeatureSection from './FeatureSection';
 import HeroSection from './HeroSection';
 import OnboardingFooter from './OnboardingFooter';
@@ -11,7 +10,7 @@ import WhyTilSection from './WhyTilSection';
 
 /**
  * 메인화면 (이슈 #8) — 온보딩 형식
- * 소개 · 기능 · TIL 필요성 · 게시판 이점 · 채팅 · 3단계 · FAQ · 시작하기 순서로 보여 주는 화면이라 데이터를 불러오지 않습니다.
+ * 소개 · 기능 · TIL 필요성 · 게시판 이점 · 채팅 · 3단계 · 시작하기 순서로 보여 주는 화면이라 데이터를 불러오지 않습니다.
  * 그래서 'use client' 없이 서버 컴포넌트로 만들었어요. (Next.js 기본 방식)
  * 배경은 섹션마다 연보라(#F6F5FB) / 흰색이 번갈아 나와요. (시작하기 띠만 연보라 위 보라 박스)
  *
@@ -33,7 +32,6 @@ export default function HomePage() {
       <WhyBoardSection />
       <ChatSection />
       <StepsSection />
-      <FaqSection />
       <CtaBanner />
       <OnboardingFooter />
       {/* 오른쪽 아래 "맨 위로" 버튼 (화면에 고정) */}

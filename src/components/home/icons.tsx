@@ -2,7 +2,6 @@ import type { SVGProps } from 'react';
 
 // 온보딩 화면에서만 쓰는 아이콘입니다. (Lucide 아이콘 경로, ISC 라이선스)
 // 공통에 이미 있는 아이콘(MessageCircleIcon 등)은 여기 만들지 않고 common/icons 에서 가져다 씁니다.
-// TODO(common): 공통 Icon 에 같은 아이콘이 추가되면 common/icons 로 교체합니다.
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -41,15 +40,6 @@ export function MessageSquareTextIcon(props: IconProps) {
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       <path d="M13 8H7" />
       <path d="M17 12H7" />
-    </Icon>
-  );
-}
-
-export function LockIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </Icon>
   );
 }

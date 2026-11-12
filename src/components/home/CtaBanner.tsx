@@ -5,9 +5,8 @@ import { buttonClassName } from '@/components/common/Button';
 import { fullBleedBackground, PAGE_BG } from './fullBleed';
 import { buttonHover } from './buttonHover';
 import Reveal from './Reveal';
-import SectionJumpLink from './SectionJumpLink';
 
-// ⑧ 마지막 시작하기 띠: 보라 그라데이션 박스 (왼쪽 아래 모서리가 크게 둥근 모양)
+// ⑦ 마지막 시작하기 띠: 보라 그라데이션 박스 (왼쪽 아래 모서리가 크게 둥근 모양)
 export default function CtaBanner() {
   return (
     <section
@@ -28,12 +27,11 @@ export default function CtaBanner() {
         />
 
         <div className="relative flex flex-col gap-3 text-(--color-text-on-brand)">
-          <p className="font-mono text-[14px] leading-[1.55]">{'// ready to commit?'}</p>
           {/* ⚠️ 40px 제목은 팀 텍스트 스타일에 없는 크기예요. (Display 스타일 추가 요청 필요) */}
           <h2 className="text-[32px] leading-tight font-bold sm:text-[40px]">
             오늘의 첫 기록을 남겨 보세요
           </h2>
-          {/* ⚠️ 회원가입이 관리자 승인제인지 확인 필요 (승인제면 "1분" 문구 수정) */}
+          {/* ⚠️ 회원가입은 관리자 승인제예요. "1분" 문구는 승인제에 맞게 고칠 예정 (보류) */}
           <p className="text-[16px] leading-[1.5] font-normal opacity-90">
             가입은 1분이면 끝나요. 작은 TIL 하나가 성장의 시작이에요.
           </p>
@@ -41,7 +39,7 @@ export default function CtaBanner() {
 
         {/* 시안은 흰 버튼 · 투명 버튼이지만, 공통 Button 에 보라 배경용 버튼이 없어 Soft · Outline 을 씁니다. */}
         <div className="relative flex shrink-0 gap-3">
-          {/* TODO: 회원가입 페이지 주소를 로그인 담당(#4)과 확인 */}
+          {/* 기존 유저도 누를 수 있어 /login 으로 보냄 (로그인 화면에 회원가입 링크 있음) */}
           {/* 마우스를 올리면 한 단계 진한 색 + 살짝 떠오름 (누를 수 있다는 느낌) */}
           <Link
             href="/login"
@@ -53,9 +51,9 @@ export default function CtaBanner() {
           >
             시작하기
           </Link>
-          {/* 바로 위 FAQ 섹션으로 부드럽게 이동 (로그인 필요 없음) */}
-          <SectionJumpLink
-            targetId="faq"
+          {/* FAQ 화면으로 이동 (누구나 볼 수 있어 로그인 필요 없음) */}
+          <Link
+            href="/faq"
             className={buttonClassName({
               variant: 'outline',
               size: 'lg',
@@ -63,7 +61,7 @@ export default function CtaBanner() {
             })}
           >
             FAQ 보기
-          </SectionJumpLink>
+          </Link>
         </div>
       </Reveal>
     </section>
