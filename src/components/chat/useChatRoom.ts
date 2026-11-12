@@ -33,7 +33,7 @@ export function useChatRoom(peerId: ChatUserId) {
   const loadingOlderRef = useRef(false);
   const snapshotGeneration = useRef(0);
   const clientSequence = useRef(0);
-  const uploadedFiles = useRef(new Map<string, ChatAttachment>());
+  const uploadedAttachments = useRef(new Map<string, ChatAttachment>());
 
   useEffect(
     () =>
@@ -87,10 +87,10 @@ export function useChatRoom(peerId: ChatUserId) {
   const sendFile = useCallback(
     async (clientId: string, file: File) => {
       const attachment =
-        uploadedFiles.current.get(clientId) ?? (await messageService.uploadAttachment(file));
-      uploadedFiles.current.set(clientId, attachment);
+        uploadedAttachments.current.get(clientId) ?? (await messageService.uploadAttachment(file));
+      uploadedAttachments.current.set(clientId, attachment);
       const sent = await messageService.sendAttachment(peerId, attachment);
-      uploadedFiles.current.delete(clientId);
+      uploadedAttachments.current.delete(clientId);
       return sent;
     },
     [peerId],
@@ -160,7 +160,7 @@ export function useChatRoom(peerId: ChatUserId) {
   );
 
   const discard = useCallback((clientId: string) => {
-    uploadedFiles.current.delete(clientId);
+    uploadedAttachments.current.delete(clientId);
     setPending((current) => current.filter((message) => message.clientId !== clientId));
   }, []);
 

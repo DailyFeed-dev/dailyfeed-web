@@ -1,21 +1,54 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { messageService } from '@/services/chatService';
 import type { ChatAttachment, ChatUserId } from '@/types/chat';
 
 const REVOKE_DOWNLOAD_URL_MS = 30_000;
+const NEAR_VIEWPORT_MARGIN = '200px';
 
 type LoadedImage = { key: string; url: string | null; failed: boolean };
 
 type DownloadStatus = 'idle' | 'downloading' | 'failed';
 
-export function useAttachmentImage(peerId: ChatUserId, attachment: ChatAttachment) {
+export function useNearViewport() {
+  const [near, setNear] = useState(false);
+
+  const observe = useCallback(
+    (node: Element | null) => {
+      if (!node || near) return;
+      if (typeof IntersectionObserver === 'undefined') {
+        setNear(true);
+        return;
+      }
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          setNear(true);
+          observer.disconnect();
+        },
+        { rootMargin: NEAR_VIEWPORT_MARGIN },
+      );
+      observer.observe(node);
+      return () => observer.disconnect();
+    },
+    [near],
+  );
+
+  return { near, observe };
+}
+
+export function useAttachmentImage(
+  peerId: ChatUserId,
+  attachment: ChatAttachment,
+  enabled: boolean,
+) {
   const { name, path, mime, size } = attachment;
   const [attempt, setAttempt] = useState(0);
   const [loaded, setLoaded] = useState<LoadedImage | null>(null);
   const key = `${peerId}:${path}:${attempt}`;
 
   useEffect(() => {
+    if (!enabled) return;
     const controller = new AbortController();
     let objectUrl: string | null = null;
     messageService
@@ -32,7 +65,7 @@ export function useAttachmentImage(peerId: ChatUserId, attachment: ChatAttachmen
       controller.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [key, peerId, name, path, mime, size]);
+  }, [enabled, key, peerId, name, path, mime, size]);
 
   const current = loaded?.key === key ? loaded : null;
   return {

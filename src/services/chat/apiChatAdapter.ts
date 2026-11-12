@@ -17,6 +17,8 @@ import type {
 const DM_PATH = '/api/v1/dm/conversations';
 const ATTACHMENTS_PATH = '/api/v1/dm/attachments';
 const PATH_CHECK_ORIGIN = 'https://path-check.invalid';
+const MAX_DECODE_ROUNDS = 3;
+const INVALID_ATTACHMENT_PATH = '첨부 파일 주소가 올바르지 않습니다.';
 const FRIENDS_PATH = '/api/v1/friends';
 const BLOCKS_PATH = '/api/v1/blocks';
 const ME_PATH = '/api/v1/auth/me';
@@ -72,14 +74,50 @@ function toMessage(item: DmMessage | null | undefined): ChatMessage | null {
   };
 }
 
-function downloadPathOf(attachment: ChatAttachment) {
-  const url = new URL(attachment.path, PATH_CHECK_ORIGIN);
-  const isAttachmentPath =
+function decodedFormsOf(segment: string) {
+  const forms = [segment];
+  for (let round = 0; round < MAX_DECODE_ROUNDS; round += 1) {
+    const current = forms[forms.length - 1];
+    try {
+      const next = decodeURIComponent(current);
+      if (next === current) break;
+      forms.push(next);
+    } catch {
+      break;
+    }
+  }
+  return forms;
+}
+
+function hasEncodedTraversal(pathname: string) {
+  return pathname
+    .split('/')
+    .some((segment) =>
+      decodedFormsOf(segment).some((form) => form === '.' || form === '..' || /[/\\]/.test(form)),
+    );
+}
+
+function parsePath(path: string) {
+  try {
+    return new URL(path, PATH_CHECK_ORIGIN);
+  } catch {
+    return null;
+  }
+}
+
+function isAttachmentUrl(url: URL) {
+  return (
     url.origin === PATH_CHECK_ORIGIN &&
     url.pathname.startsWith(`${ATTACHMENTS_PATH}/`) &&
     !url.search &&
-    !url.hash;
-  if (!isAttachmentPath) throw new Error('첨부 파일 주소가 올바르지 않습니다.');
+    !url.hash &&
+    !hasEncodedTraversal(url.pathname)
+  );
+}
+
+function downloadPathOf(attachment: ChatAttachment) {
+  const url = parsePath(attachment.path);
+  if (!url || !isAttachmentUrl(url)) throw new Error(INVALID_ATTACHMENT_PATH);
   return url.pathname;
 }
 
