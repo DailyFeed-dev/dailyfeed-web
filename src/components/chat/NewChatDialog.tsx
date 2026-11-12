@@ -23,13 +23,13 @@ type NewChatDialogProps = {
 type UserOptionProps = {
   user: ChatUser;
   checked: boolean;
-  isFriend: boolean;
+  showFriendBadge: boolean;
   onSelect: (user: ChatUser) => void;
 };
 
 const TITLE_ID = 'new-chat-dialog-title';
 
-function UserOption({ user, checked, isFriend, onSelect }: UserOptionProps) {
+function UserOption({ user, checked, showFriendBadge, onSelect }: UserOptionProps) {
   const name = user.name || UNKNOWN_USER_NAME;
   return (
     <label
@@ -39,7 +39,7 @@ function UserOption({ user, checked, isFriend, onSelect }: UserOptionProps) {
       <span className="min-w-0 flex-1 truncate text-[15px] leading-[1.45] font-semibold text-(--color-text-primary)">
         {name}
       </span>
-      {isFriend && <Badge tone="neutral">친구</Badge>}
+      {showFriendBadge && <Badge tone="neutral">친구</Badge>}
       <input
         type="radio"
         name="new-chat-user"
@@ -66,9 +66,8 @@ function ListError({ message, onRetry }: { message: string; onRetry: () => void 
 export default function NewChatDialog({ friendsState, onClose }: NewChatDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const router = useRouter();
-  const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<ChatUser | null>(null);
-  const search = useUserSearch(query);
+  const search = useUserSearch();
 
   const friendIds = new Set(friendsState.friends.map((user) => user.id));
   const selectedName = selected ? selected.name || UNKNOWN_USER_NAME : null;
@@ -90,7 +89,7 @@ export default function NewChatDialog({ friendsState, onClose }: NewChatDialogPr
     close();
   };
 
-  const renderUsers = (users: ChatUser[], emptyText: string, markFriends: boolean) => {
+  const renderUsers = (users: ChatUser[], emptyText: string, showFriendBadges: boolean) => {
     if (users.length === 0) {
       return <p className="p-3 text-sm text-(--color-text-muted)">{emptyText}</p>;
     }
@@ -99,7 +98,7 @@ export default function NewChatDialog({ friendsState, onClose }: NewChatDialogPr
         key={user.id}
         user={user}
         checked={user.id === selected?.id}
-        isFriend={markFriends && friendIds.has(user.id)}
+        showFriendBadge={showFriendBadges && friendIds.has(user.id)}
         onSelect={setSelected}
       />
     ));
@@ -162,8 +161,8 @@ export default function NewChatDialog({ friendsState, onClose }: NewChatDialogPr
 
         <Search
           placeholder="이름으로 사용자 검색"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          value={search.query}
+          onChange={(event) => search.setQuery(event.target.value)}
         />
 
         <p

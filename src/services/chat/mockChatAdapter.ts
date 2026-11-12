@@ -16,6 +16,7 @@ import type {
 } from '@/types/chat';
 
 const ME: ChatUserId = 1;
+const ME_USER: ChatUser = { id: ME, name: '테스트', avatarUrl: null };
 const MOCK_DELAY_MS = 200;
 const AUTO_REPLY_DELAY_MS = 1500;
 const AUTO_REPLY_TYPING_AFTER_MS = 300;
@@ -297,7 +298,7 @@ const friendPort: ChatFriendPort = {
 const userPort: ChatUserPort = {
   async getMe(signal) {
     await wait(signal);
-    return { id: ME, name: '테스트', avatarUrl: null };
+    return { ...ME_USER };
   },
 
   async getUser(userId, signal) {
@@ -309,7 +310,7 @@ const userPort: ChatUserPort = {
     await wait(signal);
     const keyword = query.trim().toLowerCase();
     if (!keyword) return [];
-    return [...users.values()]
+    return [ME_USER, ...users.values()]
       .filter((user) => user.name.toLowerCase().includes(keyword))
       .map((user) => ({ ...user }));
   },
