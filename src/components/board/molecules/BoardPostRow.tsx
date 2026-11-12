@@ -1,4 +1,8 @@
+import Link from 'next/link';
+import { getCategoryLabel } from '../boardCategories';
+
 // 게시글 목록의 한 줄입니다. 머리글(BoardPostList)과 같은 칸 구성을 씁니다.
+// 줄 전체를 누르면 해당 게시글 상세(/board/[id])로 이동합니다.
 export const POST_GRID = 'grid grid-cols-[91px_1fr_112px_136px_84px_101px] items-center px-6';
 
 export type BoardPostItem = {
@@ -15,11 +19,12 @@ export type BoardPostItem = {
 
 export default function BoardPostRow({ post }: { post: BoardPostItem }) {
   return (
-    <div
+    <Link
+      href={`/board/${post.id}`}
       className={`${POST_GRID} h-17 border-b border-zinc-200 transition-colors hover:bg-indigo-50`}
     >
       <span className="w-fit justify-self-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-[13px] leading-[1.5] font-medium text-indigo-600">
-        {post.category}
+        {getCategoryLabel(post.category)}
       </span>
       <div className="min-w-0">
         <p className="truncate text-sm leading-[1.5] font-semibold text-[#1F1D2B]">{post.title}</p>
@@ -31,6 +36,6 @@ export default function BoardPostRow({ post }: { post: BoardPostItem }) {
       <span className="text-[13px] leading-[1.5] text-[#6C6980]">
         {post.reactions} · {post.comments}
       </span>
-    </div>
+    </Link>
   );
 }

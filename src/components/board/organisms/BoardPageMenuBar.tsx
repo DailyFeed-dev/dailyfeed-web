@@ -1,53 +1,53 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
+import { BOARD_CATEGORIES, type BoardCategory } from '../boardCategories';
 
-// 임시 데이터입니다. 게시글 API 연결 후 props 로 받도록 바꿔 주세요.
-const CATEGORIES = [
-  { id: 'all', label: '전체', count: 128 },
-  { id: 'info', label: '정보', count: 48 },
-  { id: 'free', label: '자유글', count: 32 },
-  { id: 'design', label: '디자인', count: 28 },
-  { id: 'dev', label: '개발', count: 20 },
+// 탭 목록 — 전체는 ?category= 를 생략한 주소(/board)입니다.
+const TABS = [
+  { code: undefined, label: '전체', href: '/board' },
+  ...BOARD_CATEGORIES.map(({ code, label }) => ({
+    code,
+    label,
+    href: `/board?category=${code}`,
+  })),
 ];
 
-// 게시글 메뉴바 — 카테고리 탭, 게시글 수, 검색, 정렬
-export default function BoardPageMenuBar() {
-  const [selected, setSelected] = useState('all');
+// 게시글 메뉴바 — 카테고리 탭, 검색, 정렬
+// category: 현재 선택된 카테고리 (URL 의 ?category= 값, 없으면 전체)
+export default function BoardPageMenuBar({ category }: { category?: BoardCategory }) {
   const [keyword, setKeyword] = useState('');
 
   return (
-    <nav aria-label="게시판 메뉴" className="pt-11 pb-5">
+    <nav aria-label="게시판 메뉴" className="pt-5 pb-5">
       <div role="tablist" className="flex gap-7 border-b border-zinc-200">
-        {CATEGORIES.map((category) => {
-          const isSelected = category.id === selected;
+        {TABS.map((tab) => {
+          const isSelected = tab.code === category;
           return (
-            <button
-              key={category.id}
-              type="button"
+            <Link
+              key={tab.label}
+              href={tab.href}
               role="tab"
               aria-selected={isSelected}
-              onClick={() => setSelected(category.id)}
               className={`-mb-px flex flex-col items-stretch gap-2 pt-2 text-sm leading-[1.5] ${
                 isSelected
                   ? 'font-semibold text-[#1F1D2B]'
                   : 'font-medium text-[#6C6980] hover:text-[#1F1D2B]'
               }`}
             >
-              {category.label} {category.count}
+              {tab.label}
               <span
                 aria-hidden="true"
                 className={`h-0.5 ${isSelected ? 'bg-indigo-600' : 'bg-transparent'}`}
               />
-            </button>
+            </Link>
           );
         })}
       </div>
 
       <div className="mt-7 flex items-center justify-between gap-4">
-        <p className="text-[13px] leading-[1.55] text-[#6C6980]">총 128개의 글</p>
-
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           <label className="flex w-78 items-center gap-2 rounded-lg bg-zinc-100 px-3.5 py-2.5 text-[#6C6980]">
             <SearchIcon className="size-4.5 shrink-0" />
             <input

@@ -1,4 +1,4 @@
-import { POST_GRID } from './BoardPostRow';
+import { POST_GRID } from '../molecules/BoardPostRow';
 
 // 게시글 목록 컬럼 헤더
 export default function BoardPostHeader() {

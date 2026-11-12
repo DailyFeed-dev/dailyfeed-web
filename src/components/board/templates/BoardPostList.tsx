@@ -1,12 +1,13 @@
+import type { BoardCategory } from '../boardCategories';
 import BoardPagination from '../organisms/BoardPagination';
 import BoardPostHeader from '../organisms/BoardPostHeader';
-import BoardPostRow, { type BoardPostItem } from '../organisms/BoardPostRow';
+import BoardPostRow, { type BoardPostItem } from '../molecules/BoardPostRow';
 
 // 임시 데이터입니다. 게시글 API 연결 후 props 로 받도록 바꿔 주세요.
 const POSTS: BoardPostItem[] = [
   {
     id: 1,
-    category: '자유글',
+    category: 'FREE',
     title: '팀 협업을 위한 프로젝트 킥오프 템플릿',
     topic: '프로젝트 관리 · 팀 협업',
     author: '서지민',
@@ -17,7 +18,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 2,
-    category: '디자인',
+    category: 'QUESTION',
     title: '실무에서 바로 쓰는 UI 디자인 체크리스트',
     topic: 'UI · 디자인 시스템',
     author: '박서연',
@@ -28,7 +29,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 3,
-    category: '개발',
+    category: 'REVIEW',
     title: 'React 컴포넌트 리뷰 가이드',
     topic: '프론트엔드 · 코드 리뷰',
     author: '최동하',
@@ -39,7 +40,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 4,
-    category: '정보',
+    category: 'INFO',
     title: '모바일 온보딩 사용성 테스트 보고서',
     topic: '사용성 · 리서치',
     author: '이상민',
@@ -50,7 +51,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 5,
-    category: '자유글',
+    category: 'FREE',
     title: '소프트웨어 리뷰, 어떻게 진행했어요',
     topic: '회고 · 커뮤니케이션',
     author: '사빈',
@@ -61,7 +62,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 6,
-    category: '디자인',
+    category: 'QUESTION',
     title: '라이트·다크 모드 컬러 토큰 가이드',
     topic: '컬러 · 디자인 토큰',
     author: '김남일',
@@ -72,7 +73,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 7,
-    category: '정보',
+    category: 'INFO',
     title: '채용 요구사항 작성 실무 가이드',
     topic: '채용 · 커리어',
     author: '최인하',
@@ -83,7 +84,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 8,
-    category: '개발',
+    category: 'REVIEW',
     title: 'TypeScript 제네릭 실전 활용 패턴',
     topic: '타입스크립트 · 프론트엔드',
     author: '정하늘',
@@ -94,7 +95,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 9,
-    category: '자유글',
+    category: 'FREE',
     title: '재택근무 한 달 후기와 루틴 공유',
     topic: '회고 · 일상',
     author: '한소율',
@@ -105,7 +106,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 10,
-    category: '디자인',
+    category: 'QUESTION',
     title: '버튼 컴포넌트 상태별 설계 기준',
     topic: '컴포넌트 · 디자인 시스템',
     author: '윤재호',
@@ -116,7 +117,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 11,
-    category: '정보',
+    category: 'INFO',
     title: '2026 하반기 개발자 컨퍼런스 일정 정리',
     topic: '컨퍼런스 · 커리어',
     author: '오민재',
@@ -127,7 +128,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 12,
-    category: '개발',
+    category: 'REVIEW',
     title: 'Next.js 앱 라우터 데이터 패칭 정리',
     topic: '프론트엔드 · Next.js',
     author: '배지훈',
@@ -138,7 +139,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 13,
-    category: '자유글',
+    category: 'FREE',
     title: '주니어 개발자가 처음 겪는 코드 리뷰',
     topic: '코드 리뷰 · 성장',
     author: '문세린',
@@ -149,7 +150,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 14,
-    category: '디자인',
+    category: 'QUESTION',
     title: '접근성을 고려한 컬러 대비 점검법',
     topic: '접근성 · 컬러',
     author: '강다은',
@@ -160,7 +161,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 15,
-    category: '정보',
+    category: 'INFO',
     title: '사이드 프로젝트 기획서 작성 가이드',
     topic: '기획 · 프로젝트 관리',
     author: '임도윤',
@@ -171,7 +172,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 16,
-    category: '개발',
+    category: 'REVIEW',
     title: 'Git 브랜치 전략, 우리 팀은 이렇게 합니다',
     topic: '협업 · Git',
     author: '신유나',
@@ -182,7 +183,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 17,
-    category: '자유글',
+    category: 'FREE',
     title: '퇴근 후 30분, 꾸준히 공부하는 방법',
     topic: '자기계발 · 습관',
     author: '조현우',
@@ -193,7 +194,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 18,
-    category: '디자인',
+    category: 'QUESTION',
     title: '피그마 오토 레이아웃 제대로 쓰기',
     topic: '피그마 · 레이아웃',
     author: '노예린',
@@ -204,7 +205,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 19,
-    category: '정보',
+    category: 'INFO',
     title: '신입 개발자 포트폴리오 체크리스트',
     topic: '포트폴리오 · 커리어',
     author: '황지우',
@@ -215,7 +216,7 @@ const POSTS: BoardPostItem[] = [
   },
   {
     id: 20,
-    category: '개발',
+    category: 'REVIEW',
     title: '웹 성능 최적화, 어디서부터 시작할까',
     topic: '성능 · 프론트엔드',
     author: '안준서',
@@ -227,12 +228,15 @@ const POSTS: BoardPostItem[] = [
 ];
 
 // 글 메인 (게시글 목록)
-export default function BoardPostList() {
+// category 가 없으면 전체 글을 보여 줍니다. API 연결 후에는 서버가 걸러서 내려줍니다.
+export default function BoardPostList({ category }: { category?: BoardCategory }) {
+  const posts = category ? POSTS.filter((post) => post.category === category) : POSTS;
+
   return (
     <section aria-label="게시글 목록">
       <div className="overflow-hidden rounded-t-lg">
         <BoardPostHeader />
-        {POSTS.map((post) => (
+        {posts.map((post) => (
           <BoardPostRow key={post.id} post={post} />
         ))}
       </div>
