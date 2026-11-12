@@ -118,9 +118,12 @@ export default function TilCommentSection({
 
   const renderComment = (c: Comment) => {
     const author = c.author ?? {};
+    // 내 댓글이면 프로필 팝오버를 열지 않습니다.
+    const isMine = isSameUser(author.id, currentUser?.id);
     return (
       <article key={c.id} className="flex items-start gap-3.5 border-b border-[#ecebf2] py-5">
         <TilProfilePopoverTrigger
+          disabled={isMine}
           profile={author}
           chatHref={tilChatHref(author.id)}
           triggerClassName="rounded-full"
@@ -131,6 +134,7 @@ export default function TilCommentSection({
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <header className="flex items-center gap-2 leading-[1.4]">
             <TilProfilePopoverTrigger
+              disabled={isMine}
               profile={author}
               chatHref={tilChatHref(author.id)}
               triggerClassName="group"
@@ -143,7 +147,7 @@ export default function TilCommentSection({
             <span className="text-[13px] text-[#9a99a8]">{formatTilRelativeTime(c.createdAt)}</span>
 
             {/* 내 댓글만 메뉴(삭제)를 보여줍니다. */}
-            {isSameUser(author.id, currentUser?.id) && (
+            {isMine && (
               <details className="relative ml-auto">
                 <summary
                   aria-label="댓글 메뉴"

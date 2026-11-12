@@ -33,7 +33,8 @@ export function tilListHref(current: TilListQuery, patch: Partial<TilListQuery>)
   const next = { ...current, ...patch };
   const params = new URLSearchParams();
   if (next.tab !== 'all') params.set('tab', next.tab);
-  if (next.sort !== 'latest') params.set('sort', next.sort);
+  // 정렬은 전체 탭에서만 씁니다.
+  if (next.tab === 'all' && next.sort !== 'latest') params.set('sort', next.sort);
   if (next.page > 1) params.set('page', String(next.page));
   const qs = params.toString();
   return qs ? `${TIL_BOARD_BASE}?${qs}` : TIL_BOARD_BASE;
@@ -50,9 +51,9 @@ export function tilEditHref(id: number | undefined) {
   return `${TIL_BOARD_BASE}/edit?id=${id}`;
 }
 
-/** 채팅 화면 주소 (TODO: 채팅 담당과 주소 규칙을 맞춥니다) */
+/** 그 사용자와의 채팅방 주소 (/chat?with=상대방 userId) */
 export function tilChatHref(userId: number | undefined) {
-  return `/chat?user=${userId}`;
+  return userId === undefined ? '/chat' : `/chat?with=${userId}`;
 }
 
 /** 주소의 ?id= 값을 숫자로 바꿉니다. 잘못된 값이면 null */

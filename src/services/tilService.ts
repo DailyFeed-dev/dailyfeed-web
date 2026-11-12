@@ -43,22 +43,32 @@ export async function getTilCurrentUser(): Promise<Schemas['AuthorResponse']> {
 
 // ---- 게시판 ----
 
+/** 인기 탭 기간. week = 이번 주(KST 월요일 00:00 부터), all = 전체 */
+export const TIL_POPULAR_PERIOD: 'week' | 'all' = 'week';
+
 /**
- * TIL 목록. query.page 는 1부터, 응답의 page 는 API 그대로 0부터입니다.
- * - tab: 전체 / 인기(좋아요 많은 순) / 내 TIL / 북마크
- * - sort: 최신순 / 오래된순 (인기 탭에서는 쓰지 않음)
- * TODO: 백엔드에 탭(tab) 조회가 아직 없습니다. 파라미터 이름 · 값은 백엔드와 맞춰야 합니다.
+ * TIL 목록. 탭마다 다른 API 를 부릅니다. (응답 모양은 모두 TilPageResponse)
+ * - 전체    GET /api/v1/tils?sort=latest|oldest
+ * - 인기    GET /api/v1/tils/popular?period=   (좋아요 → 댓글 → 최신 순, 정렬 고정)
+ * - 내 TIL  GET /api/v1/tils/me                 (최신순 고정)
+ * - 북마크  GET /api/v1/tils/me/bookmarks       (북마크한 순서, 최근 먼저)
+ * query.page 는 1부터, 응답의 page 는 API 그대로 0부터입니다.
  */
 export function getTils({ tab, sort, page }: TilListQuery): Promise<Schemas['TilPageResponse']> {
-  if (USE_TIL_MOCK) return mock.getTils({ tab, sort, page }, TIL_PAGE_SIZE);
-  return api.get<Schemas['TilPageResponse']>(BASE, {
-    query: {
-      page: page - 1,
-      size: TIL_PAGE_SIZE,
-      ...(tab === 'popular' ? {} : { sort }),
-      ...(tab === 'all' ? {} : { tab }),
-    },
-  });
+  if (USE_TIL_MOCK) return mock.getTils({ tab, sort, page }, TIL_PAGE_SIZE, TIL_POPULAR_PERIOD);
+  const paging = { page: page - 1, size: TIL_PAGE_SIZE };
+  switch (tab) {
+    case 'popular':
+      return api.get<Schemas['TilPageResponse']>(`${BASE}/popular`, {
+        query: { ...paging, period: TIL_POPULAR_PERIOD },
+      });
+    case 'mine':
+      return api.get<Schemas['TilPageResponse']>(`${BASE}/me`, { query: paging });
+    case 'bookmarks':
+      return api.get<Schemas['TilPageResponse']>(`${BASE}/me/bookmarks`, { query: paging });
+    default:
+      return api.get<Schemas['TilPageResponse']>(BASE, { query: { ...paging, sort } });
+  }
 }
 
 /** 내 학습 현황 (보드 위젯) */
