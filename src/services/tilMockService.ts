@@ -151,15 +151,26 @@ export const getTilCurrentUser = () => wait(ME);
 export function getTils(
   { tab, sort, page }: TilListQuery,
   size: number,
+  popularPeriod: 'week' | 'all',
 ): Promise<Schemas['TilPageResponse']> {
   const time = (t: MockTil) => new Date(t.createdAt).getTime();
+  // 이번 주 월요일 00:00 (인기 탭 period=week)
+  const monday = new Date();
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+
   const filtered = tils.filter((t) => {
     if (tab === 'mine') return t.author.id === ME.id;
     if (tab === 'bookmarks') return t.bookmarkedByMe;
+    if (tab === 'popular' && popularPeriod === 'week') return time(t) >= monday.getTime();
     return true;
   });
   const sorted = [...filtered].sort((a, b) => {
-    if (tab === 'popular') return b.likeCount - a.likeCount || time(b) - time(a);
+    if (tab === 'popular') {
+      return b.likeCount - a.likeCount || b.commentCount - a.commentCount || time(b) - time(a);
+    }
+    // 내 TIL · 북마크는 최신순 고정 (가짜 데이터에는 북마크 시각이 없어서 작성 시각으로)
+    if (tab !== 'all') return time(b) - time(a);
     return sort === 'latest' ? time(b) - time(a) : time(a) - time(b);
   });
   const start = (page - 1) * size;

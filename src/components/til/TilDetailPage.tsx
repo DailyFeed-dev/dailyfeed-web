@@ -119,7 +119,11 @@ export default function TilDetailPage({ tilId }: { tilId: number }) {
           </h1>
 
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <TilAuthorTrigger author={author} dateLabel={formatTilDateTime(til.createdAt)} />
+            <TilAuthorTrigger
+              author={author}
+              dateLabel={formatTilDateTime(til.createdAt)}
+              isMe={isOwner}
+            />
             {isOwner && <TilOwnerActions tilId={tilId} />}
           </div>
         </header>
@@ -138,7 +142,7 @@ export default function TilDetailPage({ tilId }: { tilId: number }) {
           initialBookmarked={til.bookmarkedByMe ?? false}
         />
 
-        <TilAuthorCard author={author} />
+        <TilAuthorCard author={author} isMe={isOwner} />
 
         <TilCommentSection
           key={`comments-${tilId}`}

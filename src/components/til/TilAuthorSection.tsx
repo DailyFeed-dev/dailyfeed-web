@@ -10,12 +10,16 @@ import { tilChatHref } from './tilBoardUrl';
 export function TilAuthorTrigger({
   author,
   dateLabel,
+  isMe = false,
 }: {
   author: Schemas['AuthorResponse'];
   dateLabel: string;
+  /** 내가 쓴 글이면 프로필 팝오버를 열지 않습니다. */
+  isMe?: boolean;
 }) {
   return (
     <TilProfilePopoverTrigger
+      disabled={isMe}
       profile={author}
       chatHref={tilChatHref(author.id)}
       triggerClassName="-my-1 -ml-1.5 gap-3 rounded-[10px] py-1 pr-3 pl-1.5 transition-colors hover:bg-[#f0eefe]/60"
@@ -34,13 +38,21 @@ export function TilAuthorTrigger({
  * 본문 아래 작성자 카드 (디자인: Author Card 136:5061)
  * API 에 소개 · 기록 수 · 팔로우가 없어 아바타와 이름만 보여줍니다.
  */
-export function TilAuthorCard({ author }: { author: Schemas['AuthorResponse'] }) {
+export function TilAuthorCard({
+  author,
+  isMe = false,
+}: {
+  author: Schemas['AuthorResponse'];
+  /** 내가 쓴 글이면 프로필 팝오버를 열지 않습니다. */
+  isMe?: boolean;
+}) {
   return (
     <section
       aria-label="작성자"
       className="flex items-center gap-4 rounded-2xl border border-[#e2defd] bg-white p-6"
     >
       <TilProfilePopoverTrigger
+        disabled={isMe}
         profile={author}
         chatHref={tilChatHref(author.id)}
         triggerClassName="rounded-full"
