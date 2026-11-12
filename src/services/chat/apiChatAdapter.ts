@@ -8,6 +8,7 @@ import type {
   ChatMessage,
   ChatMessagePort,
   ChatRelationStatus,
+  ChatTypingPort,
   ChatUser,
   ChatUserPort,
 } from '@/types/chat';
@@ -212,9 +213,17 @@ const userPort: ChatUserPort = {
   },
 };
 
+const typingPort: ChatTypingPort = {
+  async sendTyping(peerId, typing) {
+    const body: Schemas['TypingBody'] = { typing };
+    await api.post(`${DM_PATH}/${peerId}/typing`, body);
+  },
+};
+
 export const apiChatAdapter: ChatAdapter = {
   conversations: conversationPort,
   messages: messagePort,
   friends: friendPort,
   users: userPort,
+  typing: typingPort,
 };

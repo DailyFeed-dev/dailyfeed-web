@@ -1,6 +1,7 @@
 import { io, type Socket } from 'socket.io-client';
 
 import type { ChatSyncSignal } from '@/services/chat/pollingChatRealtime';
+import type { ChatTypingFeed, ChatUserId } from '@/types/chat';
 
 export type ChatJoinPayload = {
   accessToken: string;
@@ -16,20 +17,37 @@ type SocketChatSignalOptions = {
   fallbackIntervalMs: number;
 };
 
+type TypingListener = (typing: boolean) => void;
+
+function readTypingEvent(payload: unknown) {
+  if (typeof payload !== 'object' || payload === null) return null;
+  const { user, typing } = payload as { user?: { id?: unknown }; typing?: unknown };
+  const userId = Number(user?.id);
+  if (!Number.isInteger(userId) || typeof typing !== 'boolean') return null;
+  return { userId, typing };
+}
+
 export function createSocketChatSignal({
   url,
   path,
   getJoinPayload,
   joinedIntervalMs,
   fallbackIntervalMs,
-}: SocketChatSignalOptions): ChatSyncSignal {
-  const listeners = new Set<() => void>();
+}: SocketChatSignalOptions): ChatSyncSignal & ChatTypingFeed {
+  const pokeListeners = new Set<() => void>();
+  const typingListeners = new Map<ChatUserId, Set<TypingListener>>();
   let socket: Socket | null = null;
   let joined = false;
   let attempt = 0;
 
   const pokeAll = () => {
-    for (const listener of [...listeners]) listener();
+    for (const listener of [...pokeListeners]) listener();
+  };
+
+  const notifyTyping = (payload: unknown) => {
+    const event = readTypingEvent(payload);
+    if (!event) return;
+    for (const listener of [...(typingListeners.get(event.userId) ?? [])]) listener(event.typing);
   };
 
   const forgetJoin = () => {
@@ -58,6 +76,7 @@ export function createSocketChatSignal({
     current.on('connect', () => void join(current));
     current.on('disconnect', forgetJoin);
     current.on('chat:message', pokeAll);
+    current.on('chat:typing', notifyTyping);
   };
 
   const close = () => {
@@ -66,14 +85,37 @@ export function createSocketChatSignal({
     forgetJoin();
   };
 
+  const openIfNeeded = () => {
+    if (!socket) open();
+  };
+
+  const closeIfUnused = () => {
+    if (pokeListeners.size === 0 && typingListeners.size === 0) close();
+  };
+
   return {
     intervalMs: () => (joined ? joinedIntervalMs : fallbackIntervalMs),
+
     subscribe(onPoke) {
-      listeners.add(onPoke);
-      if (!socket) open();
+      pokeListeners.add(onPoke);
+      openIfNeeded();
       return () => {
-        listeners.delete(onPoke);
-        if (listeners.size === 0) close();
+        pokeListeners.delete(onPoke);
+        closeIfUnused();
+      };
+    },
+
+    subscribeTyping(peerId, onTyping) {
+      const listeners = typingListeners.get(peerId) ?? new Set<TypingListener>();
+      listeners.add(onTyping);
+      typingListeners.set(peerId, listeners);
+      openIfNeeded();
+      return () => {
+        listeners.delete(onTyping);
+        if (listeners.size === 0 && typingListeners.get(peerId) === listeners) {
+          typingListeners.delete(peerId);
+        }
+        closeIfUnused();
       };
     },
   };
