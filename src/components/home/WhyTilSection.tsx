@@ -62,7 +62,8 @@ function TilTemplateCard() {
 export default function WhyTilSection() {
   return (
     <section
-      className="flex flex-col gap-14 py-24 lg:py-30"
+      id="why-til"
+      className="flex scroll-mt-28 flex-col gap-14 py-24 lg:py-30"
       style={fullBleedBackground(`linear-gradient(${PAGE_BG} 0 0)`)}
     >
       <Reveal>

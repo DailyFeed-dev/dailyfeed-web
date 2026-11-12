@@ -218,9 +218,9 @@ export default function HeroSection() {
             >
               시작하기
             </Link>
-            {/* 같은 페이지 안 기능 소개(#features)로 부드럽게 내려가요. 누를 때마다 동작해요 */}
+            {/* 같은 페이지 안 "TIL 작성은 왜 필요할까요?"(#why-til)로 부드럽게 내려가요. 누를 때마다 동작해요 */}
             <SectionJumpLink
-              targetId="features"
+              targetId="why-til"
               className={buttonClassName({
                 variant: 'outline',
                 size: 'lg',
