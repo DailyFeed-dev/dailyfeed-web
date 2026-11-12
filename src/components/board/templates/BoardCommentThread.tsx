@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import Modal from '@/components/common/Modal';
 import { ApiError } from '@/lib/api';
 import {
   createComment,
@@ -32,6 +33,8 @@ export default function BoardCommentThread({
   const [submitting, setSubmitting] = useState(false);
   const [busyIds, setBusyIds] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
+  // 삭제 확인 모달이 가리키는 댓글 id. null 이면 모달이 닫혀 있습니다.
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -80,8 +83,9 @@ export default function BoardCommentThread({
     );
   }
 
+  // 모달에서 삭제를 확인하면 모달을 닫고 삭제 요청을 보냅니다.
   function handleDelete(commentId: number) {
-    if (!window.confirm('댓글을 삭제할까요?')) return;
+    setDeleteTargetId(null);
     return runOn(
       commentId,
       async () => {
@@ -138,12 +142,22 @@ export default function BoardCommentThread({
                 isMine={meId !== undefined && comment.author?.id === meId}
                 busy={id !== undefined && busyIds.includes(id)}
                 onToggleLike={() => id !== undefined && handleToggleLike(id)}
-                onDelete={() => id !== undefined && handleDelete(id)}
+                onDelete={() => id !== undefined && setDeleteTargetId(id)}
               />
             );
           })}
         </ul>
       )}
+
+      <Modal
+        open={deleteTargetId !== null}
+        title="댓글을 삭제할까요?"
+        body="삭제한 댓글은 되돌릴 수 없어요."
+        confirmLabel="삭제"
+        cancelLabel="취소"
+        onConfirm={() => deleteTargetId !== null && handleDelete(deleteTargetId)}
+        onCancel={() => setDeleteTargetId(null)}
+      />
     </>
   );
 }
