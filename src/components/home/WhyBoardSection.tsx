@@ -186,11 +186,12 @@ export default function WhyBoardSection() {
         />
       </Reveal>
 
-      {/* 1200px(75rem) 이상: 왼쪽 이점 목록 + 오른쪽 게시판 화면 예시 600px / 그보다 좁으면 위아래로 쌓임 */}
+      {/* 1200px(75rem) 이상: 왼쪽 이점 목록 + 오른쪽 게시판 화면 예시 600px / 그보다 좁으면 위아래로 쌓임
+          넓은 화면에서 목록과 예시 사이가 너무 벌어지지 않게, 목록 왼쪽에 여백(pl-16)을 둬서 목록을 예시 쪽으로 조금 밀어요 */}
       <div className="grid items-center gap-16 min-[75rem]:grid-cols-[minmax(0,1fr)_600px]">
         {/* 이점 4개는 한 묶음으로 같이 떠오르게 */}
         <Reveal>
-          <ol className="flex flex-col gap-7">
+          <ol className="flex flex-col gap-7 min-[75rem]:pl-16">
             {BENEFITS.map((b) => (
               <li key={b.no} className="flex gap-5">
                 {/* 번호 칸: 연보라 그라데이션 + 위쪽 하이라이트 + 작은 그림자로 살짝 볼록하게 */}

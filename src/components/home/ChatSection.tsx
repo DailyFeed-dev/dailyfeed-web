@@ -143,9 +143,10 @@ export default function ChatSection() {
           <ChatScreenMock />
         </Reveal>
 
-        {/* 설명 4개는 한 묶음으로 같이 떠오르게 · 넓은 화면에서는 오른쪽 끝에 붙여 예시와 멀리 (게시판 섹션과 좌우 대칭) */}
+        {/* 설명 4개는 한 묶음으로 같이 떠오르게 · 넓은 화면에서는 오른쪽 끝에 붙이되,
+            오른쪽 여백(pr-16)만큼 예시 쪽으로 조금 당겨서 간격을 줄여요 (게시판 섹션의 pl-16 과 좌우 대칭) */}
         <Reveal delay={120} className="min-[75rem]:justify-self-end">
-          <ol className="flex flex-col gap-9">
+          <ol className="flex flex-col gap-9 min-[75rem]:pr-16">
             {FEATURES.map((f) => (
               <li key={f.no} className="flex gap-5">
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-(--color-bg-surface) font-mono text-[15px] font-bold text-(--color-text-brand)">

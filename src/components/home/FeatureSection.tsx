@@ -149,7 +149,7 @@ function FeatureLinkCard({
 // 카드 안 미리보기는 소개용 예시 문구입니다. (API 필요 없음)
 export default function FeatureSection() {
   return (
-    <section id="features" className="flex scroll-mt-28 flex-col gap-14 py-24 lg:py-30">
+    <section className="flex flex-col gap-14 py-24 lg:py-30">
       <Reveal>
         <SectionHeading
           title="DailyFeed에서 할 수 있는 일"
