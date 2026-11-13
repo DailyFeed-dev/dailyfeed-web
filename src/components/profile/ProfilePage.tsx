@@ -31,7 +31,7 @@ export default function ProfilePage() {
   function openProfileSettings() {
     setIsEditingProfile(true);
     if (isEditingProfile) {
-      document.getElementById('profile-banner-editor')?.querySelector('select')?.focus();
+      document.getElementById('profile-presence-status')?.focus();
     }
   }
 
@@ -44,7 +44,17 @@ export default function ProfilePage() {
         isEditing={isEditingProfile}
         onEdit={() => setIsEditingProfile((open) => !open)}
       >
-        <ProfileSettings profile={profile} isOpen={isEditingProfile} onProfileChange={setProfile} />
+        <ProfileSettings
+          profile={profile}
+          isOpen={isEditingProfile}
+          onProfileChange={(updatedProfile) => {
+            setProfile(updatedProfile);
+            setIsEditingProfile(false);
+            document
+              .querySelector<HTMLButtonElement>('button[aria-controls="profile-banner-editor"]')
+              ?.focus();
+          }}
+        />
       </ProfileSummary>
       <ProfileTabs view={view} onChange={setView} />
       {view === 'overview' && <ProfileOverview profile={profile} onViewChange={setView} />}

@@ -26,13 +26,15 @@ export default function ProfileSummary({
 
   return (
     <section
-      className="relative overflow-hidden rounded-3xl bg-[#6157E9] p-6 text-white sm:min-h-52 sm:px-8 sm:py-6"
+      className="relative rounded-3xl bg-[#6157E9] p-6 text-white sm:min-h-52 sm:px-8 sm:py-6"
       aria-label="내 프로필 요약"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-32 -right-16 size-80 rounded-full border border-white/5 bg-white/5"
-      />
+        className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl"
+      >
+        <div className="absolute -top-32 -right-16 size-80 rounded-full border border-white/5 bg-white/5" />
+      </div>
       <div className="relative sm:flex sm:items-center sm:justify-between sm:gap-6">
         <div className="flex min-w-0 items-center gap-4 sm:gap-6">
           <ProfileAvatar src={profile.avatarUrl} name={profile.name} size="summary" />
