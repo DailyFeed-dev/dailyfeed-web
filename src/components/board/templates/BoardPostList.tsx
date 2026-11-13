@@ -2,8 +2,11 @@
 
 import { ApiError } from '@/lib/api';
 import { useApiData } from '@/hooks/useApiData';
-import { getPosts } from '@/services/postService';
+import { getPostAuthor, getPosts } from '@/services/postService';
 import type { BoardCategory } from '../boardCategories';
+import { isUnauthorized } from '../boardLogin';
+import { boardListHref } from '../boardUrl';
+import BoardLoginNotice from '../molecules/BoardLoginNotice';
 import BoardPagination from '../organisms/BoardPagination';
 import BoardPostHeader from '../organisms/BoardPostHeader';
 import BoardPostRow from '../molecules/BoardPostRow';
@@ -24,7 +27,10 @@ export default function BoardPostList({
   const { data, error, loading } = useApiData(`posts:${category ?? 'ALL'}:${page}`, (signal) =>
     getPosts({ page: page - 1, size: 20, category }, signal),
   );
-  const posts = data?.items ?? [];
+  // 제목이나 작성자가 없는 글은 보여 주지 않습니다.
+  const posts = (data?.items ?? []).filter(
+    (post) => post.title?.trim() && getPostAuthor(post).name?.trim(),
+  );
 
   return (
     <section aria-label="게시글 목록">
@@ -37,7 +43,14 @@ export default function BoardPostList({
             ))}
           </div>
         )}
-        {!loading && error !== undefined && (
+        {!loading && isUnauthorized(error) && (
+          // 로그인하면 지금 보던 카테고리·페이지로 돌아옵니다.
+          <BoardLoginNotice
+            message="게시판을 보려면 로그인해 주세요."
+            returnTo={boardListHref({ category, page })}
+          />
+        )}
+        {!loading && error !== undefined && !isUnauthorized(error) && (
           <ListMessage>
             {error instanceof ApiError ? error.message : '글을 불러오지 못했어요.'}
           </ListMessage>

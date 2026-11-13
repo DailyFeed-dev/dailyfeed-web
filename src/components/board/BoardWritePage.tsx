@@ -4,8 +4,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { ApiError } from '@/lib/api';
+import { useApiData } from '@/hooks/useApiData';
+import { getCurrentUser } from '@/services/authService';
 import { createPost } from '@/services/postService';
 import { parseCategory } from './boardCategories';
+import { isUnauthorized } from './boardLogin';
+import BoardLoginNotice from './molecules/BoardLoginNotice';
 import BoardWriteForm from './templates/BoardWriteForm';
 
 // 게시판 글쓰기 화면 — 담당자는 이 폴더(src/components/board) 안에서 작업합니다.
@@ -20,6 +24,10 @@ function BoardWriteContent() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // 로그인한 사용자만 글을 쓸 수 있어서, 먼저 로그인 여부를 확인합니다.
+  const { error: meError, loading: meLoading } = useApiData('me', (signal) =>
+    getCurrentUser(signal),
+  );
 
   // 필수 항목은 브라우저가 먼저 검사하고, 모두 채워졌을 때만 여기로 옵니다.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -49,6 +57,24 @@ function BoardWriteContent() {
       );
       setSubmitting(false);
     }
+  }
+
+  if (meLoading) {
+    return (
+      <div
+        role="status"
+        aria-label="글쓰기 화면을 불러오는 중"
+        className="mx-auto mt-9 h-[640px] w-full max-w-[720px] animate-pulse rounded-xl bg-zinc-100"
+      />
+    );
+  }
+  // 로그인하지 않았으면 안내와 로그인 버튼을 보여 줍니다. 로그인하면 글쓰기로 돌아옵니다.
+  if (isUnauthorized(meError)) {
+    return (
+      <div className="mx-auto w-full max-w-[720px] pt-9 pb-16">
+        <BoardLoginNotice message="글을 쓰려면 로그인해 주세요." returnTo="/board/postwrite" />
+      </div>
+    );
   }
 
   return (
