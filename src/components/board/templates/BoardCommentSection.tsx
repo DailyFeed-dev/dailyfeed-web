@@ -4,6 +4,7 @@ import type { Schemas } from '@/lib/api';
 import { ApiError } from '@/lib/api';
 import { useApiData } from '@/hooks/useApiData';
 import { getComments } from '@/services/commentService';
+import BoardCommentSkeleton from '../organisms/BoardCommentSkeleton';
 import BoardCommentThread from './BoardCommentThread';
 
 // 댓글 영역 — 댓글을 가져온 뒤 BoardCommentThread 가 제목, 입력창, 목록을 보여 줍니다.
@@ -22,23 +23,7 @@ export default function BoardCommentSection({
 
   return (
     <section aria-label="댓글" className="mt-10">
-      {comments.loading && (
-        <div role="status" aria-label="댓글을 불러오는 중" className="animate-pulse">
-          <div className="h-7 w-24 rounded bg-zinc-100" />
-          <div className="mt-4 h-[88px] rounded-2xl bg-zinc-100" />
-          <div className="mt-6 flex flex-col gap-6">
-            {[0, 1].map((index) => (
-              <div key={index} className="flex gap-3">
-                <span className="size-9 shrink-0 rounded-full bg-zinc-200" />
-                <div className="flex flex-1 flex-col gap-2 pt-1">
-                  <span className="h-3 w-24 rounded bg-zinc-200" />
-                  <span className="h-3.5 w-3/4 rounded bg-zinc-100" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {comments.loading && <BoardCommentSkeleton />}
 
       {!comments.loading && comments.error !== undefined && (
         <p className="py-10 text-center text-sm text-[#74717F]">
