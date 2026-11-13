@@ -9,7 +9,14 @@ import { parseCategory } from './boardCategories';
 import BoardWriteForm from './templates/BoardWriteForm';
 
 // 게시판 글쓰기 화면 — 담당자는 이 폴더(src/components/board) 안에서 작업합니다.
+// key 가 새 이동(링크·push·replace)마다 바뀌어, 다시 들어오면 입력값·등록 중 상태 없이 처음부터 시작합니다.
+// (캐시 컴포넌트가 숨겨 둔 이전 화면의 상태를 되살리지 않게 하는 용도. 브라우저 뒤로가기일 때만 복원됩니다.)
 export default function BoardWritePage() {
+  const { bfcacheId } = useRouter();
+  return <BoardWriteContent key={bfcacheId} />;
+}
+
+function BoardWriteContent() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -30,7 +37,8 @@ export default function BoardWritePage() {
         tags: form.getAll('tags').map(String),
       });
       // 성공하면 방금 쓴 글로 이동합니다. 이동하는 동안에는 버튼을 계속 막아 둡니다.
-      router.push(post.id ? `/board/${post.id}` : '/board');
+      // replace 로 글쓰기 화면을 기록에서 빼서, 뒤로가기로 다시 글쓰기 화면이 열리지 않게 합니다.
+      router.replace(post.id ? `/board/${post.id}` : '/board');
     } catch (error) {
       setSubmitError(
         error instanceof ApiError
