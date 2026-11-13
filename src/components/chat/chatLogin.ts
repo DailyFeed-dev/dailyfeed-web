@@ -9,12 +9,13 @@ export type ChatAccess = 'checking' | 'login' | 'ready';
 
 export function chatAccessOf(
   requiresLogin: boolean,
-  loggedIn: boolean | null,
-  sessionExpired: boolean,
+  token: string | null | undefined,
+  expiredToken: string | null | undefined,
 ): ChatAccess {
   if (!requiresLogin) return 'ready';
-  if (loggedIn === null) return 'checking';
-  return loggedIn && !sessionExpired ? 'ready' : 'login';
+  if (token === undefined) return 'checking';
+  if (token === null || token === expiredToken) return 'login';
+  return 'ready';
 }
 
 export function chatLoginHref(query: string) {

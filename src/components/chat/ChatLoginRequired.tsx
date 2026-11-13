@@ -18,18 +18,20 @@ export default function ChatLoginRequired() {
         aria-label="채팅"
         className="flex flex-1 items-center justify-center rounded-2xl bg-(--color-bg-surface) p-6"
       >
-        <ChatStateMessage
-          visual={<ChatStateIcon name="message" />}
-          title="로그인이 필요해요"
-          description="채팅은 로그인한 뒤에 이용할 수 있어요"
-        >
-          <Link
-            href={chatLoginHref(searchParams.toString())}
-            className={buttonClassName({ variant: 'primary', size: 'md' })}
+        <div role="status">
+          <ChatStateMessage
+            visual={<ChatStateIcon name="message" />}
+            title="로그인이 필요해요"
+            description="채팅은 로그인한 뒤에 이용할 수 있어요"
           >
-            로그인하기
-          </Link>
-        </ChatStateMessage>
+            <Link
+              href={chatLoginHref(searchParams.toString())}
+              className={buttonClassName({ variant: 'primary', size: 'md' })}
+            >
+              로그인하기
+            </Link>
+          </ChatStateMessage>
+        </div>
       </section>
     </div>
   );

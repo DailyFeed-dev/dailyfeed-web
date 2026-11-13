@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation';
 
 import { MessageCircleIcon } from '@/components/common/icons';
 import NotificationBell from '@/components/notification/NotificationBell';
-import useIsLoggedIn from '@/hooks/useIsLoggedIn';
 
 import HeaderLoginLink from './HeaderLoginLink';
 import HeaderProfileDropdown from './HeaderProfileDropdown';
+import useIsLoggedIn from './useIsLoggedIn';
 
 // 메뉴는 여기서 한 번에 관리합니다. 새 메뉴가 필요하면 팀에 공유한 뒤 수정하세요.
 const NAV_ITEMS = [
