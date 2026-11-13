@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image'; // 💡 next/image 컴포넌트 임포트
 import { NotificationItem } from './NotificationTypes';
 import { notificationService } from './NotificationService';
 
@@ -21,13 +20,11 @@ export default function NotificationsPage() {
         return;
       }
 
-      // 💡 try-catch-finally를 통해 통신 실패 시에도 무한 로딩 멈춤 방어
       try {
         const data = await notificationService.fetchNotifications();
         setNotifications(data);
       } catch (error) {
         console.error('알림 목록 로딩 에러:', error);
-        // 필요 시 여기서 UI(예: Toast)로 에러 표출 가능
       } finally {
         setIsLoading(false);
       }
@@ -36,7 +33,6 @@ export default function NotificationsPage() {
     fetchInitialData();
   }, [router]);
 
-  // 💡 즉각 차감(Optimistic)을 위해 이벤트에 DECREMENT 액션 추가
   const triggerDecrementEvent = () => {
     window.dispatchEvent(
       new CustomEvent('notification-updated', { detail: { type: 'DECREMENT' } }),
@@ -52,17 +48,13 @@ export default function NotificationsPage() {
   const handleDeleteOnly = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
 
-    // 상태 백업 (롤백용)
     const previousNotifications = [...notifications];
 
-    // UI 즉각 반영 (Fire-and-forget)
     setNotifications((prev) => prev.filter((item) => item.id !== id));
     triggerDecrementEvent();
 
-    // 백그라운드 API 호출
     notificationService.markAsRead(id).then((isSuccess) => {
       if (!isSuccess) {
-        // 💡 통신 실패 시 UI 롤백 처리
         setNotifications(previousNotifications);
         triggerIncrementEvent();
         alert('알림 삭제에 실패했습니다.');
@@ -70,18 +62,14 @@ export default function NotificationsPage() {
     });
   };
 
-  // 💡 async await 제거로 체감속도 극한상승 (Fire-and-forget)
   const handleNotificationClick = (noti: NotificationItem) => {
     const previousNotifications = [...notifications];
 
-    // 1. UI 목록에서 즉시 제거 & 벨 숫자 즉시 차감
     setNotifications((prev) => prev.filter((item) => item.id !== noti.id));
     triggerDecrementEvent();
 
-    // 2. 서버 통신 기다리지 않고 페이지 쾌속 이동!
     if (noti.linkUrl) router.push(noti.linkUrl);
 
-    // 3. 백그라운드에서 읽음 처리 (실패 시 롤백)
     notificationService.markAsRead(noti.id).then((isSuccess) => {
       if (!isSuccess) {
         setNotifications(previousNotifications);
@@ -138,36 +126,11 @@ export default function NotificationsPage() {
                 </button>
               </div>
 
-              <div className="flex items-center gap-4">
-                {noti.type === 'post' ? (
-                  <div className="flex h-[48px] w-[48px] flex-shrink-0 items-center justify-center rounded-[12px] bg-[#EEF2FF] text-[#6366F1]">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="22"
-                      height="22"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z" />
-                    </svg>
-                  </div>
-                ) : (
-                  <div className="relative h-[48px] w-[48px] flex-shrink-0">
-                    {/* 💡 일반 img 대신 next/image 최적화 컴포넌트 사용 */}
-                    {noti.avatarUrl && (
-                      <Image
-                        src={noti.avatarUrl}
-                        alt="프로필"
-                        width={48}
-                        height={48}
-                        className="rounded-full object-cover"
-                      />
-                    )}
-                    <div className="absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-[2.5px] border-white bg-[#10B981]"></div>
-                  </div>
-                )}
+              <div className="flex items-center justify-between gap-4">
                 <p className="flex-1 text-[15px] font-medium text-gray-800">{noti.message}</p>
-                <span className="text-[13px] font-medium text-gray-400">{noti.time}</span>
+                <span className="text-[13px] font-medium whitespace-nowrap text-gray-400">
+                  {noti.time}
+                </span>
               </div>
             </div>
           ))}
