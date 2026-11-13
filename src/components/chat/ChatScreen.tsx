@@ -1,9 +1,12 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 import type { ChatUserId } from '@/types/chat';
 
+import { CHAT_CANVAS_CLASS } from './chatLayout';
+import { isUnauthorized } from './chatLogin';
 import ChatRoom from './ChatRoom';
 import ChatSidebar from './ChatSidebar';
 import ChatStateMessage, { ChatStateIcon } from './ChatStateMessage';
@@ -16,17 +19,27 @@ function parsePeerId(value: string | null): ChatUserId | null {
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
-export default function ChatScreen() {
+type ChatScreenProps = {
+  onUnauthorized: () => void;
+};
+
+export default function ChatScreen({ onUnauthorized }: ChatScreenProps) {
   const searchParams = useSearchParams();
   const peerId = parsePeerId(searchParams.get('with'));
   const conversationsState = useConversations();
   const friendsState = useFriends();
+  const unauthorized = isUnauthorized(conversationsState.error);
+
+  useEffect(() => {
+    if (unauthorized) onUnauthorized();
+  }, [unauthorized, onUnauthorized]);
+
   const knownPeer = conversationsState.conversations.find(
     (conversation) => conversation.peer.id === peerId,
   )?.peer;
 
   return (
-    <div className="mb-6 flex h-[calc(100dvh-7.75rem)] min-h-[520px] gap-5 rounded-3xl bg-(--color-bg-subtle) p-3 sm:p-6">
+    <div className={CHAT_CANVAS_CLASS}>
       <ChatSidebar
         conversationsState={conversationsState}
         friendsState={friendsState}
