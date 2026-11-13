@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="930" height="730" viewBox="212 190 930 730" fill="none">
+  <!--
+    DailyFeed 헤더 마크 (TIL 작성 일러스트) — Figma "03 · 컬러 · 간격 · 둥글기" (207:5726) 원색만 사용
+    원본 1305×1206 캔버스에서 그림이 있는 부분만 잘라(viewBox), 작게 띄워도 그림이 꽉 차게 했어요.    gray/900 #1F1D2B · gray/800 #2E2D3A · gray/50 #F6F5FB · gray/0 #FFFFFF
+    brand/50 #F0EEFE · brand/100 #E2DEFD · brand/200 #C3BEFF · brand/300 #B3AAF7
+    brand/400 #8A7FF3 · brand/500 #6157E9 · brand/600 #4B3FD6
+  -->
+  <defs>
+    <linearGradient id="screen" x1="338" y1="355" x2="1003" y2="815" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F0EEFE"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="408" y1="437" x2="606" y2="613" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8A7FF3"/>
+      <stop offset="1" stop-color="#6157E9"/>
+    </linearGradient>
+    <linearGradient id="back" x1="282" y1="450" x2="282" y2="810" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6157E9"/>
+      <stop offset="1" stop-color="#4B3FD6"/>
+    </linearGradient>
+    <linearGradient id="base" x1="230" y1="822" x2="230" y2="905" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F0EEFE"/>
+      <stop offset="1" stop-color="#C3BEFF"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+  </defs>
+
+  <!-- soft brand glow under the laptop and pencil -->
+  <ellipse cx="650" cy="915" rx="420" ry="34" fill="#B3AAF7" opacity="0.45" filter="url(#soft)"/>
+  <ellipse cx="880" cy="560" rx="70" ry="210" transform="rotate(36 880 560)" fill="#C3BEFF" opacity="0.45" filter="url(#soft)"/>
+
+  <!-- sparkles (brand/500) -->
+  <g stroke="#6157E9" stroke-width="40" stroke-linecap="round">
+    <path d="M262 278 L312 316"/>
+    <path d="M375 218 L394 282"/>
+  </g>
+
+  <!-- back panel of the screen -->
+  <rect x="282" y="452" width="150" height="360" rx="48" fill="url(#back)" stroke="#1F1D2B" stroke-width="26"/>
+
+  <!-- screen -->
+  <rect x="338" y="355" width="665" height="460" rx="56" fill="url(#screen)" stroke="#1F1D2B" stroke-width="28"/>
+
+  <!-- code tile -->
+  <rect x="408" y="437" width="198" height="176" rx="26" fill="url(#tile)"/>
+  <g stroke="#FFFFFF" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M474 497 L444 525 L474 553"/>
+    <path d="M540 497 L570 525 L540 553"/>
+    <path d="M518 487 L497 563"/>
+  </g>
+
+  <!-- text lines -->
+  <g stroke-width="40" stroke-linecap="round">
+    <path d="M666 485 H780" stroke="#C3BEFF"/>
+    <path d="M666 559 H742" stroke="#C3BEFF"/>
+    <path d="M430 665 H704" stroke="#E2DEFD"/>
+    <path d="M430 732 H741" stroke="#E2DEFD"/>
+  </g>
+
+  <!-- laptop base -->
+  <rect x="230" y="822" width="840" height="83" rx="41.5" fill="url(#base)" stroke="#1F1D2B" stroke-width="26"/>
+  <rect x="552" y="822" width="200" height="34" rx="14" fill="#2E2D3A"/>
+
+  <!-- pencil: drawn pointing along +x, then placed on the screen -->
+  <g transform="translate(786 680) rotate(-53.6)">
+    <!-- white halo so the pencil separates cleanly from the screen outline -->
+    <path d="M0 0 L120 -59 H405 Q455 -59 455 -19 V19 Q455 59 405 59 H120 Z" stroke="#FFFFFF" stroke-width="64" stroke-linejoin="round"/>
+    <!-- body stripes -->
+    <rect x="120" y="-59" width="240" height="40" fill="#8A7FF3"/>
+    <rect x="120" y="-19" width="240" height="38" fill="#6157E9"/>
+    <rect x="120" y="19" width="240" height="40" fill="#4B3FD6"/>
+    <!-- metal band + eraser -->
+    <rect x="360" y="-59" width="36" height="118" fill="#E2DEFD"/>
+    <path d="M396 -59 H405 Q455 -59 455 -19 V19 Q455 59 405 59 H396 Z" fill="#6157E9"/>
+    <!-- wood cone + lead -->
+    <path d="M0 0 L120 -59 V59 Z" fill="#F6F5FB"/>
+    <path d="M0 0 L38 -18.7 V18.7 Z" fill="#1F1D2B"/>
+    <!-- outline -->
+    <path d="M0 0 L120 -59 H405 Q455 -59 455 -19 V19 Q455 59 405 59 H120 Z" stroke="#1F1D2B" stroke-width="26" stroke-linejoin="round"/>
+    <g stroke="#1F1D2B" stroke-width="18" stroke-linecap="round">
+      <path d="M120 -59 V59"/>
+      <path d="M360 -59 V59"/>
+      <path d="M396 -59 V59"/>
+    </g>
+  </g>
+</svg>

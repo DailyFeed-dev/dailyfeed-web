@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -27,7 +28,16 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-10 flex h-25 shrink-0 items-center justify-between bg-white px-4 sm:px-10">
       <div className="flex items-center gap-8 md:gap-16">
-        <Link href="/" className="text-2xl font-bold text-zinc-950">
+        {/* 로고: 마크(노트북 + 연필 그림) + DailyFeed 글자. 글자가 있어서 마크는 꾸밈용(alt 비움)이에요. */}
+        <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-zinc-950">
+          <Image
+            src="/logo-mark.svg"
+            alt=""
+            width={42}
+            height={33}
+            priority
+            className="-translate-y-0.5"
+          />
           DailyFeed
         </Link>
         <nav aria-label="주 메뉴" className="hidden items-center gap-8 text-lg font-medium sm:flex">
