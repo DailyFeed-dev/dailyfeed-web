@@ -1,15 +1,12 @@
 import { Suspense } from 'react';
 
-import ChatScreen from './ChatScreen';
+import ChatAccess from './ChatAccess';
+import { CHAT_CANVAS_CLASS } from './chatLayout';
 
 export default function ChatPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="mb-6 h-[calc(100dvh-7.75rem)] min-h-[520px] rounded-3xl bg-(--color-bg-subtle)" />
-      }
-    >
-      <ChatScreen />
+    <Suspense fallback={<div className={CHAT_CANVAS_CLASS} />}>
+      <ChatAccess />
     </Suspense>
   );
 }
