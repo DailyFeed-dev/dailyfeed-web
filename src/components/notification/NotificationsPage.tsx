@@ -11,37 +11,71 @@ export default function NotificationsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token =
-      typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
+    const fetchInitialData = async () => {
+      const token =
+        typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
 
-    // 팝업을 띄우지 않고, 비로그인 상태로 주소창에 직접 쳐서 들어온 경우에만 안전하게 뒤로 보냄
-    if (!token) {
-      router.back();
-      return;
-    }
+      if (!token || token === 'null' || token === 'undefined' || token === '') {
+        router.replace('/login');
+        return;
+      }
 
-    notificationService.fetchNotifications().then((data) => {
-      setNotifications(data);
-      setIsLoading(false);
-    });
+      try {
+        const data = await notificationService.fetchNotifications();
+        setNotifications(data);
+      } catch (error) {
+        console.error('알림 목록 로딩 에러:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialData();
   }, [router]);
 
-  const triggerUpdateEvent = () => {
-    window.dispatchEvent(new CustomEvent('notification-updated'));
+  const triggerDecrementEvent = () => {
+    window.dispatchEvent(
+      new CustomEvent('notification-updated', { detail: { type: 'DECREMENT' } }),
+    );
   };
 
-  const handleDeleteOnly = async (id: string, e: React.MouseEvent) => {
+  const triggerIncrementEvent = () => {
+    window.dispatchEvent(
+      new CustomEvent('notification-updated', { detail: { type: 'INCREMENT' } }),
+    );
+  };
+
+  const handleDeleteOnly = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+
+    const previousNotifications = [...notifications];
+
     setNotifications((prev) => prev.filter((item) => item.id !== id));
-    await notificationService.deleteNotification(id);
-    triggerUpdateEvent();
+    triggerDecrementEvent();
+
+    notificationService.markAsRead(id).then((isSuccess) => {
+      if (!isSuccess) {
+        setNotifications(previousNotifications);
+        triggerIncrementEvent();
+        alert('알림 삭제에 실패했습니다.');
+      }
+    });
   };
 
-  const handleNotificationClick = async (noti: NotificationItem) => {
+  const handleNotificationClick = (noti: NotificationItem) => {
+    const previousNotifications = [...notifications];
+
     setNotifications((prev) => prev.filter((item) => item.id !== noti.id));
-    await notificationService.deleteNotification(noti.id);
-    triggerUpdateEvent();
+    triggerDecrementEvent();
+
     if (noti.linkUrl) router.push(noti.linkUrl);
+
+    notificationService.markAsRead(noti.id).then((isSuccess) => {
+      if (!isSuccess) {
+        setNotifications(previousNotifications);
+        triggerIncrementEvent();
+      }
+    });
   };
 
   if (isLoading) {
@@ -92,31 +126,11 @@ export default function NotificationsPage() {
                 </button>
               </div>
 
-              <div className="flex items-center gap-4">
-                {noti.type === 'post' ? (
-                  <div className="flex h-[48px] w-[48px] flex-shrink-0 items-center justify-center rounded-[12px] bg-[#EEF2FF] text-[#6366F1]">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="22"
-                      height="22"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z" />
-                    </svg>
-                  </div>
-                ) : (
-                  <div className="relative h-[48px] w-[48px] flex-shrink-0">
-                    <img
-                      src={noti.avatarUrl}
-                      alt="프로필"
-                      className="h-full w-full rounded-full object-cover"
-                    />
-                    <div className="absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-[2.5px] border-white bg-[#10B981]"></div>
-                  </div>
-                )}
+              <div className="flex items-center justify-between gap-4">
                 <p className="flex-1 text-[15px] font-medium text-gray-800">{noti.message}</p>
-                <span className="text-[13px] font-medium text-gray-400">{noti.time}</span>
+                <span className="text-[13px] font-medium whitespace-nowrap text-gray-400">
+                  {noti.time}
+                </span>
               </div>
             </div>
           ))}
