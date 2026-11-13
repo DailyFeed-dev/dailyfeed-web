@@ -2,7 +2,14 @@
 
 import { useState } from 'react';
 import { focusFirstInvalid } from '@/lib/focus-first-invalid';
-import { BORDER_DEFAULT, BORDER_ERROR, BORDER_FILLED, LABEL } from '../boardWriteStyles';
+import {
+  BORDER_DEFAULT,
+  BORDER_ERROR,
+  BORDER_FILLED,
+  FIELD_BORDER,
+  FIELD_PX,
+  LABEL,
+} from '../boardWriteStyles';
 
 const MAX_LENGTH = 100;
 
@@ -44,7 +51,7 @@ export default function BoardTitleField() {
         onPointerDown={() => setEngaged(true)}
         onKeyDown={() => setEngaged(true)}
         onBlur={() => setEngaged(false)}
-        className={`rounded-lg border-[1.5px] bg-white ${
+        className={`${FIELD_BORDER} ${
           missing
             ? engaged
               ? BORDER_FILLED
@@ -52,7 +59,7 @@ export default function BoardTitleField() {
             : value.trim()
               ? BORDER_FILLED
               : BORDER_DEFAULT
-        } h-[46px] px-4 text-sm leading-[1.55] text-[#201D2B] outline-none placeholder:text-[#6C6980] ${
+        } h-[46px] ${FIELD_PX} text-sm leading-[1.55] text-[#201D2B] outline-none placeholder:text-[#6C6980] ${
           missing ? '' : 'focus:border-[#6157E9]'
         }`}
       />
