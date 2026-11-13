@@ -1,15 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { ApiError } from '@/lib/api';
 import { chatRealtime, conversationService, messageService } from '@/services/chatService';
-import type { ChatMessage, ChatUserId } from '@/types/chat';
+import type { ChatAttachment, ChatMessage, ChatUserId } from '@/types/chat';
 
+import { isTooLargeToSend } from './chatAttachment';
 import { mergeMessages, type PendingMessage } from './chatTimeline';
 import { errorMessageOf } from './errorMessage';
 
 type RoomStatus = 'loading' | 'ready' | 'error';
 
 const SEND_FAILED_MESSAGE = '메시지를 보내지 못했어요.';
+const FILE_FAILED_MESSAGE = '파일을 보내지 못했어요.';
+const FILE_TOO_LARGE_MESSAGE = '파일이 너무 커요.';
+const FILE_SIZE_LIMIT_MESSAGE = '10MB 이하 파일만 보낼 수 있어요.';
+const PAYLOAD_TOO_LARGE = 413;
 const OLDER_FAILED_MESSAGE = '이전 메시지를 불러오지 못했어요.';
+
+function sendErrorOf(error: unknown, file: File | null) {
+  if (!file) return errorMessageOf(error, SEND_FAILED_MESSAGE);
+  const tooLarge = error instanceof ApiError && error.status === PAYLOAD_TOO_LARGE;
+  return tooLarge ? FILE_TOO_LARGE_MESSAGE : errorMessageOf(error, FILE_FAILED_MESSAGE);
+}
 
 export function useChatRoom(peerId: ChatUserId) {
   const [status, setStatus] = useState<RoomStatus>('loading');
@@ -23,6 +35,7 @@ export function useChatRoom(peerId: ChatUserId) {
   const loadingOlderRef = useRef(false);
   const snapshotGeneration = useRef(0);
   const clientSequence = useRef(0);
+  const uploadedAttachments = useRef(new Map<string, ChatAttachment>());
 
   useEffect(
     () =>
@@ -73,8 +86,21 @@ export function useChatRoom(peerId: ChatUserId) {
     }
   }, [peerId, olderCursor]);
 
+  const sendFile = useCallback(
+    async (clientId: string, file: File) => {
+      if (isTooLargeToSend(file)) throw new Error(FILE_SIZE_LIMIT_MESSAGE);
+      const attachment =
+        uploadedAttachments.current.get(clientId) ?? (await messageService.uploadAttachment(file));
+      uploadedAttachments.current.set(clientId, attachment);
+      const sent = await messageService.sendAttachment(peerId, attachment);
+      uploadedAttachments.current.delete(clientId);
+      return sent;
+    },
+    [peerId],
+  );
+
   const deliver = useCallback(
-    async (clientId: string, content: string) => {
+    async ({ clientId, content, file }: PendingMessage) => {
       setPending((current) =>
         current.map((message) =>
           message.clientId === clientId
@@ -83,56 +109,61 @@ export function useChatRoom(peerId: ChatUserId) {
         ),
       );
       try {
-        const sent = await messageService.sendMessage(peerId, content);
+        const sent = file
+          ? await sendFile(clientId, file)
+          : await messageService.sendMessage(peerId, content);
         setMessages((current) => mergeMessages(current, [sent]));
         setPending((current) => current.filter((message) => message.clientId !== clientId));
       } catch (error) {
         setPending((current) =>
           current.map((message) =>
             message.clientId === clientId
-              ? {
-                  ...message,
-                  status: 'failed',
-                  errorMessage: errorMessageOf(error, SEND_FAILED_MESSAGE),
-                }
+              ? { ...message, status: 'failed', errorMessage: sendErrorOf(error, file) }
               : message,
           ),
         );
       }
     },
-    [peerId],
+    [peerId, sendFile],
+  );
+
+  const enqueue = useCallback(
+    (content: string, file: File | null) => {
+      clientSequence.current += 1;
+      const message: PendingMessage = {
+        clientId: `local-${clientSequence.current}`,
+        content,
+        file,
+        createdAt: new Date().toISOString(),
+        status: 'sending',
+        errorMessage: null,
+      };
+      setPending((current) => [...current, message]);
+      void deliver(message);
+    },
+    [deliver],
   );
 
   const send = useCallback(
     (text: string) => {
       const content = text.trim();
-      if (!content) return;
-      clientSequence.current += 1;
-      const clientId = `local-${clientSequence.current}`;
-      setPending((current) => [
-        ...current,
-        {
-          clientId,
-          content,
-          createdAt: new Date().toISOString(),
-          status: 'sending',
-          errorMessage: null,
-        },
-      ]);
-      void deliver(clientId, content);
+      if (content) enqueue(content, null);
     },
-    [deliver],
+    [enqueue],
   );
+
+  const attach = useCallback((file: File) => enqueue('', file), [enqueue]);
 
   const retry = useCallback(
     (clientId: string) => {
       const target = pending.find((message) => message.clientId === clientId);
-      if (target) void deliver(clientId, target.content);
+      if (target) void deliver(target);
     },
     [pending, deliver],
   );
 
   const discard = useCallback((clientId: string) => {
+    uploadedAttachments.current.delete(clientId);
     setPending((current) => current.filter((message) => message.clientId !== clientId));
   }, []);
 
@@ -154,6 +185,7 @@ export function useChatRoom(peerId: ChatUserId) {
     retryLoad,
     loadOlder,
     send,
+    attach,
     retry,
     discard,
   };

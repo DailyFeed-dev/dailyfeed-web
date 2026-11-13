@@ -1,6 +1,7 @@
 import { ApiError } from '@/lib/api';
 import type {
   ChatAdapter,
+  ChatAttachment,
   ChatConversation,
   ChatConversationPort,
   ChatFriendPort,
@@ -22,6 +23,7 @@ const AUTO_REPLY_DELAY_MS = 1500;
 const AUTO_REPLY_TYPING_AFTER_MS = 300;
 const DEFAULT_PAGE_SIZE = 20;
 const MINUTE_MS = 60_000;
+const MOCK_ATTACHMENT_PATH = '/api/v1/dm/attachments/mock';
 
 type FriendRequestRecord = {
   fromId: ChatUserId;
@@ -41,6 +43,27 @@ const seedMessage = (senderId: ChatUserId, content: string, minutes: number): Ch
   createdAt: minutesAgo(minutes),
 });
 
+const attachmentFiles = new Map<string, Blob>();
+
+function storeAttachment(file: Blob, name: string): ChatAttachment {
+  const path = `${MOCK_ATTACHMENT_PATH}/${nextId('f')}`;
+  attachmentFiles.set(path, file);
+  return { name, path, mime: file.type || 'application/octet-stream', size: file.size };
+}
+
+const seedAttachment = (
+  senderId: ChatUserId,
+  attachment: ChatAttachment,
+  minutes: number,
+): ChatMessage => ({ ...seedMessage(senderId, '', minutes), attachment });
+
+const apiGuideFile = storeAttachment(
+  new Blob(['채팅 API 정리\n\n1. 대화 목록\n2. 메시지 보내기\n3. 첨부 올리기\n'], {
+    type: 'text/plain',
+  }),
+  'api-client-guide.txt',
+);
+
 const users = new Map<ChatUserId, ChatUser>(
   [
     { id: 2, name: '김민지', avatarUrl: null },
@@ -53,9 +76,11 @@ const users = new Map<ChatUserId, ChatUser>(
 );
 
 const minjiThread = [
-  ...Array.from({ length: 30 }, (_, index) =>
+  ...Array.from({ length: 28 }, (_, index) =>
     seedMessage(index % 2 === 0 ? 2 : ME, `이전 대화 ${index + 1}`, 600 - index * 10),
   ),
+  seedAttachment(2, apiGuideFile, 320),
+  seedMessage(ME, '이전 대화 30', 310),
   seedMessage(2, '로그인 API 연결 끝났어요 🎉', 5),
   seedMessage(2, '채팅 화면은 어디까지 됐어요?', 3),
 ];
@@ -230,6 +255,39 @@ const messagePort: ChatMessagePort = {
     lastReadIds.set(peerId, message.id);
     scheduleAutoReply(peerId);
     return { ...message };
+  },
+
+  async uploadAttachment(file) {
+    await wait();
+    return storeAttachment(file, file.name);
+  },
+
+  async sendAttachment(peerId, attachment) {
+    await wait();
+    requirePeer(peerId);
+    requireNotBlocked(peerId);
+    if (!attachmentFiles.has(attachment.path)) {
+      throw new ApiError('첨부 파일을 찾을 수 없습니다.', 404);
+    }
+    const message: ChatMessage = {
+      id: nextId('m'),
+      senderId: ME,
+      content: '',
+      createdAt: now(),
+      attachment: { ...attachment },
+    };
+    appendMessage(peerId, message);
+    lastReadIds.set(peerId, message.id);
+    scheduleAutoReply(peerId);
+    return { ...message };
+  },
+
+  async downloadAttachment(peerId, attachment, signal) {
+    await wait(signal);
+    requirePeer(peerId);
+    const file = attachmentFiles.get(attachment.path);
+    if (!file) throw new ApiError('첨부 파일을 찾을 수 없습니다.', 404);
+    return file;
   },
 };
 

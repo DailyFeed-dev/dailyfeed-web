@@ -69,12 +69,12 @@ async function refreshTokens(): Promise<boolean> {
   return refreshing;
 }
 
-async function request<T>(
+async function send(
   method: string,
   path: string,
   { query, body, skipAuth, signal }: RequestOptions = {},
   isRetry = false,
-): Promise<T> {
+): Promise<Response> {
   const headers: Record<string, string> = {};
   const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
 
@@ -93,22 +93,35 @@ async function request<T>(
   // 토큰 만료 → 한 번만 갱신 후 다시 시도
   if (res.status === 401 && !skipAuth && !isRetry) {
     if (await refreshTokens()) {
-      return request<T>(method, path, { query, body, skipAuth, signal }, true);
+      return send(method, path, { query, body, skipAuth, signal }, true);
     }
     tokenStorage.clear();
   }
 
+  return res;
+}
+
+function toApiError(res: Response, json: ApiEnvelope<unknown> | null) {
+  return new ApiError(
+    json?.message ?? `요청에 실패했습니다. (${res.status})`,
+    res.status,
+    json?.code,
+  );
+}
+
+async function request<T>(method: string, path: string, options?: RequestOptions): Promise<T> {
+  const res = await send(method, path, options);
   const json = await parseEnvelope<T>(res);
 
-  if (!res.ok || json?.success === false) {
-    throw new ApiError(
-      json?.message ?? `요청에 실패했습니다. (${res.status})`,
-      res.status,
-      json?.code,
-    );
-  }
+  if (!res.ok || json?.success === false) throw toApiError(res, json);
 
   return json?.data as T;
+}
+
+async function requestBlob(path: string, options?: RequestOptions): Promise<Blob> {
+  const res = await send('GET', path, options);
+  if (!res.ok) throw toApiError(res, await parseEnvelope<unknown>(res));
+  return res.blob();
 }
 
 /**
@@ -126,6 +139,7 @@ async function request<T>(
 export const api = {
   get: <T>(path: string, options?: Omit<RequestOptions, 'body'>) =>
     request<T>('GET', path, options),
+  getBlob: (path: string, options?: Omit<RequestOptions, 'body'>) => requestBlob(path, options),
   post: <T>(path: string, body?: unknown, options?: Omit<RequestOptions, 'body'>) =>
     request<T>('POST', path, { ...options, body }),
   put: <T>(path: string, body?: unknown, options?: Omit<RequestOptions, 'body'>) =>

@@ -22,7 +22,8 @@ export default function ProfileSettings({
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (isOpen) formRef.current?.querySelector('select')?.focus();
+    if (isOpen)
+      formRef.current?.querySelector<HTMLButtonElement>('#profile-presence-status')?.focus();
   }, [isOpen]);
 
   return (

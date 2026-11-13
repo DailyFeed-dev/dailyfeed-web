@@ -1,6 +1,7 @@
 import Button from '@/components/common/Button';
 import type { ChatUserId } from '@/types/chat';
 
+import { messagePreviewOf } from './chatAttachment';
 import { matchesQuery } from './chatSearch';
 import { ChatListSkeleton } from './ChatSkeletons';
 import ChatStateMessage, { ChatStateIcon } from './ChatStateMessage';
@@ -51,7 +52,7 @@ export default function ConversationList({
   }
 
   const visible = conversations.filter(({ peer, lastMessage }) =>
-    matchesQuery(query, peer.name, lastMessage?.content ?? ''),
+    matchesQuery(query, peer.name, lastMessage ? messagePreviewOf(lastMessage) : ''),
   );
 
   return (

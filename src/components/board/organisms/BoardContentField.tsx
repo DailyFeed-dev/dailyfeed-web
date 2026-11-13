@@ -7,6 +7,7 @@ import {
   BORDER_ERROR,
   BORDER_FILLED,
   FIELD_BORDER,
+  FIELD_PX,
   LABEL,
 } from '../boardWriteStyles';
 
@@ -52,7 +53,7 @@ export default function BoardContentField() {
             : filled
               ? BORDER_FILLED
               : BORDER_DEFAULT
-        } block h-[400px] w-full resize-none px-5 py-5 text-sm leading-[1.55] text-[#201D2B] outline-none placeholder:text-[#6C6980] ${
+        } block h-[400px] w-full resize-none ${FIELD_PX} py-3.5 text-sm leading-[1.55] text-[#201D2B] outline-none placeholder:text-[#6C6980] ${
           missing ? '' : 'focus:border-[#6157E9]'
         }`}
       />

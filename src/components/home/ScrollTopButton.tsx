@@ -42,7 +42,8 @@ export default function ScrollTopButton() {
       // 숨어 있을 때는 키보드 Tab 으로도 선택되지 않게
       tabIndex={visible ? 0 : -1}
       aria-hidden={!visible}
-      className={`fixed right-6 bottom-6 z-20 flex size-14 items-center justify-center rounded-full bg-[#1F1D2B] text-(--color-text-on-brand) shadow-[0_8px_24px_rgba(31,29,43,0.25)] transition-[opacity,translate,background-color] duration-300 hover:bg-[#2E2D3A] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-border-brand) motion-reduce:transition-none sm:right-8 sm:bottom-8 ${
+      // 마우스를 올리면: 손가락 커서 · 브랜드 보라로 바뀌고 다른 버튼(buttonHover)처럼 살짝 떠올라요. 누르는 순간엔 내려앉아요.
+      className={`fixed right-6 bottom-6 z-20 flex size-14 cursor-pointer items-center justify-center rounded-full bg-[#1F1D2B] text-(--color-text-on-brand) shadow-[0_8px_24px_rgba(31,29,43,0.25)] transition-[opacity,translate,background-color] duration-300 hover:-translate-y-0.5 hover:bg-(--color-bg-brand) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-border-brand) active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:right-8 sm:bottom-8 ${
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0'
       }`}
     >

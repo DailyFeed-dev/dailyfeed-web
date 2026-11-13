@@ -31,6 +31,9 @@ const form = new FormData();
 form.append('file', file);
 await api.post(`/api/v1/projects/${projectId}/documents`, form, { query: { title } });
 
+// 파일 받기 (토큰이 필요한 파일. 응답 본문을 Blob 으로 돌려줍니다)
+const blob = await api.getBlob(attachmentPath, { query: { peerUserId } });
+
 // 에러 처리
 try {
   await api.delete(`/api/v1/projects/${projectId}/posts/${postId}`);

@@ -1,8 +1,11 @@
-import type { ChatUser } from '@/types/chat';
+import type { ChatMessage, ChatUser } from '@/types/chat';
 
+import AttachmentCard from './AttachmentCard';
 import ChatAvatar from './ChatAvatar';
+import { fileMetaOf, isTooLargeToSend } from './chatAttachment';
 import { formatMessageTime } from './chatTime';
 import type { TimelineItem } from './chatTimeline';
+import MessageAttachment from './MessageAttachment';
 
 type MessageRowProps = {
   item: TimelineItem;
@@ -15,6 +18,8 @@ const BUBBLE_TEXT = 'text-sm leading-[1.45] break-words whitespace-pre-wrap';
 const INCOMING_BUBBLE = `max-w-[440px] rounded-[4px_16px_16px_16px] bg-(--color-bg-subtle) px-4 py-2.5 text-(--color-text-primary) ${BUBBLE_TEXT}`;
 const OUTGOING_BUBBLE = `max-w-[440px] rounded-[16px_4px_16px_16px] bg-(--color-bg-brand) px-4 py-2.5 text-(--color-text-on-brand) ${BUBBLE_TEXT}`;
 const META = 'flex items-center gap-1.5 text-xs leading-[1.45]';
+
+const showsText = (message: ChatMessage) => message.content !== '' || !message.attachment;
 
 export default function MessageRow({ item, peer, onRetry, onDiscard }: MessageRowProps) {
   if (item.kind === 'divider') {
@@ -43,7 +48,10 @@ export default function MessageRow({ item, peer, onRetry, onDiscard }: MessageRo
               </time>
             </div>
           )}
-          <p className={INCOMING_BUBBLE}>{message.content}</p>
+          {message.attachment && (
+            <MessageAttachment peerId={peer.id} attachment={message.attachment} />
+          )}
+          {showsText(message) && <p className={INCOMING_BUBBLE}>{message.content}</p>}
         </div>
       </div>
     );
@@ -53,7 +61,10 @@ export default function MessageRow({ item, peer, onRetry, onDiscard }: MessageRo
     const { message } = item;
     return (
       <div className="flex flex-col items-end gap-1.5">
-        <p className={OUTGOING_BUBBLE}>{message.content}</p>
+        {message.attachment && (
+          <MessageAttachment peerId={peer.id} attachment={message.attachment} />
+        )}
+        {showsText(message) && <p className={OUTGOING_BUBBLE}>{message.content}</p>}
         <time dateTime={message.createdAt} className={`${META} text-(--color-text-muted)`}>
           {formatMessageTime(message.createdAt)}
         </time>
@@ -63,19 +74,31 @@ export default function MessageRow({ item, peer, onRetry, onDiscard }: MessageRo
 
   const { message } = item;
   const failed = message.status === 'failed';
+  const dimmed = failed ? '' : 'opacity-60';
+  const canRetry = !message.file || !isTooLargeToSend(message.file);
   return (
     <div className="flex flex-col items-end gap-1.5">
-      <p className={`${OUTGOING_BUBBLE} ${failed ? '' : 'opacity-60'}`}>{message.content}</p>
+      {message.file ? (
+        <AttachmentCard
+          name={message.file.name}
+          meta={fileMetaOf(message.file.name, message.file.size)}
+          className={dimmed}
+        />
+      ) : (
+        <p className={`${OUTGOING_BUBBLE} ${dimmed}`}>{message.content}</p>
+      )}
       {failed ? (
         <div className={`${META} text-(--color-text-danger)`} role="alert">
           <span>{message.errorMessage}</span>
-          <button
-            type="button"
-            onClick={() => onRetry(message.clientId)}
-            className="cursor-pointer font-semibold underline underline-offset-2"
-          >
-            다시 보내기
-          </button>
+          {canRetry && (
+            <button
+              type="button"
+              onClick={() => onRetry(message.clientId)}
+              className="cursor-pointer font-semibold underline underline-offset-2"
+            >
+              다시 보내기
+            </button>
+          )}
           <button
             type="button"
             onClick={() => onDiscard(message.clientId)}

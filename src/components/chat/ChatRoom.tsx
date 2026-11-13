@@ -112,6 +112,7 @@ export default function ChatRoom({ peerId, knownPeer, friendsState }: ChatRoomPr
         value={draft}
         onValueChange={changeDraft}
         onSend={sendMessage}
+        onAttach={room.attach}
         disabled={room.status !== 'ready' || !canDm}
         placeholder={canDm ? undefined : '메시지를 보낼 수 없어요'}
         inputRef={inputRef}

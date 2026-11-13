@@ -16,8 +16,6 @@ type Props = {
   mode: TilEditorMode;
   onModeChange: (mode: TilEditorMode) => void;
   backHref?: string;
-  /** 없으면 임시저장 버튼을 숨깁니다. (수정 화면) */
-  onSaveDraft?: () => void;
   onSubmit: () => void;
   submitLabel: string;
   submitting?: boolean;
@@ -28,7 +26,6 @@ export default function TilEditorTopBar({
   mode,
   onModeChange,
   backHref = TIL_BOARD_BASE,
-  onSaveDraft,
   onSubmit,
   submitLabel,
   submitting = false,
@@ -71,11 +68,6 @@ export default function TilEditorTopBar({
       </div>
 
       <div className="flex items-center justify-end gap-3">
-        {onSaveDraft && (
-          <Button variant="outline" size="md" onClick={onSaveDraft}>
-            임시저장
-          </Button>
-        )}
         <Button size="md" onClick={onSubmit} disabled={submitting}>
           {submitLabel}
         </Button>

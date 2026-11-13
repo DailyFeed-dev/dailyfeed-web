@@ -14,7 +14,9 @@ export type IconName =
   | 'chevron-down'
   | 'message'
   | 'warning'
-  | 'refresh';
+  | 'refresh'
+  | 'paperclip'
+  | 'file';
 
 type IconProps = Omit<ComponentProps<'span'>, 'children'> & {
   name: IconName;

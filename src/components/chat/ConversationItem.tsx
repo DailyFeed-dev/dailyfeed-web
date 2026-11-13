@@ -4,6 +4,7 @@ import Badge from '@/components/common/Badge';
 import type { ChatConversation } from '@/types/chat';
 
 import ChatAvatar from './ChatAvatar';
+import { messagePreviewOf } from './chatAttachment';
 import { formatRoomTime } from './chatTime';
 import { UNKNOWN_USER_NAME } from './useChatPeer';
 
@@ -29,7 +30,7 @@ export default function ConversationItem({ conversation, selected }: Conversatio
       <div className="flex min-w-0 flex-1 flex-col gap-0.5 leading-[1.45]">
         <p className="truncate text-[15px] font-semibold text-(--color-text-primary)">{name}</p>
         <p className="truncate text-[13px] text-(--color-text-secondary)">
-          {lastMessage?.content ?? ''}
+          {lastMessage ? messagePreviewOf(lastMessage) : ''}
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1.5">

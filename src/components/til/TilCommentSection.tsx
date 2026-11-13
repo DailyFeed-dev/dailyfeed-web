@@ -83,7 +83,13 @@ export default function TilCommentSection({
     setSubmitting(true);
     try {
       const created = await addTilComment(tilId, content);
-      setComments((list) => [...list, created]);
+      // 작성 응답에 작성자가 비어 있으면 로그인한 나로 채워요.
+      // 그래야 새로고침 없이도 이름 · 사진과 '작성자' 표시(글쓴이가 단 댓글)가 바로 보여요.
+      const withAuthor =
+        created.author?.id === undefined && currentUser
+          ? { ...created, author: currentUser }
+          : created;
+      setComments((list) => [...list, withAuthor]);
       // 전체(오래된 순)에서는 새 댓글이 맨 끝에 붙어서, 방금 쓴 댓글까지 펼쳐 보여 줘요.
       // 다른 정렬에서는 보고 있던 댓글이 밀려 사라지지 않게 한 칸만 늘려요.
       setVisible((n) => (sort === 'all' ? Math.max(n, comments.length) + 1 : n + 1));

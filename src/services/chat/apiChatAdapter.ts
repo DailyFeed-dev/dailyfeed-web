@@ -1,6 +1,7 @@
 import { api, ApiError, type Schemas } from '@/lib/api';
 import type {
   ChatAdapter,
+  ChatAttachment,
   ChatConversation,
   ChatConversationPort,
   ChatFriendPort,
@@ -14,6 +15,11 @@ import type {
 } from '@/types/chat';
 
 const DM_PATH = '/api/v1/dm/conversations';
+const ATTACHMENTS_PATH = '/api/v1/dm/attachments';
+const ATTACHMENT_KIND = 'FILE';
+const UPLOAD_NAME_MAX_LENGTH = 60;
+const UPLOAD_NAME_FALLBACK = 'file';
+const INVALID_ATTACHMENT_PATH = '첨부 파일 주소가 올바르지 않습니다.';
 const FRIENDS_PATH = '/api/v1/friends';
 const BLOCKS_PATH = '/api/v1/blocks';
 const ME_PATH = '/api/v1/auth/me';
@@ -23,6 +29,7 @@ const SEARCH_LIMIT = 20;
 
 type DmMessage = Schemas['GlobalDmMessageResult'];
 type DmConversation = Schemas['GlobalDmConversationResult'];
+type DmAttachment = Schemas['DmAttachmentResult'];
 type FriendUser = Schemas['FriendUserResult'];
 type FriendRequest = Schemas['FriendRequestResult'];
 type PublicUser = Schemas['PublicUserProfileResult'];
@@ -46,14 +53,45 @@ const newestFirst = (a: { createdAt: string }, b: { createdAt: string }) =>
 const timeOfLastMessage = (conversation: ChatConversation) =>
   conversation.lastMessage ? Date.parse(conversation.lastMessage.createdAt) : 0;
 
+function toAttachment(item: DmAttachment | null | undefined): ChatAttachment | null {
+  if (!item?.attachmentPath) return null;
+  return {
+    name: item.attachmentName || '첨부 파일',
+    path: item.attachmentPath,
+    mime: item.attachmentMime || 'application/octet-stream',
+    size: item.attachmentSize ?? 0,
+  };
+}
+
 function toMessage(item: DmMessage | null | undefined): ChatMessage | null {
   if (!item?.id || item.senderId === undefined || !item.createdAt) return null;
+  const attachment = toAttachment(item);
   return {
     id: item.id,
     senderId: item.senderId,
     content: item.content ?? '',
     createdAt: item.createdAt,
+    ...(attachment && { attachment }),
   };
+}
+
+function uploadNameOf(fileName: string) {
+  const dot = fileName.lastIndexOf('.');
+  const base = dot > 0 ? fileName.slice(0, dot) : fileName;
+  const extension = dot > 0 ? fileName.slice(dot + 1).replace(/[^A-Za-z0-9]/g, '') : '';
+  const shortBase = base.replace(/[^A-Za-z0-9-]+/g, '_').slice(0, UPLOAD_NAME_MAX_LENGTH);
+  const safeBase = shortBase.replace(/^_+|_+$/g, '') || UPLOAD_NAME_FALLBACK;
+  return extension ? `${safeBase}.${extension}` : safeBase;
+}
+
+function downloadPathOf(attachment: ChatAttachment) {
+  const prefix = `${ATTACHMENTS_PATH}/`;
+  if (!attachment.path.startsWith(prefix)) throw new Error(INVALID_ATTACHMENT_PATH);
+  const segments = attachment.path.slice(prefix.length).split('/');
+  if (segments.some((segment) => segment === '.' || segment === '..')) {
+    throw new Error(INVALID_ATTACHMENT_PATH);
+  }
+  return prefix + segments.map(encodeURIComponent).join('/');
 }
 
 function toConversation(item: DmConversation): ChatConversation | null {
@@ -140,6 +178,30 @@ const messagePort: ChatMessagePort = {
     const body: Schemas['SendFlexibleBody'] = { content: text };
     const item = await api.post<DmMessage>(`${DM_PATH}/${peerId}/messages`, body);
     return toMessage(item) ?? invalidResponse();
+  },
+
+  async uploadAttachment(file) {
+    const form = new FormData();
+    form.append('file', file, uploadNameOf(file.name));
+    const uploaded = toAttachment(await api.post<DmAttachment>(ATTACHMENTS_PATH, form));
+    if (!uploaded) return invalidResponse();
+    return { ...uploaded, name: file.name || uploaded.name };
+  },
+
+  async sendAttachment(peerId, attachment) {
+    const body: Schemas['SendFlexibleBody'] = {
+      kind: ATTACHMENT_KIND,
+      attachmentName: attachment.name,
+      attachmentPath: attachment.path,
+      attachmentMime: attachment.mime,
+      attachmentSize: attachment.size,
+    };
+    const item = await api.post<DmMessage>(`${DM_PATH}/${peerId}/messages`, body);
+    return toMessage(item) ?? invalidResponse();
+  },
+
+  async downloadAttachment(peerId, attachment, signal) {
+    return api.getBlob(downloadPathOf(attachment), { query: { peerUserId: peerId }, signal });
   },
 };
 

@@ -59,6 +59,7 @@ function selectRealtimeSources(): RealtimeSources {
 
 const realtimeSources = selectRealtimeSources();
 
+export const chatRequiresLogin = adapter !== mockChatAdapter;
 export const conversationService = adapter.conversations;
 export const messageService = adapter.messages;
 export const friendService = adapter.friends;
