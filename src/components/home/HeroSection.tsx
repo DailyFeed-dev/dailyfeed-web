@@ -3,7 +3,6 @@ import Icon from '@/components/common/Icon';
 
 import { fullBleedBackground, PAGE_BG } from './fullBleed';
 import Reveal from './Reveal';
-import SectionJumpLink from './SectionJumpLink';
 import TerminalWindow from './TerminalWindow';
 
 // 연속 기록 카드의 7일 칸 (brand/50 → brand/600)
@@ -214,26 +213,22 @@ export default function HeroSection() {
         </Reveal>
       </div>
 
-      {/* 아래로 읽어 내려가라는 안내: 히어로 맨 아래 가운데에 크고 연한 화살표 2개를 세로로 겹쳐 둬요
-          위에서 아래로 차례로 은은하게 밝아졌다 흐려져서, 아래로 흐르는 느낌을 줘요. ("동작 줄이기" 사용자에게는 멈춰 있어요)
-          버튼처럼 보이지 않게 테두리 · 배경 없이 두었고, 누르면 다음 섹션(기능 소개 #features)으로 내려가요 */}
-      <div className="absolute inset-x-0 bottom-2 flex justify-center lg:bottom-5">
-        <SectionJumpLink
-          targetId="features"
-          className="flex flex-col items-center text-[#8A7FF3] opacity-50 transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-(--color-border-brand)"
-        >
-          <span className="sr-only">아래로 내려서 둘러보기</span>
-          <Icon
-            name="chevron-down"
-            size={44}
-            className="animate-pulse motion-reduce:animate-none"
-          />
-          <Icon
-            name="chevron-down"
-            size={44}
-            className="-mt-7 animate-pulse [animation-delay:300ms] motion-reduce:animate-none"
-          />
-        </SectionJumpLink>
+      {/* 아래로 읽어 내려가라는 안내: 히어로 맨 아래 가운데에 작은 "SCROLL" 글자와 아래 화살표를 둬요
+          화살표가 아래로 살짝 내려갔다 돌아오기를 반복해서 "아래로 보세요"라는 느낌을 줘요. ("동작 줄이기" 사용자에게는 멈춰 있어요)
+          누르는 버튼이 아니라 보기만 하는 표시라서 클릭 · Tab 선택이 안 되고, 화면 읽기 프로그램에도 읽히지 않아요 */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-3 flex flex-col items-center text-[#8A7FF3] select-none lg:bottom-6"
+      >
+        {/* 글자 사이를 넓히면 오른쪽에 빈칸이 남아서, 왼쪽에도 같은 만큼(pl) 줘서 화살표와 가운데를 맞춰요 */}
+        <span className="pl-[0.3em] font-mono text-xs font-medium tracking-[0.3em] opacity-80">
+          SCROLL
+        </span>
+        <Icon
+          name="chevron-down"
+          size={28}
+          className="animate-scroll-hint motion-reduce:animate-none"
+        />
       </div>
     </section>
   );

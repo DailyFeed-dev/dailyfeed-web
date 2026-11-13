@@ -35,6 +35,23 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* 온보딩 히어로 아래 "SCROLL" 안내 화살표: 아래로 살짝 내려갔다 돌아오기를 반복해요 (animate-scroll-hint) */
+@theme {
+  --animate-scroll-hint: scroll-hint 1.6s ease-in-out infinite;
+
+  @keyframes scroll-hint {
+    0%,
+    100% {
+      translate: 0 0;
+      opacity: 0.5;
+    }
+    50% {
+      translate: 0 6px;
+      opacity: 1;
+    }
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
