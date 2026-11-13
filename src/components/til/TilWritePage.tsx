@@ -18,8 +18,6 @@ import {
   tilErrorMessage,
 } from './tilBoardUrl';
 
-const DRAFT_KEY = 'dailyfeed.til.draft';
-
 type State = { me?: Schemas['AuthorResponse']; error?: unknown };
 
 /** 새 TIL 작성 (/til/write). 로그인해야 쓸 수 있습니다. */
@@ -70,7 +68,6 @@ export default function TilWritePage() {
       authorName={state.me.name ?? ''}
       date={formatTilDate(new Date().toISOString())}
       submitLabel="저장하기"
-      draftKey={DRAFT_KEY}
       onSubmit={submit}
     />
   );
