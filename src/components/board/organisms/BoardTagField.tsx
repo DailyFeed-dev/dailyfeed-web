@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { BORDER_DEFAULT, BORDER_FILLED, FIELD_BORDER, LABEL } from '../boardWriteStyles';
+import { BORDER_DEFAULT, BORDER_FILLED, FIELD_BORDER, FIELD_PX, LABEL } from '../boardWriteStyles';
 
 const MAX_TAGS = 5;
 const MAX_TAG_LENGTH = 20;
@@ -51,7 +51,7 @@ export default function BoardTagField() {
         onClick={() => inputRef.current?.focus()}
         className={`${FIELD_BORDER} ${
           tags.length > 0 ? BORDER_FILLED : BORDER_DEFAULT
-        } flex min-h-[46px] flex-wrap items-center gap-2 px-3 py-2.5 focus-within:border-[#6157E9]`}
+        } flex min-h-[46px] flex-wrap items-center gap-2 ${FIELD_PX} py-2.5 focus-within:border-[#6157E9]`}
       >
         {tags.map((tag) => (
           <span

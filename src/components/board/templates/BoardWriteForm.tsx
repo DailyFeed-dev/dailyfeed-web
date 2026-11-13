@@ -1,4 +1,7 @@
+'use client';
+
 import { Check } from 'lucide-react';
+import { useState } from 'react';
 import { focusFirstInvalid } from '@/lib/focus-first-invalid';
 import { LABEL } from '../boardWriteStyles';
 import BoardCategorySelect from '../organisms/BoardCategorySelect';
@@ -16,6 +19,9 @@ export default function BoardWriteForm({
   submitting?: boolean;
   submitError?: string | null;
 }) {
+  // 이용 수칙을 해제한 채 등록해서 검사에 걸렸을 때만 체크박스를 빨갛게 합니다. 다시 체크하면 풀립니다.
+  const [agreeMissing, setAgreeMissing] = useState(false);
+
   return (
     <section
       aria-label="게시글 작성"
@@ -51,18 +57,26 @@ export default function BoardWriteForm({
             defaultChecked
             required
             className="peer sr-only"
+            onChange={(event) => {
+              if (event.target.checked) setAgreeMissing(false);
+            }}
             onInvalid={(event) => {
               event.preventDefault(); // 브라우저 기본 말풍선 대신 아래 에러 표시를 씁니다.
+              setAgreeMissing(true);
               focusFirstInvalid(event.currentTarget);
             }}
           />
           <span
             aria-hidden="true"
-            className="inline-flex size-[18px] shrink-0 items-center justify-center rounded bg-[#6157E9] text-white peer-not-checked:border peer-not-checked:border-[#E7E5EE] peer-not-checked:bg-white peer-user-invalid:border-[#D41717] peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-300"
+            className={`inline-flex size-[18px] shrink-0 items-center justify-center rounded bg-[#6157E9] text-white peer-not-checked:border peer-not-checked:bg-white peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-300 ${
+              agreeMissing
+                ? 'peer-not-checked:border-[#D41717]'
+                : 'peer-not-checked:border-[#E7E5EE]'
+            }`}
           >
             <Check className="size-3.5" strokeWidth={3} />
           </span>
-          <span className="text-xs leading-[1.55] text-[#74717F]">
+          <span className="text-xs leading-none text-[#74717F]">
             게시판 이용 수칙과 개인정보 포함 여부를 확인했습니다.
           </span>
         </label>
