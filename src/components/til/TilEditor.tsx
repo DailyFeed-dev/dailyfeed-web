@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  type KeyboardEvent,
-} from 'react';
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 
 import type { Schemas } from '@/lib/api';
 import { TIL_BODY_MAX, TIL_TITLE_MAX } from '@/types/til';
@@ -16,38 +9,10 @@ import TilEditorTopBar, { type TilEditorMode } from './TilEditorTopBar';
 import TilFormatToolbar from './TilFormatToolbar';
 import TilMarkdownPreview from './TilMarkdownPreview';
 import TilMarkdownSourceEditor from './TilMarkdownSourceEditor';
-import { formatTilDateTime, tilErrorMessage } from './tilBoardUrl';
+import { tilErrorMessage } from './tilBoardUrl';
 import { applyFormat, headingLevelAt, type FormatCommand } from './tilMarkdownCommands';
 
 type TilInput = Schemas['CreateTilRequest'];
-type SavedDraft = TilInput & { savedAt: number };
-
-// ---- 임시저장 (이 브라우저에만 저장) ----
-
-function readDraft(key: string): string | null {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null; // 사생활 보호 모드 등에서는 저장소를 못 쓸 수 있습니다.
-  }
-}
-
-function parseDraft(raw: string | null): SavedDraft | null {
-  if (!raw) return null;
-  try {
-    const draft = JSON.parse(raw) as Partial<SavedDraft>;
-    return typeof draft.title === 'string' && typeof draft.body === 'string'
-      ? { title: draft.title, body: draft.body, savedAt: Number(draft.savedAt) || Date.now() }
-      : null;
-  } catch {
-    return null;
-  }
-}
-
-const subscribeStorage = (onChange: () => void) => {
-  window.addEventListener('storage', onChange);
-  return () => window.removeEventListener('storage', onChange);
-};
 
 type Props = {
   /** 미리보기에 보여줄 작성자 이름 */
@@ -57,8 +22,6 @@ type Props = {
   day?: number;
   initialValue?: TilInput;
   submitLabel: string;
-  /** 넘기면 임시저장 버튼과 '불러오기' 안내가 생깁니다. (새 글 작성에서만) */
-  draftKey?: string;
   /** 저장하기. 실패하면 에러를 던지면 됩니다. (메시지를 알림으로 보여줍니다) */
   onSubmit: (input: TilInput) => Promise<void>;
 };
@@ -70,7 +33,6 @@ export default function TilEditor({
   day,
   initialValue,
   submitLabel,
-  draftKey,
   onSubmit,
 }: Props) {
   const [mode, setMode] = useState<TilEditorMode>('markdown');
@@ -79,21 +41,10 @@ export default function TilEditor({
   const [caret, setCaret] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [draftDismissed, setDraftDismissed] = useState(false);
 
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLTextAreaElement>(null);
   const pendingSelection = useRef<[number, number] | null>(null);
-
-  // 서버 렌더링 때는 null, 브라우저에서는 저장된 값을 읽습니다. (화면 불일치 없이)
-  const savedDraft = parseDraft(
-    useSyncExternalStore(
-      subscribeStorage,
-      () => (draftKey ? readDraft(draftKey) : null),
-      () => null,
-    ),
-  );
-  const showDraftBanner = !!savedDraft && !draftDismissed && !title && !body;
 
   // 긴 제목은 줄바꿈되도록 제목 칸 높이를 내용에 맞춥니다.
   useEffect(() => {
@@ -152,35 +103,6 @@ export default function TilEditor({
     }
   };
 
-  const handleSaveDraft = () => {
-    if (!draftKey) return;
-    try {
-      const draft: SavedDraft = { title, body, savedAt: Date.now() };
-      window.localStorage.setItem(draftKey, JSON.stringify(draft));
-      setToast('임시저장했어요');
-    } catch {
-      setToast('이 브라우저에서는 임시저장을 할 수 없어요');
-    }
-  };
-
-  const restoreDraft = () => {
-    if (!savedDraft) return;
-    setTitle(savedDraft.title);
-    setBody(savedDraft.body);
-    setDraftDismissed(true);
-  };
-
-  const discardDraft = () => {
-    if (draftKey) {
-      try {
-        window.localStorage.removeItem(draftKey);
-      } catch {
-        // 저장소를 못 쓰는 환경이면 그냥 넘어갑니다.
-      }
-    }
-    setDraftDismissed(true);
-  };
-
   const handleSubmit = async () => {
     if (!title.trim()) {
       setToast('제목을 입력해 주세요');
@@ -199,7 +121,6 @@ export default function TilEditor({
     setSubmitting(true);
     try {
       await onSubmit({ title: title.trim(), body });
-      if (draftKey) discardDraft(); // 올린 글의 임시저장은 지웁니다.
     } catch (error) {
       setToast(tilErrorMessage(error, '저장하지 못했어요'));
       setSubmitting(false);
@@ -214,7 +135,6 @@ export default function TilEditor({
       <TilEditorTopBar
         mode={mode}
         onModeChange={setMode}
-        onSaveDraft={draftKey ? handleSaveDraft : undefined}
         onSubmit={handleSubmit}
         submitLabel={submitLabel}
         submitting={submitting}
@@ -233,32 +153,6 @@ export default function TilEditor({
             <div
               className={`flex w-full flex-col items-start gap-5 ${isMarkdown ? '' : 'mx-auto max-w-190'}`}
             >
-              {showDraftBanner && savedDraft && (
-                <div
-                  role="status"
-                  className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-[10px] bg-[#f0eefe] px-4 py-3 text-sm text-[#4b3fd6]"
-                >
-                  <span className="mr-auto">
-                    임시저장한 글이 있어요 (
-                    {formatTilDateTime(new Date(savedDraft.savedAt).toISOString())})
-                  </span>
-                  <button
-                    type="button"
-                    onClick={restoreDraft}
-                    className="cursor-pointer font-semibold underline underline-offset-2"
-                  >
-                    불러오기
-                  </button>
-                  <button
-                    type="button"
-                    onClick={discardDraft}
-                    className="cursor-pointer text-[#6b6a7b] hover:text-[#1f1d2b]"
-                  >
-                    삭제
-                  </button>
-                </div>
-              )}
-
               <textarea
                 ref={titleRef}
                 value={title}
