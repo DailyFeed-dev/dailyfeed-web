@@ -4,6 +4,7 @@ import { ApiError } from '@/lib/api';
 import { chatRealtime, conversationService, messageService } from '@/services/chatService';
 import type { ChatAttachment, ChatMessage, ChatUserId } from '@/types/chat';
 
+import { isTooLargeToSend } from './chatAttachment';
 import { mergeMessages, type PendingMessage } from './chatTimeline';
 import { errorMessageOf } from './errorMessage';
 
@@ -12,6 +13,7 @@ type RoomStatus = 'loading' | 'ready' | 'error';
 const SEND_FAILED_MESSAGE = '메시지를 보내지 못했어요.';
 const FILE_FAILED_MESSAGE = '파일을 보내지 못했어요.';
 const FILE_TOO_LARGE_MESSAGE = '파일이 너무 커요.';
+const FILE_SIZE_LIMIT_MESSAGE = '10MB 이하 파일만 보낼 수 있어요.';
 const PAYLOAD_TOO_LARGE = 413;
 const OLDER_FAILED_MESSAGE = '이전 메시지를 불러오지 못했어요.';
 
@@ -86,6 +88,7 @@ export function useChatRoom(peerId: ChatUserId) {
 
   const sendFile = useCallback(
     async (clientId: string, file: File) => {
+      if (isTooLargeToSend(file)) throw new Error(FILE_SIZE_LIMIT_MESSAGE);
       const attachment =
         uploadedAttachments.current.get(clientId) ?? (await messageService.uploadAttachment(file));
       uploadedAttachments.current.set(clientId, attachment);

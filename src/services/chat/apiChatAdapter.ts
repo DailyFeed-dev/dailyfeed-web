@@ -16,8 +16,9 @@ import type {
 
 const DM_PATH = '/api/v1/dm/conversations';
 const ATTACHMENTS_PATH = '/api/v1/dm/attachments';
-const PATH_CHECK_ORIGIN = 'https://path-check.invalid';
-const MAX_DECODE_ROUNDS = 3;
+const ATTACHMENT_KIND = 'FILE';
+const UPLOAD_NAME_MAX_LENGTH = 60;
+const UPLOAD_NAME_FALLBACK = 'file';
 const INVALID_ATTACHMENT_PATH = '첨부 파일 주소가 올바르지 않습니다.';
 const FRIENDS_PATH = '/api/v1/friends';
 const BLOCKS_PATH = '/api/v1/blocks';
@@ -74,51 +75,23 @@ function toMessage(item: DmMessage | null | undefined): ChatMessage | null {
   };
 }
 
-function decodedFormsOf(segment: string) {
-  const forms = [segment];
-  for (let round = 0; round < MAX_DECODE_ROUNDS; round += 1) {
-    const current = forms[forms.length - 1];
-    try {
-      const next = decodeURIComponent(current);
-      if (next === current) break;
-      forms.push(next);
-    } catch {
-      break;
-    }
-  }
-  return forms;
-}
-
-function hasEncodedTraversal(pathname: string) {
-  return pathname
-    .split('/')
-    .some((segment) =>
-      decodedFormsOf(segment).some((form) => form === '.' || form === '..' || /[/\\]/.test(form)),
-    );
-}
-
-function parsePath(path: string) {
-  try {
-    return new URL(path, PATH_CHECK_ORIGIN);
-  } catch {
-    return null;
-  }
-}
-
-function isAttachmentUrl(url: URL) {
-  return (
-    url.origin === PATH_CHECK_ORIGIN &&
-    url.pathname.startsWith(`${ATTACHMENTS_PATH}/`) &&
-    !url.search &&
-    !url.hash &&
-    !hasEncodedTraversal(url.pathname)
-  );
+function uploadNameOf(fileName: string) {
+  const dot = fileName.lastIndexOf('.');
+  const base = dot > 0 ? fileName.slice(0, dot) : fileName;
+  const extension = dot > 0 ? fileName.slice(dot + 1).replace(/[^A-Za-z0-9]/g, '') : '';
+  const shortBase = base.replace(/[^A-Za-z0-9-]+/g, '_').slice(0, UPLOAD_NAME_MAX_LENGTH);
+  const safeBase = shortBase.replace(/^_+|_+$/g, '') || UPLOAD_NAME_FALLBACK;
+  return extension ? `${safeBase}.${extension}` : safeBase;
 }
 
 function downloadPathOf(attachment: ChatAttachment) {
-  const url = parsePath(attachment.path);
-  if (!url || !isAttachmentUrl(url)) throw new Error(INVALID_ATTACHMENT_PATH);
-  return url.pathname;
+  const prefix = `${ATTACHMENTS_PATH}/`;
+  if (!attachment.path.startsWith(prefix)) throw new Error(INVALID_ATTACHMENT_PATH);
+  const segments = attachment.path.slice(prefix.length).split('/');
+  if (segments.some((segment) => segment === '.' || segment === '..')) {
+    throw new Error(INVALID_ATTACHMENT_PATH);
+  }
+  return prefix + segments.map(encodeURIComponent).join('/');
 }
 
 function toConversation(item: DmConversation): ChatConversation | null {
@@ -209,14 +182,15 @@ const messagePort: ChatMessagePort = {
 
   async uploadAttachment(file) {
     const form = new FormData();
-    form.append('file', file);
-    const item = await api.post<DmAttachment>(ATTACHMENTS_PATH, form);
-    return toAttachment(item) ?? invalidResponse();
+    form.append('file', file, uploadNameOf(file.name));
+    const uploaded = toAttachment(await api.post<DmAttachment>(ATTACHMENTS_PATH, form));
+    if (!uploaded) return invalidResponse();
+    return { ...uploaded, name: file.name || uploaded.name };
   },
 
   async sendAttachment(peerId, attachment) {
     const body: Schemas['SendFlexibleBody'] = {
-      kind: attachment.mime.startsWith('image/') ? 'IMAGE' : 'FILE',
+      kind: ATTACHMENT_KIND,
       attachmentName: attachment.name,
       attachmentPath: attachment.path,
       attachmentMime: attachment.mime,
