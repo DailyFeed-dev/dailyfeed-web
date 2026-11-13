@@ -10,43 +10,41 @@ const getAuthToken = () => {
 
 export const notificationService = {
   fetchNotifications: async (): Promise<NotificationItem[]> => {
-    try {
-      const token = getAuthToken();
-      if (!token) return [];
+    const token = getAuthToken();
+    if (!token) return [];
 
-      const response = await fetch('/api/v1/notifications', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    const response = await fetch('/api/v1/notifications', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      if (!response.ok) throw new Error('알림 목록 조회 실패');
-      const result = await response.json();
-
-      return (result.data || []).map((item: any) => ({
-        id: item.id.toString(),
-        type: item.type === 'CHAT_MESSAGE' ? 'message' : 'post',
-        title: item.title || item.actorName || '알림',
-        message: item.body || '',
-        time: new Intl.DateTimeFormat('ko-KR', {
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-        }).format(new Date(item.createdAt)),
-        linkUrl: item.type === 'CHAT_MESSAGE' ? `/chat?with=${item.actorId}` : item.linkPath || '#',
-        avatarUrl:
-          item.type === 'CHAT_MESSAGE' ? `https://i.pravatar.cc/150?u=${item.actorId}` : undefined,
-      }));
-    } catch (error) {
-      console.error(error);
-      return [];
+    // 💡 에러 던지기 적용: UI(페이지) 쪽으로 에러를 넘겨서 처리하도록 변경
+    if (!response.ok) {
+      throw new Error(`알림 목록 조회 실패 (상태 코드: ${response.status})`);
     }
+
+    const result = await response.json();
+
+    return (result.data || []).map((item: any) => ({
+      id: item.id.toString(),
+      type: item.type === 'CHAT_MESSAGE' ? 'message' : 'post',
+      title: item.title || item.actorName || '알림',
+      message: item.body || '',
+      time: new Intl.DateTimeFormat('ko-KR', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      }).format(new Date(item.createdAt)),
+      linkUrl: item.type === 'CHAT_MESSAGE' ? `/chat?with=${item.actorId}` : item.linkPath || '#',
+      avatarUrl:
+        item.type === 'CHAT_MESSAGE' ? `https://i.pravatar.cc/150?u=${item.actorId}` : undefined,
+    }));
   },
 
-  // 👇 delete가 아닌 markAsRead 로 완전히 확정!
   markAsRead: async (id: string): Promise<boolean> => {
     try {
       const token = getAuthToken();

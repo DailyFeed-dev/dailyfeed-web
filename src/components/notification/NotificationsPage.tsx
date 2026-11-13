@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'; // 💡 next/image 컴포넌트 임포트
 import { NotificationItem } from './NotificationTypes';
 import { notificationService } from './NotificationService';
 
@@ -11,39 +12,82 @@ export default function NotificationsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token =
-      typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
+    const fetchInitialData = async () => {
+      const token =
+        typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
 
-    if (!token || token === 'null' || token === 'undefined' || token === '') {
-      router.replace('/login');
-      return;
-    }
+      if (!token || token === 'null' || token === 'undefined' || token === '') {
+        router.replace('/login');
+        return;
+      }
 
-    notificationService.fetchNotifications().then((data) => {
-      setNotifications(data);
-      setIsLoading(false);
-    });
+      // 💡 try-catch-finally를 통해 통신 실패 시에도 무한 로딩 멈춤 방어
+      try {
+        const data = await notificationService.fetchNotifications();
+        setNotifications(data);
+      } catch (error) {
+        console.error('알림 목록 로딩 에러:', error);
+        // 필요 시 여기서 UI(예: Toast)로 에러 표출 가능
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialData();
   }, [router]);
 
-  const triggerUpdateEvent = () => {
-    window.dispatchEvent(new CustomEvent('notification-updated'));
+  // 💡 즉각 차감(Optimistic)을 위해 이벤트에 DECREMENT 액션 추가
+  const triggerDecrementEvent = () => {
+    window.dispatchEvent(
+      new CustomEvent('notification-updated', { detail: { type: 'DECREMENT' } }),
+    );
   };
 
-  const handleDeleteOnly = async (id: string, e: React.MouseEvent) => {
+  const triggerIncrementEvent = () => {
+    window.dispatchEvent(
+      new CustomEvent('notification-updated', { detail: { type: 'INCREMENT' } }),
+    );
+  };
+
+  const handleDeleteOnly = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+
+    // 상태 백업 (롤백용)
+    const previousNotifications = [...notifications];
+
+    // UI 즉각 반영 (Fire-and-forget)
     setNotifications((prev) => prev.filter((item) => item.id !== id));
-    // 👇 markAsRead 호출
-    await notificationService.markAsRead(id);
-    triggerUpdateEvent();
+    triggerDecrementEvent();
+
+    // 백그라운드 API 호출
+    notificationService.markAsRead(id).then((isSuccess) => {
+      if (!isSuccess) {
+        // 💡 통신 실패 시 UI 롤백 처리
+        setNotifications(previousNotifications);
+        triggerIncrementEvent();
+        alert('알림 삭제에 실패했습니다.');
+      }
+    });
   };
 
-  const handleNotificationClick = async (noti: NotificationItem) => {
-    setNotifications((prev) => prev.filter((item) => item.id !== noti.id));
-    // 👇 markAsRead 호출
-    await notificationService.markAsRead(noti.id);
-    triggerUpdateEvent();
+  // 💡 async await 제거로 체감속도 극한상승 (Fire-and-forget)
+  const handleNotificationClick = (noti: NotificationItem) => {
+    const previousNotifications = [...notifications];
 
+    // 1. UI 목록에서 즉시 제거 & 벨 숫자 즉시 차감
+    setNotifications((prev) => prev.filter((item) => item.id !== noti.id));
+    triggerDecrementEvent();
+
+    // 2. 서버 통신 기다리지 않고 페이지 쾌속 이동!
     if (noti.linkUrl) router.push(noti.linkUrl);
+
+    // 3. 백그라운드에서 읽음 처리 (실패 시 롤백)
+    notificationService.markAsRead(noti.id).then((isSuccess) => {
+      if (!isSuccess) {
+        setNotifications(previousNotifications);
+        triggerIncrementEvent();
+      }
+    });
   };
 
   if (isLoading) {
@@ -109,11 +153,16 @@ export default function NotificationsPage() {
                   </div>
                 ) : (
                   <div className="relative h-[48px] w-[48px] flex-shrink-0">
-                    <img
-                      src={noti.avatarUrl}
-                      alt="프로필"
-                      className="h-full w-full rounded-full object-cover"
-                    />
+                    {/* 💡 일반 img 대신 next/image 최적화 컴포넌트 사용 */}
+                    {noti.avatarUrl && (
+                      <Image
+                        src={noti.avatarUrl}
+                        alt="프로필"
+                        width={48}
+                        height={48}
+                        className="rounded-full object-cover"
+                      />
+                    )}
                     <div className="absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-[2.5px] border-white bg-[#10B981]"></div>
                   </div>
                 )}

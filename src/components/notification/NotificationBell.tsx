@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { notificationService } from './NotificationService';
 
 export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter(); // 💡 라우팅을 위한 useRouter 추가
 
   useEffect(() => {
-    // 빨간 점 숫자를 가져오는 함수
     const fetchCount = async () => {
       const token =
         typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
@@ -20,26 +20,37 @@ export default function NotificationBell() {
 
     fetchCount();
 
-    // 알림을 지웠을 때 빨간 점 실시간 동기화
-    window.addEventListener('notification-updated', fetchCount);
-    return () => window.removeEventListener('notification-updated', fetchCount);
+    // 💡 이벤트 페이로드를 받아 낙관적 업데이트(즉시 -1) 처리
+    const handleUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.type === 'DECREMENT') {
+        // 서버 요청 없이 프론트 단에서 즉시 -1 (0 밑으로는 안 내려가게 방어)
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      } else if (customEvent.detail?.type === 'INCREMENT') {
+        setUnreadCount((prev) => prev + 1); // 롤백용
+      } else {
+        fetchCount(); // 전체 갱신이 필요할 땐 백엔드 요청
+      }
+    };
+
+    window.addEventListener('notification-updated', handleUpdate);
+    return () => window.removeEventListener('notification-updated', handleUpdate);
   }, []);
 
-  // 🔔 종 아이콘 클릭 핸들러
   const handleBellClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     const token =
       typeof window !== 'undefined' ? localStorage.getItem('dailyfeed.accessToken') : null;
 
-    // 🚨 비로그인 상태일 때만! 페이지 이동을 꽉 막고 팝업을 띄웁니다.
     if (!token || token === 'null' || token === 'undefined' || token === '') {
-      e.preventDefault();
-      e.stopPropagation();
       alert('로그인이 필요합니다.');
       return;
     }
 
-    // ✅ 로그인 상태일 때는 막지 않고 통과시켜서 정상적으로 알림창으로 넘어가게 합니다.
-    setIsOpen((prev) => !prev);
+    // 💡 팝업 띄우는 로직 제거하고 곧바로 알림 페이지로 이동!
+    router.push('/notifications');
   };
 
   return (
@@ -64,7 +75,6 @@ export default function NotificationBell() {
           />
         </svg>
 
-        {/* 미읽음 빨간 점(뱃지): 숫자가 1 이상일 때만 표시 */}
         {unreadCount > 0 && (
           <span className="absolute top-2 right-2 flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
