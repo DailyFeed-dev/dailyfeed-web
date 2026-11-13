@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image'; // next/image 추가
 import { NotificationItem } from './NotificationTypes';
 import { notificationService } from './NotificationService';
 
@@ -20,53 +19,30 @@ export default function NotificationsPage() {
       return;
     }
 
-    // 에러 핸들링 및 무한 로딩 방지 (finally)
-    notificationService
-      .fetchNotifications()
-      .then((data) => setNotifications(data))
-      .catch((err) => console.error('알림 로딩 실패:', err))
-      .finally(() => setIsLoading(false));
+    notificationService.fetchNotifications().then((data) => {
+      setNotifications(data);
+      setIsLoading(false);
+    });
   }, [router]);
 
-  // 프론트에서 뱃지 숫자를 1개 줄이라고 신호를 보냄
-  const triggerReadEvent = () => {
-    window.dispatchEvent(new CustomEvent('notification-read'));
+  const triggerUpdateEvent = () => {
+    window.dispatchEvent(new CustomEvent('notification-updated'));
   };
 
   const handleDeleteOnly = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-
-    // 실패를 대비한 상태 백업
-    const previousNotifications = [...notifications];
-
-    // 낙관적 업데이트: 화면에서 즉시 지우고 이벤트 발송
     setNotifications((prev) => prev.filter((item) => item.id !== id));
-    triggerReadEvent();
-
-    const isSuccess = await notificationService.markAsRead(id);
-    if (!isSuccess) {
-      // API 실패 시 원래 상태로 롤백
-      setNotifications(previousNotifications);
-      window.dispatchEvent(new CustomEvent('notification-refresh')); // 뱃지 숫자 복구
-      alert('알림 삭제에 실패했습니다.');
-    }
+    // 👇 markAsRead 호출
+    await notificationService.markAsRead(id);
+    triggerUpdateEvent();
   };
 
-  const handleNotificationClick = (noti: NotificationItem) => {
-    // 1. 화면 즉시 업데이트
-    const previousNotifications = [...notifications];
+  const handleNotificationClick = async (noti: NotificationItem) => {
     setNotifications((prev) => prev.filter((item) => item.id !== noti.id));
-    triggerReadEvent();
+    // 👇 markAsRead 호출
+    await notificationService.markAsRead(noti.id);
+    triggerUpdateEvent();
 
-    // 2. 백그라운드 API 호출 (await 하지 않고 던져놓음)
-    notificationService.markAsRead(noti.id).then((isSuccess) => {
-      if (!isSuccess) {
-        setNotifications(previousNotifications);
-        window.dispatchEvent(new CustomEvent('notification-refresh'));
-      }
-    });
-
-    // 3. 즉시 페이지 이동 (API 응답을 기다리지 않아 화면 멈춤 없음)
     if (noti.linkUrl) router.push(noti.linkUrl);
   };
 
@@ -101,7 +77,6 @@ export default function NotificationsPage() {
                   onClick={(e) => handleDeleteOnly(noti.id, e)}
                   className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F3F4F6] text-gray-400 transition-colors hover:bg-[#EEF2FF] hover:text-[#6366F1]"
                 >
-                  {/* X 아이콘 생략 (기존과 동일) */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="14"
@@ -122,7 +97,6 @@ export default function NotificationsPage() {
               <div className="flex items-center gap-4">
                 {noti.type === 'post' ? (
                   <div className="flex h-[48px] w-[48px] flex-shrink-0 items-center justify-center rounded-[12px] bg-[#EEF2FF] text-[#6366F1]">
-                    {/* 게시글 아이콘 생략 (기존과 동일) */}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="22"
@@ -135,16 +109,12 @@ export default function NotificationsPage() {
                   </div>
                 ) : (
                   <div className="relative h-[48px] w-[48px] flex-shrink-0">
-                    {noti.avatarUrl && (
-                      <Image
-                        src={noti.avatarUrl}
-                        alt="프로필"
-                        fill
-                        className="rounded-full object-cover"
-                        sizes="48px"
-                      />
-                    )}
-                    <div className="absolute right-0 bottom-0 z-10 h-3.5 w-3.5 rounded-full border-[2.5px] border-white bg-[#10B981]"></div>
+                    <img
+                      src={noti.avatarUrl}
+                      alt="프로필"
+                      className="h-full w-full rounded-full object-cover"
+                    />
+                    <div className="absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-[2.5px] border-white bg-[#10B981]"></div>
                   </div>
                 )}
                 <p className="flex-1 text-[15px] font-medium text-gray-800">{noti.message}</p>

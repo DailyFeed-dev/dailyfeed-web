@@ -46,7 +46,8 @@ export const notificationService = {
     }
   },
 
-  deleteNotification: async (id: string): Promise<boolean> => {
+  // 👇 delete가 아닌 markAsRead 로 완전히 확정!
+  markAsRead: async (id: string): Promise<boolean> => {
     try {
       const token = getAuthToken();
       if (!token) return false;
@@ -82,7 +83,6 @@ export const notificationService = {
       if (!response.ok) return 0;
       const result = await response.json();
 
-      // 🚨 빨간 점 데이터를 놓치지 않기 위한 4중 방어 (백엔드가 데이터를 어떻게 줄지 모르므로)
       let count = 0;
       if (typeof result.data === 'number') {
         count = result.data;
