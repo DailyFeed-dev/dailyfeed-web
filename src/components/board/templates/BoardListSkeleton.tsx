@@ -1,7 +1,7 @@
 import BoardPageMenuBarSkeleton from '../organisms/BoardPageMenuBarSkeleton';
 import BoardPostHeader from '../organisms/BoardPostHeader';
 import BoardPostRowSkeleton from '../molecules/BoardPostRowSkeleton';
-import BoardHeader from './BoardHeader';
+import BoardHeaderSkeleton from './BoardHeaderSkeleton';
 
 const SKELETON_ROWS = 10;
 
@@ -9,7 +9,7 @@ const SKELETON_ROWS = 10;
 export default function BoardListSkeleton() {
   return (
     <div role="status" aria-label="게시판을 불러오는 중">
-      <BoardHeader />
+      <BoardHeaderSkeleton />
       <BoardPageMenuBarSkeleton />
       <div className="overflow-hidden rounded-t-lg">
         <BoardPostHeader />
