@@ -8,6 +8,29 @@ const getAuthToken = () => {
   return '';
 };
 
+// API 알림 linkPath는 글 주소를 /post/{id} 로 준다. 화면의 글 상세는 /board/{id} 다.
+function toAppLink(linkPath: string): string {
+  let pathname = linkPath;
+  let search = '';
+  let hash = '';
+
+  try {
+    const url = new URL(linkPath, 'http://dailyfeed.local');
+    pathname = url.pathname;
+    search = url.search;
+    hash = url.hash;
+  } catch {
+    return linkPath;
+  }
+
+  const segments = pathname.split('/').filter(Boolean);
+  if ((segments[0] === 'post' || segments[0] === 'posts') && segments[1]) {
+    return `/board/${encodeURIComponent(segments[1])}${search}${hash}`;
+  }
+
+  return `${pathname}${search}${hash}` || '#';
+}
+
 export const notificationService = {
   fetchNotifications: async (): Promise<NotificationItem[]> => {
     const token = getAuthToken();
@@ -39,7 +62,12 @@ export const notificationService = {
         hour: 'numeric',
         minute: 'numeric',
       }).format(new Date(item.createdAt)),
-      linkUrl: item.type === 'CHAT_MESSAGE' ? `/chat?with=${item.actorId}` : item.linkPath || '#',
+      linkUrl:
+        item.type === 'CHAT_MESSAGE'
+          ? `/chat?with=${item.actorId}`
+          : item.linkPath
+            ? toAppLink(item.linkPath)
+            : '#',
       avatarUrl:
         item.type === 'CHAT_MESSAGE' ? `https://i.pravatar.cc/150?u=${item.actorId}` : undefined,
     }));
